@@ -4,13 +4,7 @@ import Image from "next/image";
 const Car: NextPage = () => {
   return (
     <div className={car.container}>
-      <Image
-        alt="🚚"
-        src="/gas_truck.svg"
-        layout="fill"
-        objectFit="contain"
-        objectPosition="0 0"
-      ></Image>
+      <Canvas></Canvas>
     </div>
   );
 };

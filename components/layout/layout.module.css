@@ -1,0 +1,7 @@
+.default {
+  width: 100vw;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(255, 251, 235);
+}

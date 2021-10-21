@@ -1,0 +1,18 @@
+.container {
+  position: relative;
+  z-index: 100;
+  width: 100vw;
+  height: 50vh;
+  right: 100vw;
+  top: 5vh;
+  animation: drive 6s linear forwards;
+}
+
+@keyframes drive {
+  from {
+    right: 100vw;
+  }
+  to {
+    right: -100vw;
+  }
+}

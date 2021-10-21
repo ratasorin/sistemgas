@@ -15,14 +15,15 @@
   width: calc(100vw / 12);
   height: 10px;
   background-color: white;
+  transform: skew(40deg);
   animation: slide 0.4s linear infinite forwards;
 }
 
 @keyframes slide {
   from {
-    transform: translateX(0) skew(-30deg);
+    right: calc(-100vw / 6);
   }
   to {
-    transform: translateX(calc(100vw / 6)) skew(-30deg);
+    right: 0;
   }
 }

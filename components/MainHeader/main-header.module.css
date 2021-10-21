@@ -1,6 +1,10 @@
-.container{
-  width : 100vw;
-  height : 60vh;
-  display : flex;
-  flex-direction : column;
+.container {
+  overflow: hidden;
+  width: 100vw;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  background: url(../../public/sky.svg);
+  background-size: cover;
+  justify-content: flex-end;
 }

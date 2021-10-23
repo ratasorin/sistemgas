@@ -1,5 +1,10 @@
 .canvas {
-  position: absolute;
+  overflow: hidden;
   top: 0;
   left: 0;
+  border: 10px solid black;
+}
+
+.img {
+  width: 100vw;
 }

@@ -3,31 +3,56 @@ import image from "next/image";
 import React, { useRef, useEffect, useState } from "react";
 import canvas from "./canvas.module.css";
 
-interface Canvas {
+interface Canvas extends HTMLCanvasElement {
   context: CanvasRenderingContext2D;
-  width: number;
-  height: number;
-  xDestination: number;
 }
 
-const drawImage = (
-  { context, width, height, xDestination }: Canvas,
+const baseline = (
+  canvas: Canvas,
   image: HTMLImageElement
+): [number, number] => {
+  const { width: cW, height: cH } = canvas;
+  const { width: iW, height: iH } = image;
+  const ratio = cH / iH;
+  return [(cW - iW * ratio) / 2, iW * ratio];
+};
+
+const drawImage = (
+  canvas: Canvas,
+  image: HTMLImageElement,
+  x: number
 ): void => {
-  context.clearRect(0, 0, width, height);
+  const [centerX, computedWidth] = baseline(canvas, image);
+  const {
+    height: canvasHeight,
+    width: canvasWidth,
+    context = canvas.getContext("2d") as CanvasRenderingContext2D,
+  } = canvas;
+
+  const { width: imageWidth, height: imageHeight } = image;
+
+  context.clearRect(0, 0, canvasWidth, canvasHeight);
+
+  context.save();
+  context.fillStyle = "black";
+  context.font = "30px Arial";
+  context.fillText("Hello World", canvasWidth / 2, canvasHeight / 2);
+  context.clearRect(-computedWidth + x, 0, imageWidth, canvasHeight);
+  context.restore();
+
   context.drawImage(
     image,
     0,
     0,
-    image.width,
-    image.height,
+    imageWidth,
+    imageHeight,
+    -centerX - computedWidth + x,
     0,
-    0,
-    width,
-    height
+    canvasWidth,
+    canvasHeight
   );
-  context.fillRect(image.width / 4, 0, 10, height);
-  context.fillRect(image.width / 2, 0, 10, height);
+  context.fillStyle = "black";
+  // context.fillRect(-computedWidth + x, 0, 10, canvasHeight);
 };
 
 // const update = () => {
@@ -39,7 +64,7 @@ interface Props {
   height: number;
 }
 const Canvas: NextPage<Props> = ({ width, height }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<Canvas>(null);
 
   /**
    * **time** is the way we are going to keep track of when we should re-draw an image. (control the framerate)
@@ -60,12 +85,9 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
     image.src = "/gas_truck.svg";
 
     let x = 20;
-    const canvas = canvasRef.current as HTMLCanvasElement;
-
+    const canvas = canvasRef.current as Canvas;
     canvas.width = width;
     canvas.height = height;
-
-    const context = canvas?.getContext("2d") as CanvasRenderingContext2D;
 
     let frameID: number;
 
@@ -75,18 +97,11 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
      * the **render** function). In other words is the current timestamp
      */
     const render = (now: number) => {
+      x += 4;
       time.start ? (time.elapsed = now - time.start) : time.elapsed;
       if (time.elapsed >= time.duration) {
         time.start = now;
-        drawImage(
-          {
-            context,
-            width: canvas.width,
-            height: canvas.height,
-            xDestination: x,
-          },
-          image
-        );
+        drawImage(canvas, image, x);
       }
       frameID = window.requestAnimationFrame(render);
     };

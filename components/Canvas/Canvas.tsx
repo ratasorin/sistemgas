@@ -13,8 +13,9 @@ const baseline = (
 ): [number, number] => {
   const { width: cW, height: cH } = canvas;
   const { width: iW, height: iH } = image;
-  const ratio = cH / iH;
-  return [(cW - iW * ratio) / 2, iW * ratio];
+  const ratio1 = cW / iW;
+
+  return [(cW - iW * ratio1) / 2, iW * ratio1];
 };
 
 const drawImage = (
@@ -32,13 +33,17 @@ const drawImage = (
   const { width: imageWidth, height: imageHeight } = image;
 
   context.clearRect(0, 0, canvasWidth, canvasHeight);
-
+  // context.fillStyle = "red";
+  // context.fillRect(0, 0, canvasWidth, canvasHeight);
   context.save();
+  context.fillRect(-canvasWidth + x + 50, 0, imageWidth, canvasHeight);
+  context.globalCompositeOperation = "source-out";
   context.fillStyle = "black";
-  context.font = "30px Arial";
+  context.font = "100px Arial";
   context.fillText("Hello World", canvasWidth / 2, canvasHeight / 2);
-  context.clearRect(-computedWidth + x, 0, imageWidth, canvasHeight);
   context.restore();
+
+  context.globalCompositeOperation = "source-over";
 
   context.drawImage(
     image,
@@ -46,9 +51,9 @@ const drawImage = (
     0,
     imageWidth,
     imageHeight,
-    -centerX - computedWidth + x,
+    -canvasWidth + x,
     0,
-    canvasWidth,
+    imageWidth * canvasHeight / imageHeight,
     canvasHeight
   );
   context.fillStyle = "black";
@@ -84,7 +89,7 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
     const image = new Image();
     image.src = "/gas_truck.svg";
 
-    let x = 20;
+    let x = 0;
     const canvas = canvasRef.current as Canvas;
     canvas.width = width;
     canvas.height = height;

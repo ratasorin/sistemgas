@@ -5,64 +5,80 @@ import canvas from "./canvas.module.css";
 
 interface Canvas extends HTMLCanvasElement {
   context: CanvasRenderingContext2D;
+  Draw : () => void
 }
 
-const baseline = (
-  canvas: Canvas,
-  image: HTMLImageElement
-): [number, number] => {
-  const { width: cW, height: cH } = canvas;
-  const { width: iW, height: iH } = image;
-  const ratio1 = cW / iW;
 
-  return [(cW - iW * ratio1) / 2, iW * ratio1];
-};
+interface CanvasImage extends HTMLImageElement{
+  displayX : number,
+  displayY: number,
+  displayWidth : number,
+  displayHeight : 0,
+}
 
-const drawImage = (
+function is<T>(t : any) : t is T
+{
+  return t instanceof T;
+} 
+
+const Draw = (toDraw : CanvasImage | "text") : void => {
+    if(is<CanvasImage>(toDraw))
+      draw<CanvasImage>();
+    else draw<Text>();
+}
+
+const draw = (
   canvas: Canvas,
-  image: HTMLImageElement,
+  image: CanvasImage,
   x: number
 ): void => {
-  const [centerX, computedWidth] = baseline(canvas, image);
+
+
   const {
     height: canvasHeight,
     width: canvasWidth,
     context = canvas.getContext("2d") as CanvasRenderingContext2D,
   } = canvas;
 
-  const { width: imageWidth, height: imageHeight } = image;
+  const { 
+    width: imageWidth, 
+    height: imageHeight, 
+    displayWidth = imageWidth * canvasHeight / imageHeight, 
+    displayHeight = canvasHeight, 
+    displayX = -canvasWidth
+  } = image;
 
+  // we clear the last image we draw on the canvas, so we don't get a cluttered canvas 
   context.clearRect(0, 0, canvasWidth, canvasHeight);
-  // context.fillStyle = "red";
-  // context.fillRect(0, 0, canvasWidth, canvasHeight);
-  context.save();
+
+  // the rectangle will cover everything to the right of displayX, and it will move along side the car.
   context.fillRect(-canvasWidth + x + 50, 0, imageWidth, canvasHeight);
+
+  // drawing the text, but if the text overlaps with the rectangle, it will be opacity 0. This will give the 
+  // impression that the car is revealing the text
   context.globalCompositeOperation = "source-out";
+  
+  
   context.fillStyle = "black";
   context.font = "100px Arial";
   context.fillText("Hello World", canvasWidth / 2, canvasHeight / 2);
-  context.restore();
 
+  // resetting canvas to overlap the objects rather than cropping them out  
   context.globalCompositeOperation = "source-over";
 
+  // drawing the car
   context.drawImage(
     image,
     0,
     0,
     imageWidth,
     imageHeight,
-    -canvasWidth + x,
+    displayX + x,
     0,
-    imageWidth * canvasHeight / imageHeight,
-    canvasHeight
+    displayWidth,
+    displayHeight
   );
-  context.fillStyle = "black";
-  // context.fillRect(-computedWidth + x, 0, 10, canvasHeight);
 };
-
-// const update = () => {
-//   const x = 0;
-// };
 
 interface Props {
   width: number;
@@ -86,14 +102,19 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
     duration: 1000 / 144,
   };
   useEffect(() => {
-    const image = new Image();
+    const image = new Image() as CanvasImage; 
     image.src = "/gas_truck.svg";
-
-    let x = 0;
     const canvas = canvasRef.current as Canvas;
-    canvas.width = width;
-    canvas.height = height;
+    /**
+     * **x** will be used to update the position of the "car" on the canvas.
+     */
+    let x = 0;
 
+
+    /**
+     * **frameID** is will be a unique number that every requestAnimationFrame call will return.
+     * We will need it in the cleanup function to stop the animation once the component is unmounted
+    */
     let frameID: number;
 
     /**
@@ -103,15 +124,23 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
      */
     const render = (now: number) => {
       x += 4;
+
+      // the first time the render function is called, we have no time.start, meaning time.elapsed will be negative
+      // and this is not a behavior we intent for it. So if this is the case, time.elapsed will have it's default value
+      // which is equal to the time.duration value. This way we make sure that the first paint is instantaneous.
       time.start ? (time.elapsed = now - time.start) : time.elapsed;
+
       if (time.elapsed >= time.duration) {
         time.start = now;
-        drawImage(canvas, image, x);
+        draw(canvas, image, x);
       }
       frameID = window.requestAnimationFrame(render);
     };
+
     window.requestAnimationFrame(render);
+    
     () => {
+      // stopping the animation on umount
       window.cancelAnimationFrame(frameID);
     };
   }, [width, height]);

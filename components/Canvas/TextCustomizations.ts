@@ -83,7 +83,6 @@ class Position {
       Math.abs(measurements.actualBoundingBoxDescent) +
       Math.abs(measurements.actualBoundingBoxAscent);
 
-    console.log(width, height, text.position);
     if (typeof text.position === "string") {
       const currX = Position.coordinates[this.lastIndex][0];
       const currY = Position.coordinates[this.lastIndex][1];
@@ -153,7 +152,6 @@ class FontConfigurations {
   }
 
   find(word: string) {
-    // console.log(word, this.keywords);
     if (!this.keywords) return false;
     if (typeof this.keywords === "string" && this.keywords === word) {
       return true;

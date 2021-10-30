@@ -25,8 +25,47 @@ interface CanvasImage {
   displayY?: 0;
   displayWidth: number;
   displayHeight: number;
-  draw: () => void;
+  draw: (x: number) => void;
 }
+
+const draw = (
+  // text: FinalText | FinalText[],
+  image: HTMLImageElement,
+  canvas: Canvas,
+  x: number
+): void => {
+  const {
+    height: canvasHeight,
+    width: canvasWidth,
+    context = canvas.getContext("2d") as CanvasRenderingContext2D,
+  } = canvas;
+
+  const { width: imageWidth, height: imageHeight } = image;
+  // we clear the last image we draw on the canvas, so we don't get a cluttered canvas
+  context.clearRect(0, 0, canvasWidth, canvasHeight);
+
+  // the rectangle will cover everything to the right of displayX, and it will move along side the car.
+  context.fillRect(-canvasWidth + x + 50, 0, imageWidth, canvasHeight);
+  context.globalCompositeOperation = "source-out";
+  context.fillStyle = "black";
+  context.font = "100px Arial";
+  context.fillText("Hello World", canvasWidth / 2, canvasHeight / 2);
+
+  context.globalCompositeOperation = "source-over";
+
+  context.drawImage(
+    image,
+    0,
+    0,
+    imageWidth,
+    imageHeight,
+    -canvasWidth + x,
+    0,
+    (imageWidth * canvasHeight) / imageHeight,
+    canvasHeight
+  );
+};
+
 const Canvas: NextPage<Props> = ({ width, height }) => {
   const canvasRef = useRef<Canvas>(null);
 
@@ -59,43 +98,11 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
 
   useEffect(() => {
     if (width && height) {
-      console.log("refresh");
       const image = new Image() as HTMLImageElement;
       image.src = "/gas_truck.svg";
       const canvas = canvasRef.current as Canvas;
       canvas.width = width;
       canvas.height = height;
-
-      const { context = canvas.getContext("2d") as CanvasRenderingContext2D } =
-        canvas;
-
-      const [fW, sW, tW] = title.getFinalText(context) as FinalText[];
-      console.log(fW, sW, tW);
-
-      const canvasImage: CanvasImage = {
-        image: image,
-        width: image.width,
-        height: image.height,
-        displayWidth: (image.width * width) / image.height,
-        displayHeight: height,
-        displayX: -width,
-        draw: (): void => {
-          // resetting canvas to overlap the objects rather than cropping them out
-          context.globalCompositeOperation = "source-over";
-          // drawing the car
-          context.drawImage(
-            canvasImage.image,
-            0,
-            0,
-            canvasImage.width,
-            canvasImage.height,
-            canvasImage.displayX + x,
-            0,
-            canvasImage.displayWidth,
-            canvasImage.displayHeight
-          );
-        },
-      };
 
       /**
        * **x** will be used to update the position of the "car" on the canvas.
@@ -123,7 +130,13 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
 
         if (time.elapsed >= time.duration) {
           time.start = now;
-          //  draw([fW, sW, tW], canvasImage, canvas, context);
+          draw(
+            // title.getFinalText(context) as FinalText[],
+            // context,
+            image,
+            canvas,
+            x
+          );
         }
         frameID = window.requestAnimationFrame(render);
       };

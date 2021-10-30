@@ -11,8 +11,6 @@ const Car: NextPage = () => {
     const div = parentRef.current as HTMLDivElement;
     setWidth(div.getBoundingClientRect().width);
     setHeight(div.getBoundingClientRect().height);
-
-    console.log(width, height);
   }, [parentRef.current]);
   return (
     <div ref={parentRef} className={car.container}>

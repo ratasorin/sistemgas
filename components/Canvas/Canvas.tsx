@@ -2,7 +2,10 @@ import { NextPage } from "next";
 import image from "next/image";
 import React, { useRef, useEffect, useState } from "react";
 import canvas from "./canvas.module.css";
-import CanvasText, { FinalText } from "./TextCustomizations";
+import CanvasText, {
+  FinalText,
+  FontConfigurationsProps,
+} from "./TextCustomizations";
 
 interface Props {
   width: number;
@@ -29,7 +32,7 @@ interface CanvasImage {
 }
 
 const draw = (
-  // text: FinalText | FinalText[],
+  allTexts: FinalText[],
   image: HTMLImageElement,
   canvas: Canvas,
   x: number
@@ -43,13 +46,24 @@ const draw = (
   const { width: imageWidth, height: imageHeight } = image;
   // we clear the last image we draw on the canvas, so we don't get a cluttered canvas
   context.clearRect(0, 0, canvasWidth, canvasHeight);
-
   // the rectangle will cover everything to the right of displayX, and it will move along side the car.
-  context.fillRect(-canvasWidth + x + 50, 0, imageWidth, canvasHeight);
-  context.globalCompositeOperation = "source-out";
-  context.fillStyle = "black";
-  context.font = "100px Arial";
-  context.fillText("Hello World", canvasWidth / 2, canvasHeight / 2);
+
+  if (Array.isArray(allTexts)) {
+    allTexts.forEach((textValue) => {
+      context.globalCompositeOperation = "destination-over";
+      context.save();
+      context.fillStyle = `${textValue.fontColor}`;
+      context.font = `${textValue.fontSize}px ${textValue.fontFamily}`;
+      context.fillText(
+        `${textValue.payload}`,
+        textValue.coordinates[0],
+        textValue.coordinates[1]
+      );
+      context.globalCompositeOperation = "destination-out";
+      context.fillRect(-canvasWidth + x + 50, 0, imageWidth, canvasHeight);
+      context.restore();
+    });
+  }
 
   context.globalCompositeOperation = "source-over";
 
@@ -84,16 +98,34 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
     duration: 1000 / 144,
   };
 
+  const fontSizeCustomizations: FontConfigurationsProps = {
+    firstValueDefault: true,
+    options: [50],
+  };
+  const fontColorCustomizations: FontConfigurationsProps = {
+    firstValueDefault: true,
+    options: ["black"],
+  };
+  const fontFamilyCustomizations: FontConfigurationsProps = {
+    firstValueDefault: true,
+    options: ["Arial", "Noto Sans Mono"],
+    keywords: "alternativa",
+  };
+
+  const fontPadding: FontConfigurationsProps = {
+    firstValueDefault: true,
+    options: [20],
+  };
   const title = new CanvasText(
-    ["Solutii", "alternative", "cock"],
-    { firstValueDefault: true, options: [30] },
-    { firstValueDefault: true, options: ["black"] },
-    {
-      firstValueDefault: true,
-      options: ["Arial", "Noto Sans Mono"],
-      keywords: ["alternative"],
-    },
-    [[0, 0], "right", "bottom"]
+    ["Solutia", "alternativa", "pentru", "furnizarea", "gazelor", "naturale"],
+    fontSizeCustomizations,
+    fontColorCustomizations,
+    fontFamilyCustomizations,
+
+    // TO DO : find better implementation for the padding
+    fontPadding,
+
+    [[200, 100], "right", "newline", "right", "right", "right"]
   );
 
   useEffect(() => {
@@ -103,7 +135,9 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
       const canvas = canvasRef.current as Canvas;
       canvas.width = width;
       canvas.height = height;
-
+      const text = title.getFinalText(
+        canvas.getContext("2d") as CanvasRenderingContext2D
+      ) as FinalText[];
       /**
        * **x** will be used to update the position of the "car" on the canvas.
        */
@@ -130,13 +164,7 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
 
         if (time.elapsed >= time.duration) {
           time.start = now;
-          draw(
-            // title.getFinalText(context) as FinalText[],
-            // context,
-            image,
-            canvas,
-            x
-          );
+          draw(text, image, canvas, x);
         }
         frameID = window.requestAnimationFrame(render);
       };
@@ -154,3 +182,36 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
 };
 
 export default Canvas;
+
+// const drawImage = (
+//   canvas: Canvas,
+//   image: HTMLImageElement,
+//   x: number
+// ): void => {
+//   const [centerX, computedWidth] = baseline(canvas, image);
+//   const {
+//     height: canvasHeight,
+//     width: canvasWidth,
+//     context = canvas.getContext("2d") as CanvasRenderingContext2D,
+//   } = canvas;
+
+//   const { width: imageWidth, height: imageHeight } = image;
+
+//   context.clearRect(0, 0, canvasWidth, canvasHeight);
+//   // context.fillStyle = "red";
+//   // context.fillRect(0, 0, canvasWidth, canvasHeight);
+
+//   context.globalCompositeOperation = "source-over";
+//   context.drawImage(
+//     image,
+//     0,
+//     0,
+//     imageWidth,
+//     imageHeight,
+//     -canvasWidth + x,
+//     0,
+//     (imageWidth * canvasHeight) / imageHeight,
+//     canvasHeight
+//   );
+//   // context.fillRect(-computedWidth + x, 0, 10, canvasHeight);
+// };

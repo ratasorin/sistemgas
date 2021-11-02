@@ -20,6 +20,7 @@ interface TextToBuild {
   fontSize: FontConfigurations;
   fontColor: FontConfigurations;
   fontFamily: FontConfigurations;
+  fontPaddings: FontConfigurations;
   positions: positions;
 }
 
@@ -29,7 +30,7 @@ interface TextToCoordinates {
   fontColor: string;
   fontFamily: string;
   position: [number, number] | string;
-  padding?: number;
+  fontPaddings: number;
 }
 
 function isStringArray(value: unknown): value is string[] {
@@ -65,6 +66,13 @@ class Position {
    * new text's X and Y.
    */
   static textLength: [width: number, height: number][] = [];
+
+  /**
+   * **newlineCoordinates** represents the x and y coordinates of the last absolute positioned element or of the
+   * last newlined element
+   */
+  static newlineCoordinates: [x: number, y: number];
+
   lastIndex: number;
   /**
    *  This constructor returns
@@ -73,7 +81,9 @@ class Position {
    * @param y The vertical location on the canvas we want our text to be positioned at
    */
   constructor(text: TextToCoordinates, context: CanvasRenderingContext2D) {
-    this.lastIndex = 0;
+    this.lastIndex = Position.coordinates.length
+      ? Position.coordinates.length - 1
+      : 0;
     context.font = text.fontSize + "px " + `${text.fontFamily}`;
     const measurements = context.measureText(text.payload);
     const width =
@@ -84,6 +94,7 @@ class Position {
       Math.abs(measurements.actualBoundingBoxAscent);
 
     if (typeof text.position === "string") {
+      console.log(Position.coordinates[this.lastIndex]);
       const currX = Position.coordinates[this.lastIndex][0];
       const currY = Position.coordinates[this.lastIndex][1];
       const currWidth = Position.textLength[this.lastIndex][0];
@@ -91,39 +102,57 @@ class Position {
 
       switch (text.position) {
         case "left": {
-          Position.coordinates.push([
-            currX - width - (text.padding || 0),
-            currY,
+          Position.coordinates.push([currX - width, currY]);
+          Position.textLength.push([
+            width + text.fontPaddings,
+            height + text.fontPaddings,
           ]);
           return;
         }
         case "right": {
-          Position.coordinates.push([
-            currWidth + currX + (text.padding || 0),
-            currY,
+          Position.coordinates.push([currWidth + currX, currY]);
+          Position.textLength.push([
+            width + text.fontPaddings,
+            height + text.fontPaddings,
           ]);
           return;
         }
         case "top": {
-          Position.coordinates.push([
-            currX,
-            currY - height - (text.padding || 0),
+          Position.coordinates.push([currX, currY - height]);
+          Position.textLength.push([
+            width + text.fontPaddings,
+            height + text.fontPaddings,
           ]);
           return;
         }
         case "bottom":
           {
-            Position.coordinates.push([
-              currX,
-              currY + currHeight + (text.padding || 0),
+            Position.coordinates.push([currX, currY + currHeight]);
+            Position.textLength.push([
+              width + text.fontPaddings,
+              height + text.fontPaddings,
             ]);
           }
           return;
+        case "newline": {
+          const x = Position.newlineCoordinates[0];
+          const y = currY + currHeight;
+          Position.newlineCoordinates = [x, y];
+          Position.coordinates.push([x, y]);
+          Position.textLength.push([
+            width + text.fontPaddings,
+            height + text.fontPaddings,
+          ]);
+        }
       }
     } else {
+      Position.newlineCoordinates = [text.position[0], text.position[1]];
       Position.coordinates.push([text.position[0], text.position[1]]);
+      Position.textLength.push([
+        width + text.fontPaddings,
+        height + text.fontPaddings,
+      ]);
     }
-    Position.textLength.push([width, height]);
   }
 
   get XY(): [number, number][] {
@@ -140,20 +169,22 @@ class FontConfigurations {
    * @param firstValueDefault Is a boolean used in deciding if the value used after all the options are exhausted
    * is the first value inputted or the last.
    *
-   * @param options Is an array of T type values used for customizing text.
+   * @param options Is an array of string | number type values used for customizing text.
    */
   constructor(fontConfigs: FontConfigurationsProps) {
     this.options = fontConfigs.options;
     fontConfigs.firstValueDefault
       ? (this.defaultValue = this.options[this.index])
       : (this.defaultValue = this.options[this.options.length]);
-
+    // console.log(fontConfigs.keywords);
     this.keywords = fontConfigs.keywords;
   }
 
   find(word: string) {
+    // console.log(word, this.keywords);
     if (!this.keywords) return false;
     if (typeof this.keywords === "string" && this.keywords === word) {
+      //   console.log(word, this.options);
       return true;
     }
     if (isStringArray(this.keywords)) {
@@ -165,6 +196,7 @@ class FontConfigurations {
 
   change(word: string): void {
     if (this.find(word)) {
+      //   console.log(this.options[this.index]);
       this.index++;
     }
   }
@@ -174,16 +206,29 @@ class FontConfigurations {
     return this.options[this.index];
   }
 }
-type relativePositions = "top" | "bottom" | "left" | "right";
+type relativePositions = "top" | "bottom" | "left" | "right" | "newline";
 type coordinates = [number, number];
 
 export default class CanvasText {
   text: TextToBuild | TextToBuild[];
+  /**
+   * To use customized text on the canvas, one can use this class to build unique combinations of proprieties
+   * and payloads.
+   * @param payload Can be a string or a string array with the text we want to display. The text's font,
+   * color, size and positions can be customized to meet the developer wishes.
+   * @param fontSize Is a **FontConfigurationsProps** type, that specifies the behaviour
+   * of the font size based on the payload.
+   * @param color
+   * @param fontFamily
+   * @param fontPaddings
+   * @param positions
+   */
   constructor(
     payload: string[] | string,
     fontSize: FontConfigurationsProps,
     color: FontConfigurationsProps,
     fontFamily: FontConfigurationsProps,
+    fontPaddings: FontConfigurationsProps,
     positions: positions
   ) {
     if (typeof payload === "string")
@@ -192,6 +237,7 @@ export default class CanvasText {
         fontSize: new FontConfigurations(fontSize),
         fontColor: new FontConfigurations(color),
         fontFamily: new FontConfigurations(fontFamily),
+        fontPaddings: new FontConfigurations(fontPaddings),
         positions,
       };
     else {
@@ -201,6 +247,7 @@ export default class CanvasText {
           fontSize: new FontConfigurations(fontSize),
           fontColor: new FontConfigurations(color),
           fontFamily: new FontConfigurations(fontFamily),
+          fontPaddings: new FontConfigurations(fontPaddings),
           positions: positions[index] || "right",
         } as TextToBuild;
       });
@@ -223,6 +270,7 @@ export default class CanvasText {
               fontSize: text.fontSize.current,
               fontColor: text.fontColor.current,
               fontFamily: text.fontFamily.current,
+              fontPaddings: text.fontPaddings.current,
               position: text.positions,
             } as TextToCoordinates,
             context
@@ -241,6 +289,7 @@ export default class CanvasText {
             fontSize: this.text.fontSize.current,
             fontColor: this.text.fontColor.current,
             fontFamily: this.text.fontFamily.current,
+            fontPaddings: this.text.fontPaddings.current,
             position: this.text.positions,
           } as TextToCoordinates,
           context
@@ -249,7 +298,18 @@ export default class CanvasText {
   }
 }
 
-interface FontConfigurationsProps {
+/**
+ * To customize the behaviour of the font used for every text, the developer can choose to
+ * pass a boolean **firstValueDefault** that indicates weather the first value passed to the options array should be
+ * used as the default (meaning after all the options are exhausted, the text will have the first value),
+ * or the last value should be the default one.
+ *
+ * The **options** array contains the customizations for the text that will be provided in the constructor.
+ *
+ * The **keywords** array contains the keywords that indicate where the font option should be changed. In case it is left
+ * empty, we assume the user wants to change the options after every word.
+ */
+export interface FontConfigurationsProps {
   firstValueDefault: boolean;
   options: (string | number)[];
   keywords?: string | string[];

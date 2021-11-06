@@ -1,87 +1,29 @@
 import { NextPage } from "next";
 import image from "next/image";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
+import {
+  AnimationContext,
+  AnimationProvider,
+} from "../../context/animationContext";
 import canvas from "./canvas.module.css";
 import CanvasText, {
   FinalText,
   FontConfigurationsProps,
 } from "./TextCustomizations";
-
+import { DrawParameters } from "../Car/Draw";
 interface Props {
   width: number;
   height: number;
-}
-interface TextProps {
-  payload: string;
-  fontSize: number;
+  drawings: Array<(props: DrawParameters) => void>;
 }
 
 interface Canvas extends HTMLCanvasElement {
   context: CanvasRenderingContext2D;
 }
 
-interface CanvasImage {
-  image: HTMLImageElement;
-  width: number;
-  height: number;
-  displayX: number;
-  displayY?: 0;
-  displayWidth: number;
-  displayHeight: number;
-  draw: (x: number) => void;
-}
-
-const draw = (
-  allTexts: FinalText[],
-  image: HTMLImageElement,
-  canvas: Canvas,
-  x: number
-): void => {
-  const {
-    height: canvasHeight,
-    width: canvasWidth,
-    context = canvas.getContext("2d") as CanvasRenderingContext2D,
-  } = canvas;
-
-  const { width: imageWidth, height: imageHeight } = image;
-  // we clear the last image we draw on the canvas, so we don't get a cluttered canvas
-  context.clearRect(0, 0, canvasWidth, canvasHeight);
-  // the rectangle will cover everything to the right of displayX, and it will move along side the car.
-
-  if (Array.isArray(allTexts)) {
-    allTexts.forEach((textValue) => {
-      context.globalCompositeOperation = "destination-over";
-      context.save();
-      context.fillStyle = `${textValue.fontColor}`;
-      context.font = `${textValue.fontSize}px ${textValue.fontFamily}`;
-      context.fillText(
-        `${textValue.payload}`,
-        textValue.coordinates[0],
-        textValue.coordinates[1]
-      );
-      context.globalCompositeOperation = "destination-out";
-      context.fillRect(-canvasWidth + x + 50, 0, imageWidth, canvasHeight);
-      context.restore();
-    });
-  }
-
-  context.globalCompositeOperation = "source-over";
-
-  context.drawImage(
-    image,
-    0,
-    0,
-    imageWidth,
-    imageHeight,
-    -canvasWidth + x,
-    0,
-    (imageWidth * canvasHeight) / imageHeight,
-    canvasHeight
-  );
-};
-
-const Canvas: NextPage<Props> = ({ width, height }) => {
+const Canvas: NextPage<Props> = ({ width, height, drawings }) => {
   const canvasRef = useRef<Canvas>(null);
+  const [AnimationDetails, setAnimationDetails] = useContext(AnimationContext);
 
   /**
    * **time** is the way we are going to keep track of when we should re-draw an image. (control the framerate)
@@ -164,7 +106,18 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
 
         if (time.elapsed >= time.duration) {
           time.start = now;
-          draw(text, image, canvas, x);
+          drawings.forEach((drawing) => {
+            drawing({
+              x: x,
+              maskWidth: image.width,
+              text: text,
+              image: image,
+              canvas: canvas,
+              context: canvas.getContext("2d") as CanvasRenderingContext2D,
+              AnimationDetails,
+              setAnimationDetails,
+            });
+          });
         }
         frameID = window.requestAnimationFrame(render);
       };
@@ -182,36 +135,3 @@ const Canvas: NextPage<Props> = ({ width, height }) => {
 };
 
 export default Canvas;
-
-// const drawImage = (
-//   canvas: Canvas,
-//   image: HTMLImageElement,
-//   x: number
-// ): void => {
-//   const [centerX, computedWidth] = baseline(canvas, image);
-//   const {
-//     height: canvasHeight,
-//     width: canvasWidth,
-//     context = canvas.getContext("2d") as CanvasRenderingContext2D,
-//   } = canvas;
-
-//   const { width: imageWidth, height: imageHeight } = image;
-
-//   context.clearRect(0, 0, canvasWidth, canvasHeight);
-//   // context.fillStyle = "red";
-//   // context.fillRect(0, 0, canvasWidth, canvasHeight);
-
-//   context.globalCompositeOperation = "source-over";
-//   context.drawImage(
-//     image,
-//     0,
-//     0,
-//     imageWidth,
-//     imageHeight,
-//     -canvasWidth + x,
-//     0,
-//     (imageWidth * canvasHeight) / imageHeight,
-//     canvasHeight
-//   );
-//   // context.fillRect(-computedWidth + x, 0, 10, canvasHeight);
-// };

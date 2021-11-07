@@ -11,17 +11,24 @@ import CanvasText, {
   FontConfigurationsProps,
 } from "./TextCustomizations";
 import { DrawParameters } from "../Car/Draw";
+// ignore
+import CarRender from "../Car/Car.ts";
+
 interface Props {
   width: number;
   height: number;
-  drawings: Array<(props: DrawParameters) => void>;
+  toDraw: "car" | "text";
 }
 
+interface Render {
+  render: () => void;
+  update: () => void;
+}
 interface Canvas extends HTMLCanvasElement {
   context: CanvasRenderingContext2D;
 }
 
-const Canvas: NextPage<Props> = ({ width, height, drawings }) => {
+const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
   const canvasRef = useRef<Canvas>(null);
   const [AnimationDetails, setAnimationDetails] = useContext(AnimationContext);
 
@@ -40,36 +47,35 @@ const Canvas: NextPage<Props> = ({ width, height, drawings }) => {
     duration: 1000 / 144,
   };
 
-  const fontSizeCustomizations: FontConfigurationsProps = {
-    firstValueDefault: true,
-    options: [50],
-  };
-  const fontColorCustomizations: FontConfigurationsProps = {
-    firstValueDefault: true,
-    options: ["black"],
-  };
-  const fontFamilyCustomizations: FontConfigurationsProps = {
-    firstValueDefault: true,
-    options: ["Arial", "Noto Sans Mono"],
-    keywords: "alternativa",
-  };
+  // const fontSizeCustomizations: FontConfigurationsProps = {
+  //   firstValueDefault: true,
+  //   options: [50],
+  // };
+  // const fontColorCustomizations: FontConfigurationsProps = {
+  //   firstValueDefault: true,
+  //   options: ["black"],
+  // };
+  // const fontFamilyCustomizations: FontConfigurationsProps = {
+  //   firstValueDefault: true,
+  //   options: ["Arial", "Noto Sans Mono"],
+  //   keywords: "alternativa",
+  // };
 
-  const fontPadding: FontConfigurationsProps = {
-    firstValueDefault: true,
-    options: [20],
-  };
-  const title = new CanvasText(
-    ["Solutia", "alternativa", "pentru", "furnizarea", "gazelor", "naturale"],
-    fontSizeCustomizations,
-    fontColorCustomizations,
-    fontFamilyCustomizations,
+  // const fontPadding: FontConfigurationsProps = {
+  //   firstValueDefault: true,
+  //   options: [20],
+  // };
+  // const title = new CanvasText(
+  //   ["Solutia", "alternativa", "pentru", "furnizarea", "gazelor", "naturale"],
+  //   fontSizeCustomizations,
+  //   fontColorCustomizations,
+  //   fontFamilyCustomizations,
 
-    // TO DO : find better implementation for the padding
-    fontPadding,
+  //   // TO DO : find better implementation for the padding
+  //   fontPadding,
 
-    [[200, 100], "right", "newline", "right", "right", "right"]
-  );
-
+  //   [[200, 100], "right", "newline", "right", "right", "right"]
+  // );
   useEffect(() => {
     if (width && height) {
       const image = new Image() as HTMLImageElement;
@@ -77,13 +83,9 @@ const Canvas: NextPage<Props> = ({ width, height, drawings }) => {
       const canvas = canvasRef.current as Canvas;
       canvas.width = width;
       canvas.height = height;
-      const text = title.getFinalText(
-        canvas.getContext("2d") as CanvasRenderingContext2D
-      ) as FinalText[];
-      /**
-       * **x** will be used to update the position of the "car" on the canvas.
-       */
-      let x = 0;
+      // const text = title.getFinalText(
+      //   canvas.getContext("2d") as CanvasRenderingContext2D
+      // ) as FinalText[];
 
       /**
        * **frameID** is will be a unique number that every requestAnimationFrame call will return.
@@ -91,38 +93,30 @@ const Canvas: NextPage<Props> = ({ width, height, drawings }) => {
        */
       let frameID: number;
 
+      const draw: Render =
+        toDraw === "car"
+          ? new CarRender(canvas, image.width, image)
+          : { render: () => {}, update: () => {} };
+
       /**
        * The **render** function paints the browser at a certain framerate
        * @param now **now** is the timestamp that requestAnimationFrame passes to the callback (that being
        * the **render** function). In other words is the current timestamp
        */
-      const render = (now: number) => {
-        x += 4;
-
+      const loop = (now: number) => {
         // the first time the render function is called, we have no time.start, meaning time.elapsed will be negative
         // and this is not a behavior we intent for it. So if this is the case, time.elapsed will have it's default value
         // which is equal to the time.duration value. This way we make sure that the first paint is instantaneous.
         time.start ? (time.elapsed = now - time.start) : time.elapsed;
-
+        draw.update();
         if (time.elapsed >= time.duration) {
           time.start = now;
-          drawings.forEach((drawing) => {
-            drawing({
-              x: x,
-              maskWidth: image.width,
-              text: text,
-              image: image,
-              canvas: canvas,
-              context: canvas.getContext("2d") as CanvasRenderingContext2D,
-              AnimationDetails,
-              setAnimationDetails,
-            });
-          });
+          draw.render();
         }
-        frameID = window.requestAnimationFrame(render);
+        frameID = window.requestAnimationFrame(loop);
       };
 
-      window.requestAnimationFrame(render);
+      window.requestAnimationFrame(loop);
     }
 
     // () => {

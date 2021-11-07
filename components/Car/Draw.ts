@@ -64,10 +64,3 @@ export const drawText = (drawingProps: DrawParameters) => {
     });
   }
 };
-
-export const drawCarRandomDirection = (drawingProps: DrawParameters) => {
-  drawingProps.context.save();
-  drawingProps.context.scale(scaleH, 1);
-  drawCar(drawingProps);
-  drawingProps.context.restore();
-};

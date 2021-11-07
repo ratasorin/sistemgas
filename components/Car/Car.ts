@@ -1,3 +1,8 @@
+interface Render {
+  render: () => void;
+  update: () => void;
+}
+
 class Car {
   position: number;
   flipX: -1 | 1;
@@ -18,15 +23,14 @@ class Car {
   restart(screenWidth: number) {
     const random = Math.random();
     setTimeout(() => {
-      this.velocity = random > 0.5 ? random * 10 : -(random * 10);
-      this.flipX = this.velocity > 0 ? 1 : -1;
-      this.position =
-        this.flipX === 1 ? 0 - this.width : screenWidth + this.width;
+      this.velocity = random > 0.5 ? 5 : 10;
+      this.flipX = random > 0.5 ? 1 : -1;
+      this.position = 0 - screenWidth;
     }, random * 2000);
   }
 }
 
-export class CarRender {
+export default class CarRender implements Render {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
   restart: boolean;
@@ -47,7 +51,7 @@ export class CarRender {
   update() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (
-      (this.car.velocity > 0 && this.car.position <= this.canvas.width) ||
+      (this.car.velocity > 0 && this.car.position <= this.car.width) ||
       (this.car.velocity < 0 && this.car.position >= 0)
     ) {
       this.restart = false;
@@ -55,13 +59,15 @@ export class CarRender {
     } else {
       this.car.timeout();
       !this.restart
-        ? this.car.restart(this.canvas.width)
+        ? (this.car.restart(this.canvas.width), (this.restart = true))
         : (this.restart = true);
     }
   }
 
   render() {
     this.context.globalCompositeOperation = "source-over";
+    this.context.save();
+    this.context.scale(this.car.flipX, 1);
     this.car.velocity
       ? this.context.drawImage(
           this.image,
@@ -90,5 +96,6 @@ export class CarRender {
           this.canvas.height
         )
       : 0;
+    this.context.restore();
   }
 }

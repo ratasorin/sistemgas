@@ -1,4 +1,4 @@
-import type { FinalText } from "../Canvas/TextCustomizations";
+import type { FinalText } from "../Text/TextCustomizations";
 /**
  * We will use a more generic approach with the DrawParameters so we avoid the
  * need to specify all the common types multiple times.

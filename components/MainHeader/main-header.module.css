@@ -5,7 +5,7 @@
   height: 80vh;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   background: url(../../public/sky.svg);
   background-size: cover;
-  justify-content: flex-end;
 }

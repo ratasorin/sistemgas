@@ -1,6 +1,6 @@
 interface Render {
   render: () => void;
-  update: () => void;
+  update: () => boolean;
 }
 
 class Car {
@@ -36,19 +36,22 @@ export default class CarRender implements Render {
   restart: boolean;
   car: Car;
   image: HTMLImageElement;
+  Blur: boolean;
   constructor(
     canvas: HTMLCanvasElement,
     carWidth: number,
-    image: HTMLImageElement
+    image: HTMLImageElement,
+    context: CanvasRenderingContext2D
   ) {
     this.canvas = canvas;
     this.image = image;
-    this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
     this.restart = false;
+    this.context = context;
     this.car = new Car(carWidth);
+    this.Blur = false;
   }
 
-  update() {
+  update(): boolean {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (
       (this.car.velocity > 0 && this.car.position <= this.car.width) ||
@@ -57,11 +60,13 @@ export default class CarRender implements Render {
       this.restart = false;
       this.car.update();
     } else {
+      this.Blur = true;
       this.car.timeout();
       !this.restart
         ? (this.car.restart(this.canvas.width), (this.restart = true))
         : (this.restart = true);
     }
+    return this.Blur;
   }
 
   render() {
@@ -89,8 +94,9 @@ export default class CarRender implements Render {
           // dy
           0,
 
-          // dw - this is the computed width that will help with fitting the image on the canvas
-          (this.image.width * this.canvas.height) / this.image.height,
+          // dw - this is the computed width that will help with fitting the image on the canvas. The 200px offset
+          // is used to scale the image down even further as to not touch the borders of the canvas.
+          (this.image.width * this.canvas.height) / (this.image.height + 200),
 
           // dh
           this.canvas.height

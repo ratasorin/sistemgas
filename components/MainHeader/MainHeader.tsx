@@ -4,15 +4,15 @@ import Image from "next/image";
 import Street from "../Street/Street";
 import Car from "../Scene/Car/Car";
 import Scene from "../Scene/Scene";
-import { AnimationProvider } from "../../context/animationContext";
+import BlurProvider from "../../context/animationContext";
 const MainHeader: NextPage = () => {
   return (
-    <AnimationProvider>
+    <BlurProvider>
       <div className={main_header.container}>
         <Scene></Scene>
         <Street></Street>
       </div>
-    </AnimationProvider>
+    </BlurProvider>
   );
 };
 

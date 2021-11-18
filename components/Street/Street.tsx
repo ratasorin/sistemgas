@@ -1,15 +1,14 @@
 import type { NextPage } from "next";
 import street from "./street.module.css";
-import { AnimationContext } from "../../context/animationContext";
+import { BlurContext } from "../../context/animationContext";
 import { useContext } from "react";
 const paddles = [1, 1, 1, 1, 1, 1, 1];
 
 const Street: NextPage = () => {
-  const [{ timesAnimated }, _] = useContext(AnimationContext);
-  const className =
-    timesAnimated >= 1
-      ? `${street.container} ${street.blur}`
-      : `${street.container}`;
+  const { shouldBlur } = useContext(BlurContext);
+  const className = shouldBlur
+    ? `${street.container} ${street.blur}`
+    : `${street.container}`;
   return (
     <div className={className}>
       {paddles.map((paddle, index) => {

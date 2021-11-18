@@ -1,21 +1,11 @@
 import { NextPage } from "next";
-import image from "next/image";
-import React, { useRef, useEffect, useState, useContext } from "react";
-import {
-  AnimationContext,
-  AnimationProvider,
-} from "../../context/animationContext";
+import React, { useRef, useEffect, useContext } from "react";
 import canvas from "./canvas.module.css";
-import CanvasText, {
-  FinalText,
-  FontConfigurationsProps,
-} from "../Scene/Text/TextCustomizations";
-import { DrawParameters } from "../Scene/Car/Draw";
-
 // ignore
 import CarRender from "../Scene/Car/Car.ts";
-import canvasStyle from "./canvas.module.css";
-
+import TextRenderer from "../Scene/Text/Text";
+import { presentationTitle } from "../Scene/Text/TextCustomizations";
+import { BlurContext } from "../../context/animationContext";
 interface Props {
   width: number;
   height: number;
@@ -24,7 +14,7 @@ interface Props {
 
 interface Render {
   render: () => void;
-  update: () => void;
+  update: () => boolean;
 }
 interface Canvas extends HTMLCanvasElement {
   context: CanvasRenderingContext2D;
@@ -32,6 +22,7 @@ interface Canvas extends HTMLCanvasElement {
 
 const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
   const canvasRef = useRef<Canvas>(null);
+  const { setShouldBlur } = useContext(BlurContext);
   /**
    * **time** is the way we are going to keep track of when we should re-draw an image. (control the framerate)
    * @member **elapsed** is the time between the **"start"** (that being the last repaint) and the current
@@ -47,44 +38,12 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
     duration: 1000 / 144,
   };
 
-  // const fontSizeCustomizations: FontConfigurationsProps = {
-  //   firstValueDefault: true,
-  //   options: [50],
-  // };
-  // const fontColorCustomizations: FontConfigurationsProps = {
-  //   firstValueDefault: true,
-  //   options: ["black"],
-  // };
-  // const fontFamilyCustomizations: FontConfigurationsProps = {
-  //   firstValueDefault: true,
-  //   options: ["Arial", "Noto Sans Mono"],
-  //   keywords: "alternativa",
-  // };
-
-  // const fontPadding: FontConfigurationsProps = {
-  //   firstValueDefault: true,
-  //   options: [20],
-  // };
-  // const title = new CanvasText(
-  //   ["Solutia", "alternativa", "pentru", "furnizarea", "gazelor", "naturale"],
-  //   fontSizeCustomizations,
-  //   fontColorCustomizations,
-  //   fontFamilyCustomizations,
-
-  //   // TO DO : find better implementation for the padding
-  //   fontPadding,
-
-  //   [[200, 100], "right", "newline", "right", "right", "right"]
-  // );
   useEffect(() => {
     const image = new Image() as HTMLImageElement;
     image.src = "/gas_truck.svg";
     const canvas = canvasRef.current as Canvas;
     [canvas.width, canvas.height] = [width, height];
-    // const text = title.getFinalText(
-    //   canvas.getContext("2d") as CanvasRenderingContext2D
-    // ) as FinalText[];
-
+    const context = canvas.getContext("2d") as CanvasRenderingContext2D;
     /**
      * **frameID** is will be a unique number that every requestAnimationFrame call will return.
      * We will need it in the cleanup function to stop the animation once the component is unmounted
@@ -93,8 +52,12 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
 
     const draw: Render =
       toDraw === "car"
-        ? new CarRender(canvas, image.width, image)
-        : { render: () => {}, update: () => {} };
+        ? new CarRender(canvas, image.width, image, context)
+        : new TextRenderer(
+            presentationTitle.getFinalText(context),
+            canvas,
+            context
+          );
 
     /**
      * The **render** function paints the browser at a certain framerate
@@ -106,7 +69,8 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
       // and this is not a behavior we intent for it. So if this is the case, time.elapsed will have it's default value
       // which is equal to the time.duration value. This way we make sure that the first paint is instantaneous.
       time.start ? (time.elapsed = now - time.start) : time.elapsed;
-      draw.update();
+      const blur = draw.update();
+      setShouldBlur(blur);
       if (time.elapsed >= time.duration) {
         time.start = now;
         draw.render();

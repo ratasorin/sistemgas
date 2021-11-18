@@ -1,11 +1,15 @@
 import type { NextPage } from "next";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
+import { BlurContext } from "../../context/animationContext";
 import Canvas from "../Canvas/Canvas";
 import scene from "./scene.module.css";
 const Scene: NextPage = () => {
   const [dimensions, setDimensions] = useState([0, 0]);
   const sceneRef = useRef<HTMLDivElement>(null);
-
+  const { shouldBlur } = useContext(BlurContext);
+  const classNameCar = shouldBlur
+    ? `${scene.canvasElem} ${scene.blur} ${scene.below}`
+    : `${scene.canvasElem}`;
   useEffect(() => {
     const scene = sceneRef.current as HTMLDivElement;
     setDimensions([
@@ -13,7 +17,7 @@ const Scene: NextPage = () => {
       scene.getBoundingClientRect().height,
     ]);
 
-    scene.addEventListener("resize", () => {
+    window.addEventListener("resize", () => {
       setDimensions([
         scene.getBoundingClientRect().width,
         scene.getBoundingClientRect().height,
@@ -22,13 +26,16 @@ const Scene: NextPage = () => {
   }, []);
   return (
     <div ref={sceneRef} className={scene.container}>
-      <Canvas
-        {...{ width: dimensions[0], height: dimensions[1], toDraw: "car" }}
-      ></Canvas>
-
-      {/* <Canvas
-        {...{ width: dimensions[0], height: dimensions[1], toDraw: "text" }}
-      ></Canvas> */}
+      <div className={scene.canvasElem}>
+        <Canvas
+          {...{ width: dimensions[0], height: dimensions[1], toDraw: "text" }}
+        ></Canvas>
+      </div>
+      <div className={classNameCar}>
+        <Canvas
+          {...{ width: dimensions[0], height: dimensions[1], toDraw: "car" }}
+        ></Canvas>
+      </div>
     </div>
   );
 };

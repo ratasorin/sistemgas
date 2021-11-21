@@ -2,10 +2,9 @@
   position: relative;
   overflow: hidden;
   width: 100vw;
-  height: 80vh;
+  bottom : calc(100vh / 4);
+  height: calc(100vh / 2 + 100vh / 4);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  background: url(../../public/sky.svg);
-  background-size: cover;
 }

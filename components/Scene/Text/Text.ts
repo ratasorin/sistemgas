@@ -1,10 +1,5 @@
 import { FinalText } from "../Text/TextCustomizations";
-
-interface Render {
-  render: () => void;
-  update: () => boolean;
-}
-
+import {Render} from '../Scene';
 export default class TextRenderer implements Render {
   text: FinalText | FinalText[];
   canvas: HTMLCanvasElement;

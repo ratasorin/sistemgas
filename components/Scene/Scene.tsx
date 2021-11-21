@@ -3,6 +3,13 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { BlurContext } from "../../context/animationContext";
 import Canvas from "../Canvas/Canvas";
 import scene from "./scene.module.css";
+
+export interface Render {
+  render: () => void;
+  update: () => void;
+  blur ?: boolean;
+}
+
 const Scene: NextPage = () => {
   const [dimensions, setDimensions] = useState([0, 0]);
   const sceneRef = useRef<HTMLDivElement>(null);

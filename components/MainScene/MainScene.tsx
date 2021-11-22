@@ -1,14 +1,13 @@
 import type { NextPage } from "next";
-import main_header from "./main-header.module.css";
-import Image from "next/image";
+import main_scene from "./main-scene.module.css";
 import Street from "../Street/Street";
-import Car from "../Scene/Car/Car";
 import Scene from "../Scene/Scene";
 import BlurProvider from "../../context/animationContext";
-const MainHeader: NextPage = () => {
+
+const MainScene: NextPage = () => {
   return (
     <BlurProvider>
-      <div className={main_header.container}>
+      <div className={main_scene.container}>
         <Scene></Scene>
         <Street></Street>
       </div>
@@ -16,4 +15,4 @@ const MainHeader: NextPage = () => {
   );
 };
 
-export default MainHeader;
+export default MainScene;

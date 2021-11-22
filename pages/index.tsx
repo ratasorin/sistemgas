@@ -1,10 +1,10 @@
 import type { NextPage } from "next";
 import { FC } from "react";
-import Layout from "../components/layout/Layout";
+import Layout from "../components/Layout/Layout";
 import Header from "../components/Header/Header";
 import Head from "next/head";
-import MainHeader from "../components/MainHeader/MainHeader";
-
+import MainScene from "../components/MainScene/MainScene";
+import Navbar from '../components/Navbar/Navbar'
 const Home: NextPage = () => {
   return (
     <div>
@@ -18,7 +18,7 @@ const Home: NextPage = () => {
           rel="stylesheet"
         />
       </Head>
-      <Layout Header={Header} MainHeader={MainHeader}></Layout>
+      <Layout Header={Header} MainScene={MainScene} Navbar ={Navbar}></Layout>
     </div>
   );
 };

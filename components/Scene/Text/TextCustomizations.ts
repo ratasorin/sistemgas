@@ -314,38 +314,3 @@ export interface FontConfigurationsProps {
   options: (string | number)[];
   keywords?: string | string[];
 }
-
-// Customizing the presentation title
-const fontSizeCustomizations: FontConfigurationsProps = {
-  firstValueDefault: true,
-  options: [50],
-};
-const fontColorCustomizations: FontConfigurationsProps = {
-  firstValueDefault: true,
-  options: ["black"],
-};
-const fontFamilyCustomizations: FontConfigurationsProps = {
-  firstValueDefault: true,
-  options: ["Arial", "Noto Sans Mono"],
-  keywords: "alternativa",
-};
-
-const fontPadding: FontConfigurationsProps = {
-  firstValueDefault: true,
-  options: [20],
-};
-
-/**
- * The **presentationTitle** will be revealed on the canvas by the car. The payload is fully customizable,
- * as are the font family, size and color, as well as the positioning of the text (which can be customized both
- * in absolute units or relative to other text).
- */
-export const presentationTitle = new CanvasText(
-  ["Solutia", "alternativa", "pentru", "furnizarea", "gazelor", "naturale"],
-  fontSizeCustomizations,
-  fontColorCustomizations,
-  fontFamilyCustomizations,
-  // TO DO : find better implementation for the padding
-  fontPadding,
-  [[200, 100], "right", "newline", "right", "right", "right"]
-);

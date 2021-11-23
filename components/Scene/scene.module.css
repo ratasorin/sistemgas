@@ -1,10 +1,7 @@
 .container {
   position: relative;
   width: 100%;
-  height: calc(75% + 100px);
-  top : 50px;
-  left: 0;
-  background-color: blue;
+  height: 100%;
   overflow: hidden;
   z-index: 1;
 }

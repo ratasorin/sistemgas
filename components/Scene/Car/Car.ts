@@ -1,4 +1,4 @@
-import {Render} from '../Scene';
+import { Render } from "../Scene";
 
 class Car {
   position: number;
@@ -61,7 +61,7 @@ export default class CarRender implements Render {
       this.car.timeout();
       !this.restart
         ? (this.car.restart(this.canvas.width), (this.restart = true))
-        : (this.restart = true, this.blur = true);
+        : ((this.restart = true), (this.blur = true));
     }
   }
 
@@ -88,14 +88,15 @@ export default class CarRender implements Render {
           -this.canvas.width + this.car.position,
 
           // dy
-          this.canvas.height / 2 - (2 / 3*this.canvas.height) / 2,
+          this.canvas.height / 2 - ((6 / 10) * this.canvas.height) / 2,
 
           // dw - this is the computed width that will help with fitting the image on the canvas. The 200px offset
           // is used to scale the image down even further as to not touch the borders of the canvas.
-          (this.image.width * (2 / 3* this.canvas.height)) / (this.image.height),
+          (this.image.width * ((6 / 10) * this.canvas.height)) /
+            this.image.height,
 
           // dh
-          2 / 3*this.canvas.height
+          (6 / 10) * this.canvas.height
         )
       : 0;
     this.context.restore();

@@ -2,9 +2,10 @@
   position: relative;
   overflow: hidden;
   width: 100vw;
-  bottom : calc(100vh / 4);
-  height: calc(100vh / 2 + 100vh / 4);
+  bottom: calc(100vh / 4);
+  height: calc(100vh / 2 + 100vh / 4 + 30px);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  padding-bottom: 30px;
 }

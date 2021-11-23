@@ -4,7 +4,7 @@ import Layout from "../components/Layout/Layout";
 import Header from "../components/Header/Header";
 import Head from "next/head";
 import MainScene from "../components/MainScene/MainScene";
-import Navbar from '../components/Navbar/Navbar'
+import Navbar from "../components/Navbar/Navbar";
 const Home: NextPage = () => {
   return (
     <div>
@@ -18,7 +18,7 @@ const Home: NextPage = () => {
           rel="stylesheet"
         />
       </Head>
-      <Layout Header={Header} MainScene={MainScene} Navbar ={Navbar}></Layout>
+      <Layout Header={Header} MainScene={MainScene} Navbar={Navbar}></Layout>
     </div>
   );
 };

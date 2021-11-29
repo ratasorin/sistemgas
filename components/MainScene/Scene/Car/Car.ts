@@ -49,7 +49,6 @@ export default class CarRender implements Render {
   }
 
   update() {
-    // console.log(this.car.width)
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (
       (this.car.velocity > 0 && this.car.position <= this.car.width) ||

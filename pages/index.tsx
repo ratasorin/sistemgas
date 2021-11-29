@@ -1,10 +1,16 @@
-import type { NextPage } from "next";
-import { FC } from "react";
+import type {
+  NextPage,
+  InferGetServerSidePropsType,
+  GetServerSidePropsResult,
+} from "next";
 import Layout from "../components/Layout/Layout";
 import Header from "../components/Header/Header";
 import Head from "next/head";
 import MainScene from "../components/MainScene/MainScene";
 import Navbar from "../components/Navbar/Navbar";
+import { promises as fs } from "fs";
+import path from "path";
+
 const Home: NextPage = () => {
   return (
     <div>
@@ -22,5 +28,17 @@ const Home: NextPage = () => {
     </div>
   );
 };
-
+export async function getServerSideProps(): Promise<
+  GetServerSidePropsResult<{ images: HTMLImageElement[] }>
+> {
+  const Path = path.join(process.cwd(), "public", "NavbarImages");
+  const images: HTMLImageElement[] = [];
+  const filenames = await fs.readdir(Path);
+  console.log(filenames);
+  return {
+    props: {
+      images: images,
+    },
+  };
+}
 export default Home;

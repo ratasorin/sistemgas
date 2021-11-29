@@ -2,12 +2,12 @@ import { NextPage } from "next";
 import React, { useRef, useEffect, useContext } from "react";
 import canvas from "./canvas.module.css";
 // ignore
-import CarRender from "../Scene/Car/Car.ts";
-import TextRenderer from "../Scene/Text/Text";
-import type { FontConfigurationsProps } from "../Scene/Text/TextCustomizations";
-import CanvasText from "../Scene/Text/TextCustomizations";
-import { BlurContext } from "../../context/animationContext";
-import { Render } from "../Scene/Scene";
+import CarRender from "../Car/Car";
+import TextRenderer from "../Text/Text";
+import type { FontConfigurationsProps } from "../Text/TextCustomizations";
+import CanvasText from "../Text/TextCustomizations";
+import { BlurContext } from "../../../../context/animationContext";
+import { Render } from "../Scene";
 
 interface Props {
   width: number;
@@ -38,8 +38,7 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
   };
 
   useEffect(() => {
-    if(width && height)
-    {
+    if (width && height) {
       const image = new Image() as HTMLImageElement;
       image.onload = () => {
         const canvas = canvasRef.current as Canvas;
@@ -50,7 +49,7 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
          * We will need it in the cleanup function to stop the animation once the component is unmounted
          */
         let frameID: number;
-        
+
         // Customizing the presentation title
         const fontSizeCustomizations: FontConfigurationsProps = {
           firstValueDefault: true,
@@ -77,53 +76,67 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
          * in absolute units or relative to other text).
          */
         const presentationTitle = new CanvasText(
-          ["Solutia", "alternativa", "pentru", "furnizarea", "gazelor", "naturale"],
+          [
+            "Solutia",
+            "alternativa",
+            "pentru",
+            "furnizarea",
+            "gazelor",
+            "naturale",
+          ],
           fontSizeCustomizations,
           fontColorCustomizations,
           fontFamilyCustomizations,
           // TO DO : find better implementation for the padding
           fontPadding,
-          [[200, canvas.height / 2], "right", "newline", "right", "right", "right"]
+          [
+            [200, canvas.height / 2],
+            "right",
+            "newline",
+            "right",
+            "right",
+            "right",
+          ]
         );
         const draw: Render =
-        toDraw === "car"
-        ? new CarRender(canvas, image.width, image, context)
-        : new TextRenderer(
-          presentationTitle.getFinalText(context),
-          canvas,
-          context
-          );
-          
-          /**
-           * The **render** function paints the browser at a certain framerate
-           * @param now **now** is the timestamp that requestAnimationFrame passes to the callback (that being
-           * the **render** function). In other words is the current timestamp
-           */
-          const loop = (now: number) => {
-            // the first time the render function is called, we have no time.start, meaning time.elapsed will be negative
-            // and this is not a behavior we intent for it. So if this is the case, time.elapsed will have it's default value
-            // which is equal to the time.duration value. This way we make sure that the first paint is instantaneous.
-            time.start ? (time.elapsed = now - time.start) : time.elapsed;
-            draw.update();
-            draw.blur ? setShouldBlur(draw.blur) : 0;
-            if (time.elapsed >= time.duration) {
-              time.start = now;
-              draw.render();
-            }
-            frameID = window.requestAnimationFrame(loop);
-          };
-          
-          window.requestAnimationFrame(loop);
-          
-          // () => {
-            //   // stopping the animation on umount
-            //   window.cancelAnimationFrame(frameID);
-            // };
+          toDraw === "car"
+            ? new CarRender(canvas, image.width, image, context)
+            : new TextRenderer(
+                presentationTitle.getFinalText(context),
+                canvas,
+                context
+              );
+
+        /**
+         * The **render** function paints the browser at a certain framerate
+         * @param now **now** is the timestamp that requestAnimationFrame passes to the callback (that being
+         * the **render** function). In other words is the current timestamp
+         */
+        const loop = (now: number) => {
+          // the first time the render function is called, we have no time.start, meaning time.elapsed will be negative
+          // and this is not a behavior we intent for it. So if this is the case, time.elapsed will have it's default value
+          // which is equal to the time.duration value. This way we make sure that the first paint is instantaneous.
+          time.start ? (time.elapsed = now - time.start) : time.elapsed;
+          draw.update();
+          draw.blur ? setShouldBlur(draw.blur) : 0;
+          if (time.elapsed >= time.duration) {
+            time.start = now;
+            draw.render();
           }
-        image.src = "/gas_truck.svg";
+          frameID = window.requestAnimationFrame(loop);
+        };
+
+        window.requestAnimationFrame(loop);
+
+        // () => {
+        //   // stopping the animation on umount
+        //   window.cancelAnimationFrame(frameID);
+        // };
+      };
+      image.src = "/gas_truck.svg";
     }
   }, [width, height]);
-  
+
   return <canvas ref={canvasRef} className={canvas.canvas}></canvas>;
 };
 

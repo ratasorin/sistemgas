@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import street from "./street.module.css";
-import { BlurContext } from "../../context/animationContext";
+import { BlurContext } from "../../../context/animationContext";
 import { useContext } from "react";
 const paddles = [1, 1, 1, 1, 1, 1, 1];
 

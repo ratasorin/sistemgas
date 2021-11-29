@@ -94,7 +94,6 @@ class Position {
       Math.abs(measurements.actualBoundingBoxAscent);
 
     if (typeof text.position === "string") {
-      console.log(Position.coordinates[this.lastIndex]);
       const currX = Position.coordinates[this.lastIndex][0];
       const currY = Position.coordinates[this.lastIndex][1];
       const currWidth = Position.textLength[this.lastIndex][0];
@@ -176,15 +175,12 @@ class FontConfigurations {
     fontConfigs.firstValueDefault
       ? (this.defaultValue = this.options[this.index])
       : (this.defaultValue = this.options[this.options.length]);
-    // console.log(fontConfigs.keywords);
     this.keywords = fontConfigs.keywords;
   }
 
   find(word: string) {
-    // console.log(word, this.keywords);
     if (!this.keywords) return false;
     if (typeof this.keywords === "string" && this.keywords === word) {
-      //   console.log(word, this.options);
       return true;
     }
     if (isStringArray(this.keywords)) {
@@ -196,7 +192,6 @@ class FontConfigurations {
 
   change(word: string): void {
     if (this.find(word)) {
-      //   console.log(this.options[this.index]);
       this.index++;
     }
   }

@@ -32,9 +32,9 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
    * desired frame rate.
    */
   const time = {
-    elapsed: 1000 / 144,
+    elapsed: 1000 / 60,
     start: -1,
-    duration: 1000 / 144,
+    duration: 1000 / 60,
   };
 
   useEffect(() => {
@@ -76,27 +76,13 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
          * in absolute units or relative to other text).
          */
         const presentationTitle = new CanvasText(
-          [
-            "Solutia",
-            "alternativa",
-            "pentru",
-            "furnizarea",
-            "gazelor",
-            "naturale",
-          ],
+          ["Solutia", "pentru", "furnizarea", "gazelor", "naturale"],
           fontSizeCustomizations,
           fontColorCustomizations,
           fontFamilyCustomizations,
           // TO DO : find better implementation for the padding
           fontPadding,
-          [
-            [200, canvas.height / 2],
-            "right",
-            "newline",
-            "right",
-            "right",
-            "right",
-          ]
+          [[200, canvas.height / 2], "right", "newline", "right", "right"]
         );
         const draw: Render =
           toDraw === "car"
@@ -121,8 +107,9 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
           draw.blur ? setShouldBlur(draw.blur) : 0;
           if (time.elapsed >= time.duration) {
             time.start = now;
-            draw.render();
+            draw.update();
           }
+          draw.render();
           frameID = window.requestAnimationFrame(loop);
         };
 

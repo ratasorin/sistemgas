@@ -1,5 +1,5 @@
 import { FinalText } from "../Text/TextCustomizations";
-import {Render} from '../Scene';
+import { Render } from "../Scene";
 export default class TextRenderer implements Render {
   text: FinalText | FinalText[];
   canvas: HTMLCanvasElement;

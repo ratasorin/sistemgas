@@ -1,4 +1,4 @@
-import { FinalText } from "../Text/TextCustomizations";
+import { FinalText } from "./TextCustomizations";
 import { Render } from "../Scene";
 export default class TextRenderer implements Render {
   text: FinalText | FinalText[];

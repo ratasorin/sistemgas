@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { useEffect, useRef, useState, useContext } from "react";
 import { BlurContext } from "../../../context/animationContext";
-import Canvas from "../Scene/Canvas/Canvas";
+import Canvas from "./Canvas/Canvas";
 import scene from "./scene.module.css";
 
 export interface Render {

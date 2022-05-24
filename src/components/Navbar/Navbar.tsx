@@ -1,12 +1,8 @@
-import type {
-  NextPage,
-  InferGetServerSidePropsType,
-  GetServerSidePropsResult,
-} from "next";
+import { FC } from "react";
 import navbar from "./navbar.module.css";
 import NavbarElement from "./NavbarElement/NavbarElement";
 
-const Navbar: NextPage<{ images: HTMLImageElement[] }> = ({ images }) => {
+const Navbar: FC<{ images: HTMLImageElement[] }> = ({ images }) => {
   return (
     <div className={navbar.container}>
       {images.map((image, index) => (

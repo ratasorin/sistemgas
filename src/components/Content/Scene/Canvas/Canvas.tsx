@@ -6,7 +6,6 @@ import CarRender from "../Car/Car";
 import TextRenderer from "../Text/Text";
 import type { FontConfigurationsProps } from "../Text/TextCustomizations";
 import CanvasText from "../Text/TextCustomizations";
-import { BlurContext } from "../../../../context/animationContext";
 import { Render } from "../Scene";
 
 interface Props {
@@ -21,7 +20,7 @@ interface Canvas extends HTMLCanvasElement {
 
 const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
   const canvasRef = useRef<Canvas>(null);
-  const { setShouldBlur } = useContext(BlurContext);
+  // const { setShouldBlur } = useContext(BlurContext);
   /**
    * **time** is the way we are going to keep track of when we should re-draw an image. (control the framerate)
    * @member **elapsed** is the time between the **"start"** (that being the last repaint) and the current
@@ -104,7 +103,7 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
           // which is equal to the time.duration value. This way we make sure that the first paint is instantaneous.
           time.start ? (time.elapsed = now - time.start) : time.elapsed;
           draw.update();
-          draw.blur ? setShouldBlur(draw.blur) : 0;
+          // draw.blur ? setShouldBlur(draw.blur) : 0;
           if (time.elapsed >= time.duration) {
             time.start = now;
             draw.update();

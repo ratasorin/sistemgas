@@ -1,7 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
+import blur from "components/Content/blur.slice";
 
 export const store = configureStore({
-  reducer: {},
+  reducer: {
+    blur,
+  },
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

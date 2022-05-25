@@ -1,4 +1,11 @@
+import { store } from "config/redux";
 import { Render } from "../Scene";
+
+const blur = () => {
+  store.dispatch({
+    type: "blur/blur",
+  });
+};
 
 class Car {
   position: number;
@@ -60,7 +67,7 @@ export default class CarRender implements Render {
       this.car.timeout();
       !this.restart
         ? (this.car.restart(this.canvas.width), (this.restart = true))
-        : ((this.restart = true), (this.blur = true));
+        : ((this.restart = true), blur());
     }
   }
 

@@ -24,17 +24,5 @@ const Home: NextPage<{ images: HTMLImageElement[] }> = ({ images }) => {
     </Provider>
   );
 };
-export async function getServerSideProps(): Promise<
-  GetServerSidePropsResult<{ images: HTMLImageElement[] }>
-> {
-  const Path = path.join(process.cwd(), "public", "NavbarImages");
-  const images: HTMLImageElement[] = [];
-  const filenames = await fs.readdir(Path);
-  console.log(filenames);
-  return {
-    props: {
-      images: images,
-    },
-  };
-}
+
 export default Home;

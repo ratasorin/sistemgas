@@ -1,8 +1,7 @@
-import type { NextPage } from "next";
+import { FC } from "react";
 
-const NavbarElement: NextPage<HTMLImageElement> = (image) => {
-  console.log(image.src);
-  return <div> {image} </div>;
+const NavbarElement: FC<{ section: string }> = ({ section }) => {
+  return <div> {section} </div>;
 };
 
 export default NavbarElement;

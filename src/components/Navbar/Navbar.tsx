@@ -2,11 +2,13 @@ import { FC } from "react";
 import navbar from "./navbar.module.css";
 import NavbarElement from "./NavbarElement/NavbarElement";
 
-const Navbar: FC<{ images: HTMLImageElement[] }> = ({ images }) => {
+const SECTIONS = ["DESPRE NOI", "ACASA", "CONTACT", "NOUTATI", "SERVICII"];
+
+const Navbar: FC = () => {
   return (
     <div className={navbar.container}>
-      {images.map((image, index) => (
-        <NavbarElement key={index} {...image}></NavbarElement>
+      {SECTIONS.map((section) => (
+        <NavbarElement key={section} section={section}></NavbarElement>
       ))}
     </div>
   );

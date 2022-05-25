@@ -12,10 +12,6 @@ const Scene: NextPage<{ width: number; height: number }> = ({
   width,
   height,
 }) => {
-  // const { shouldBlur } = useContext(BlurContext);
-  // const classNameCar = shouldBlur
-  // ? `${scene.canvasElem} ${scene.blur} ${scene.below}`
-  // : `${scene.canvasElem}`;
   const blur = useAppSelector(({ blur }) => blur);
   return (
     <div className='relative w-full flex-1 overflow-hidden z-10'>

@@ -1,16 +1,9 @@
 import type { NextPage } from "next";
-import street from "./street.module.css";
-// import { BlurContext } from "../../../context/animationContext";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { useAppSelector } from "hooks/redux";
 const paddles = [1, 1, 1, 1, 1, 1, 1];
 
 const Street: NextPage = () => {
-  // const { shouldBlur } = useContext(BlurContext);
-  // const className = shouldBlur
-  //   ? `${street.container} ${street.blur}`
-  //   : `${street.container}`;
-
   const blur = useAppSelector(({ blur }) => blur);
 
   useEffect(() => {
@@ -22,7 +15,11 @@ const Street: NextPage = () => {
         blur ? "blur-md" : ""
       }`}>
       {paddles.map((paddle, index) => {
-        return <div key={paddle * index} className={`${street.paddle}`}></div>;
+        return (
+          <div
+            key={paddle * index}
+            className='relative mr-[calc(100vw/12)] w-[calc(100vw/12)] h-3 bg-white animate-slide'></div>
+        );
       })}
     </div>
   );

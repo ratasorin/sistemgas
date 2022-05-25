@@ -16,8 +16,7 @@ const Header: FC = () => {
         />
       </a>
       <div className='ml-10 text-2xl italic overflow-visible h-2/3 flex justify-center items-center'>
-        {" "}
-        {SUBTITLE}{" "}
+        {SUBTITLE}
       </div>
     </div>
   );

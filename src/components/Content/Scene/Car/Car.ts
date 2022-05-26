@@ -105,6 +105,7 @@ export default class CarRender implements Render {
           (6 / 10) * this.canvas.height
         )
       : 0;
+
     this.context.restore();
   }
 }

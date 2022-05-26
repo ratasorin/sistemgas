@@ -1,27 +1,45 @@
+export type RelativePositions = "start" | "right" | "newline";
+type Coordinates = { x: number; y: number };
+/**
+ * To customize the behavior of the font used for every text, the developer can choose to
+ * pass a boolean **firstValueDefault** that indicates weather the first value passed to the options array should be
+ * used as the default (meaning after all the options are exhausted, the text will have the first value),
+ * or the last value should be the default one.
+ *
+ * The **options** array contains the customizations for the text that will be provided in the constructor.
+ *
+ * The **keywords** array contains the keywords that indicate where the font option should be changed. In case it is left
+ * empty, we assume the user wants to change the options after every word.
+ */
+export interface FontConfigurationsProps {
+  firstValueDefault: boolean;
+  options: (string | number)[];
+  keywords?: string | string[];
+}
 export interface FinalText {
   payload: string;
   fontSize: number;
   fontColor: string;
   fontFamily: string;
-  coordinates: [number, number];
+  coordinates: Coordinates;
 }
 
 /**
  * The **positions** type allows a user to input either a single position, a single pair of coordinates,
  * multiple positions, multiple coordinates or a combination of positions and coordinates
  */
-type positions =
-  | relativePositions
-  | coordinates
-  | (relativePositions | coordinates)[];
+export type Positions =
+  | RelativePositions
+  | Coordinates
+  | (RelativePositions | Coordinates)[];
 
-interface TextToBuild {
+export interface TextToBuild {
   payload: string | string[];
   fontSize: FontConfigurations;
   fontColor: FontConfigurations;
   fontFamily: FontConfigurations;
   fontPaddings: FontConfigurations;
-  positions: positions;
+  positions: Positions;
 }
 
 interface TextToCoordinates {
@@ -29,7 +47,7 @@ interface TextToCoordinates {
   fontSize: number;
   fontColor: string;
   fontFamily: string;
-  position: [number, number] | string;
+  position: Coordinates | RelativePositions;
   fontPaddings: number;
 }
 
@@ -58,7 +76,7 @@ class Position {
    * These values will help us determine the position of the current text we want to display, based on a relative
    * relationship with the last one.
    */
-  static coordinates: [x: number, y: number][] = [];
+  static coordinates: Coordinates[] = [];
 
   /**
    * **textLength** is another tuple array containing the width and height of the last text displayed. Because
@@ -71,7 +89,7 @@ class Position {
    * **newlineCoordinates** represents the x and y coordinates of the last absolute positioned element or of the
    * last newlined element
    */
-  static newlineCoordinates: [x: number, y: number];
+  static newlineCoordinates: Coordinates;
 
   lastIndex: number;
   /**
@@ -94,50 +112,26 @@ class Position {
       Math.abs(measurements.actualBoundingBoxAscent);
 
     if (typeof text.position === "string") {
-      const currX = Position.coordinates[this.lastIndex][0];
-      const currY = Position.coordinates[this.lastIndex][1];
+      const currX = Position.coordinates[this.lastIndex].x;
+      const currY = Position.coordinates[this.lastIndex].y;
       const currWidth = Position.textLength[this.lastIndex][0];
       const currHeight = Position.textLength[this.lastIndex][1];
 
       switch (text.position) {
-        case "left": {
-          Position.coordinates.push([currX - width, currY]);
-          Position.textLength.push([
-            width + text.fontPaddings,
-            height + text.fontPaddings,
-          ]);
-          return;
-        }
         case "right": {
-          Position.coordinates.push([currWidth + currX, currY]);
+          Position.coordinates.push({ x: currWidth + currX, y: currY });
           Position.textLength.push([
             width + text.fontPaddings,
             height + text.fontPaddings,
           ]);
           return;
         }
-        case "top": {
-          Position.coordinates.push([currX, currY - height]);
-          Position.textLength.push([
-            width + text.fontPaddings,
-            height + text.fontPaddings,
-          ]);
-          return;
-        }
-        case "bottom":
-          {
-            Position.coordinates.push([currX, currY + currHeight]);
-            Position.textLength.push([
-              width + text.fontPaddings,
-              height + text.fontPaddings,
-            ]);
-          }
-          return;
+
         case "newline": {
-          const x = Position.newlineCoordinates[0];
+          const x = Position.newlineCoordinates.x;
           const y = currY + currHeight;
-          Position.newlineCoordinates = [x, y];
-          Position.coordinates.push([x, y]);
+          Position.newlineCoordinates = { x, y };
+          Position.coordinates.push({ x, y });
           Position.textLength.push([
             width + text.fontPaddings,
             height + text.fontPaddings,
@@ -145,8 +139,8 @@ class Position {
         }
       }
     } else {
-      Position.newlineCoordinates = [text.position[0], text.position[1]];
-      Position.coordinates.push([text.position[0], text.position[1]]);
+      Position.newlineCoordinates = { x: text.position.x, y: text.position.y };
+      Position.coordinates.push({ x: text.position.x, y: text.position.y });
       Position.textLength.push([
         width + text.fontPaddings,
         height + text.fontPaddings,
@@ -154,7 +148,7 @@ class Position {
     }
   }
 
-  get XY(): [number, number][] {
+  get XY(): Coordinates[] {
     return Position.coordinates;
   }
 }
@@ -201,8 +195,6 @@ class FontConfigurations {
     return this.options[this.index];
   }
 }
-type relativePositions = "top" | "bottom" | "left" | "right" | "newline";
-type coordinates = [number, number];
 
 export default class CanvasText {
   text: TextToBuild | TextToBuild[];
@@ -223,8 +215,7 @@ export default class CanvasText {
     fontSize: FontConfigurationsProps,
     color: FontConfigurationsProps,
     fontFamily: FontConfigurationsProps,
-    fontPaddings: FontConfigurationsProps,
-    positions: positions
+    positions: Positions
   ) {
     if (typeof payload === "string")
       this.text = {
@@ -232,80 +223,90 @@ export default class CanvasText {
         fontSize: new FontConfigurations(fontSize),
         fontColor: new FontConfigurations(color),
         fontFamily: new FontConfigurations(fontFamily),
-        fontPaddings: new FontConfigurations(fontPaddings),
+        fontPaddings: new FontConfigurations({
+          firstValueDefault: true,
+          options: [Number(fontSize.options[0]) / 3],
+        }),
         positions,
       };
     else {
+      if (!Array.isArray(positions))
+        throw new Error(
+          "It seems like you mismatched the number of words and their positions. Make sure that the text position array has just as many elements as the words array"
+        );
       this.text = payload.map((payload_, index) => {
         return {
           payload: payload_,
           fontSize: new FontConfigurations(fontSize),
           fontColor: new FontConfigurations(color),
           fontFamily: new FontConfigurations(fontFamily),
-          fontPaddings: new FontConfigurations(fontPaddings),
+          fontPaddings: new FontConfigurations({
+            firstValueDefault: true,
+            options: [Number(fontSize.options[0]) / 3],
+          }),
           positions: positions[index] || "right",
         } as TextToBuild;
       });
     }
   }
-  getFinalText(context: CanvasRenderingContext2D): FinalText | FinalText[] {
+  getFinalText(
+    context: CanvasRenderingContext2D,
+    initialPosition: Coordinates
+  ): FinalText | FinalText[] {
     if (isTextArray(this.text)) {
       return this.text.map((text, index) => {
         text.fontSize.change(text.payload as string);
         text.fontColor.change(text.payload as string);
         text.fontFamily.change(text.payload as string);
+
+        const { x, y } = new Position(
+          {
+            payload: text.payload,
+            fontSize: text.fontSize.current,
+            fontColor: text.fontColor.current,
+            fontFamily: text.fontFamily.current,
+            fontPaddings: text.fontPaddings.current,
+            position:
+              text.positions === "start" ? initialPosition : text.positions,
+          } as TextToCoordinates,
+          context
+        ).XY[index];
         return {
           payload: text.payload as string,
           fontSize: text.fontSize.current as number,
           fontColor: text.fontColor.current as string,
           fontFamily: text.fontFamily.current as string,
-          coordinates: new Position(
-            {
-              payload: text.payload,
-              fontSize: text.fontSize.current,
-              fontColor: text.fontColor.current,
-              fontFamily: text.fontFamily.current,
-              fontPaddings: text.fontPaddings.current,
-              position: text.positions,
-            } as TextToCoordinates,
-            context
-          ).XY[index],
+          coordinates: {
+            x,
+            y,
+          },
         };
       });
-    } else
+    } else {
+      const { x, y } = new Position(
+        {
+          payload: this.text.payload,
+          fontSize: this.text.fontSize.current,
+          fontColor: this.text.fontColor.current,
+          fontFamily: this.text.fontFamily.current,
+          fontPaddings: this.text.fontPaddings.current,
+          position:
+            this.text.positions === "start"
+              ? initialPosition
+              : this.text.positions,
+        } as TextToCoordinates,
+        context
+      ).XY[0];
       return {
         payload: this.text.payload as string,
         fontSize: this.text.fontSize.current as number,
         fontColor: this.text.fontColor.current as string,
         fontFamily: this.text.fontFamily.current as string,
-        coordinates: new Position(
-          {
-            payload: this.text.payload,
-            fontSize: this.text.fontSize.current,
-            fontColor: this.text.fontColor.current,
-            fontFamily: this.text.fontFamily.current,
-            fontPaddings: this.text.fontPaddings.current,
-            position: this.text.positions,
-          } as TextToCoordinates,
-          context
-        ).XY[0],
+        coordinates: {
+          x,
+          y,
+        },
       };
+    }
   }
-}
-
-/**
- * To customize the behaviour of the font used for every text, the developer can choose to
- * pass a boolean **firstValueDefault** that indicates weather the first value passed to the options array should be
- * used as the default (meaning after all the options are exhausted, the text will have the first value),
- * or the last value should be the default one.
- *
- * The **options** array contains the customizations for the text that will be provided in the constructor.
- *
- * The **keywords** array contains the keywords that indicate where the font option should be changed. In case it is left
- * empty, we assume the user wants to change the options after every word.
- */
-export interface FontConfigurationsProps {
-  firstValueDefault: boolean;
-  options: (string | number)[];
-  keywords?: string | string[];
 }

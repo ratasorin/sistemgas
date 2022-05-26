@@ -1,11 +1,15 @@
 import { useAppSelector } from "hooks/redux";
 import type { NextPage } from "next";
 import Canvas from "./Canvas/Canvas";
+import { Positions } from "./Text/TextCustomizations";
 
 export interface Render {
   render: () => void;
   update: () => void;
   blur?: boolean;
+  dimensions?: (
+    coordinates: Positions
+  ) => { width: number; height: number } | Error;
 }
 
 const Scene: NextPage<{ width: number; height: number }> = ({

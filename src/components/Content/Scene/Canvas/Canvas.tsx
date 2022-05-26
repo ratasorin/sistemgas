@@ -1,7 +1,5 @@
 import { NextPage } from "next";
 import React, { useRef, useEffect, useContext } from "react";
-import canvas from "./canvas.module.css";
-// ignore
 import CarRender from "../Car/Car";
 import TextRenderer from "../Text/Text";
 import type { FontConfigurationsProps } from "../Text/TextCustomizations";
@@ -52,7 +50,7 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
         // Customizing the presentation title
         const fontSizeCustomizations: FontConfigurationsProps = {
           firstValueDefault: true,
-          options: [25],
+          options: [64],
         };
         const fontColorCustomizations: FontConfigurationsProps = {
           firstValueDefault: true,
@@ -62,11 +60,6 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
           firstValueDefault: true,
           options: ["Arial", "Noto Sans Mono"],
           keywords: "alternativa",
-        };
-
-        const fontPadding: FontConfigurationsProps = {
-          firstValueDefault: true,
-          options: [12.5],
         };
 
         /**
@@ -79,19 +72,24 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
           fontSizeCustomizations,
           fontColorCustomizations,
           fontFamilyCustomizations,
-          // TO DO : find better implementation for the padding
-          fontPadding,
-          [[200, canvas.height / 2], "right", "newline", "right", "right"]
+          ["start", "right", "newline", "right", "newline"]
         );
         const draw: Render =
           toDraw === "car"
             ? new CarRender(canvas, image.width, image, context)
-            : new TextRenderer(
-                presentationTitle.getFinalText(context),
-                canvas,
-                context
-              );
+            : new TextRenderer(presentationTitle, canvas, context);
 
+        if (draw.dimensions)
+          console.log({
+            dimensions: draw.dimensions([
+              { x: 200, y: canvas.height / 2 },
+              "right",
+              "newline",
+              "right",
+              "newline",
+            ]),
+            canvas: { width, height },
+          });
         /**
          * The **render** function paints the browser at a certain framerate
          * @param now **now** is the timestamp that requestAnimationFrame passes to the callback (that being
@@ -113,17 +111,16 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
         };
 
         window.requestAnimationFrame(loop);
-
-        // () => {
-        //   // stopping the animation on umount
-        //   window.cancelAnimationFrame(frameID);
-        // };
       };
       image.src = "/gas_truck.svg";
     }
   }, [width, height]);
 
-  return <canvas ref={canvasRef} className={canvas.canvas}></canvas>;
+  return (
+    <canvas
+      ref={canvasRef}
+      className='relative w-full h-full bg-transparent border-black border-8'></canvas>
+  );
 };
 
 export default Canvas;

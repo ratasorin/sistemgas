@@ -1,5 +1,5 @@
 import { FontConfigurations, FontConfigurationsProps } from "./fonts/config";
-import { Positions } from "./math/coordinates";
+import { Positions, RelativePositions } from "./math/coordinates";
 
 export interface TextToBuild {
   payload: string | string[];
@@ -58,12 +58,13 @@ export const textToBuild = ({
   }
 };
 
-export interface ParsedText {
+export interface CustomizedText {
   payload: string;
   fontSize: number;
   fontColor: string;
   fontFamily: string;
-  positions: Positions;
+  fontPadding: number;
+  position: RelativePositions;
 }
 
 export const parse = (textToBuild: TextToBuild | TextToBuild[]) => {
@@ -77,8 +78,9 @@ export const parse = (textToBuild: TextToBuild | TextToBuild[]) => {
         fontSize: text.fontSize.current,
         fontColor: text.fontColor.current,
         fontFamily: text.fontFamily.current,
-        positions: text.positions,
-      } as ParsedText;
+        fontPadding: text.fontPaddings.defaultValue,
+        position: text.positions,
+      } as CustomizedText;
     });
   } else {
     return {
@@ -86,7 +88,13 @@ export const parse = (textToBuild: TextToBuild | TextToBuild[]) => {
       fontSize: textToBuild.fontSize.current as number,
       fontColor: textToBuild.fontColor.current as string,
       fontFamily: textToBuild.fontFamily.current as string,
-      positions: textToBuild.positions,
-    } as ParsedText;
+      fontPadding: textToBuild.fontPaddings.defaultValue,
+      position: textToBuild.positions,
+    } as CustomizedText;
   }
+};
+
+export const customize = (customizations: Customizations) => {
+  const t2b = textToBuild(customizations);
+  return parse(t2b);
 };

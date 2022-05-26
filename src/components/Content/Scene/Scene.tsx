@@ -1,7 +1,7 @@
 import { useAppSelector } from "hooks/redux";
 import type { NextPage } from "next";
 import Canvas from "./Canvas/Canvas";
-import { Positions } from "./Text/TextCustomizations";
+import { Positions } from "./Text/helpers/math/coordinates";
 
 export interface Render {
   render: () => void;

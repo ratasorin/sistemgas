@@ -2,9 +2,11 @@ import { NextPage } from "next";
 import React, { useRef, useEffect, useContext } from "react";
 import CarRender from "../Car/Car";
 import TextRenderer from "../Text/Text";
-import type { FontConfigurationsProps } from "../Text/TextCustomizations";
-import CanvasText from "../Text/TextCustomizations";
+// import type { FontConfigurationsProps } from "../Text/TextCustomizations";
+// import CanvasText from "../Text/TextCustomizations
 import { Render } from "../Scene";
+import { FontConfigurationsProps } from "../Text/helpers/fonts/config";
+import { customize, textToBuild } from "../Text/helpers/customize";
 
 interface Props {
   width: number;
@@ -67,17 +69,17 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
          * as are the font family, size and color, as well as the positioning of the text (which can be customized both
          * in absolute units or relative to other text).
          */
-        const presentationTitle = new CanvasText(
-          ["Solutia", "pentru", "furnizarea", "gazelor", "naturale"],
-          fontSizeCustomizations,
-          fontColorCustomizations,
-          fontFamilyCustomizations,
-          ["start", "right", "newline", "right", "newline"]
-        );
+        const customizations = customize({
+          color: fontColorCustomizations,
+          fontFamily: fontFamilyCustomizations,
+          fontSize: fontSizeCustomizations,
+          payload: ["Solutia", "pentru", "furnizarea", "gazelor", "naturale"],
+          positions: ["start", "right", "newline", "right", "newline"],
+        });
         const draw: Render =
           toDraw === "car"
             ? new CarRender(canvas, image.width, image, context)
-            : new TextRenderer(presentationTitle, canvas, context);
+            : new TextRenderer(customizations, canvas, context);
 
         if (draw.dimensions)
           console.log({

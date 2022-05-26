@@ -16,6 +16,7 @@ export default class TextRenderer implements Render {
     canvas: HTMLCanvasElement,
     context: CanvasRenderingContext2D
   ) {
+    console.log({ customizations });
     this.text = getTextPosition(customizations, context, canvas);
     this.canvas = canvas;
     this.context = context;

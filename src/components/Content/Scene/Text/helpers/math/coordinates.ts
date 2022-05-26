@@ -144,7 +144,7 @@ export const getTextPosition = (
         return {
           start: {
             x: prev.start.x,
-            y: prev.start.y,
+            y: prev.start.y + height,
           },
           text: [
             ...prev.text,

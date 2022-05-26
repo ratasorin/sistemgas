@@ -74,7 +74,7 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
           fontFamily: fontFamilyCustomizations,
           fontSize: fontSizeCustomizations,
           payload: ["Solutia", "pentru", "furnizarea", "gazelor", "naturale"],
-          positions: ["start", "right", "newline", "right", "newline"],
+          positions: ["start", "right", "newline", "right", "right"],
         });
         const draw: Render =
           toDraw === "car"

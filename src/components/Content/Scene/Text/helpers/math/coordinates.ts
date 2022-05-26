@@ -32,26 +32,28 @@ export const getTextDimensions = (
     };
   } else {
     const { height, maxWidth, width } = text.reduce(
-      (prev, text_, index) => {
+      (prev, text_) => {
         context.font = `${text_.fontSize}px ${text_.fontFamily}`;
         const metrics = context.measureText(text_.payload as string);
         const fontWidth = metrics.width;
         const fontHeight =
-          metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
+          metrics.actualBoundingBoxAscent + metrics.fontBoundingBoxDescent;
 
-        if (index === 0)
+        const position = text_.position as RelativePositions;
+        if (position === "start")
           return {
             maxWidth: fontWidth,
             width: fontWidth,
             height: prev.height + fontHeight,
           };
-        const position = text_.position as RelativePositions;
         if (position === "right")
           return {
             maxWidth: prev.maxWidth,
             width: prev.width + fontWidth,
             height: prev.height,
           };
+
+        console.log({ fontHeight });
         if (position === "newline")
           return {
             maxWidth: prev.maxWidth > prev.width ? prev.maxWidth : prev.width,
@@ -67,6 +69,7 @@ export const getTextDimensions = (
         height: 0,
       }
     );
+
     return {
       width: maxWidth > width ? maxWidth : width,
       height,

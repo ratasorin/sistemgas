@@ -1,11 +1,6 @@
 import { NextPage } from "next";
 import React, { useRef, useEffect, useContext } from "react";
-import CarRender from "../Car/Car";
-import TextRenderer from "../Text/Text";
-// import type { FontConfigurationsProps } from "../Text/TextCustomizations";
-// import CanvasText from "../Text/TextCustomizations
 import { Render } from "../Scene";
-import { Text } from "../Text/helpers/text";
 
 interface Props {
   width: number;
@@ -46,17 +41,6 @@ const Canvas: NextPage<Props> = ({ width, height, render }) => {
        */
       let frameID: number;
 
-      if (render.dimensions)
-        console.log({
-          dimensions: render.dimensions([
-            { x: 200, y: canvas.height / 2 },
-            "right",
-            "newline",
-            "right",
-            "newline",
-          ]),
-          canvas: { width, height },
-        });
       /**
        * The **render** function paints the browser at a certain framerate
        * @param now **now** is the timestamp that requestAnimationFrame passes to the callback (that being
@@ -77,12 +61,7 @@ const Canvas: NextPage<Props> = ({ width, height, render }) => {
     }
   }, [width, height]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="relative w-full h-full bg-transparent"
-    ></canvas>
-  );
+  return <canvas ref={canvasRef} className="relative w-full h-full bg-transparent"></canvas>;
 };
 
 export default Canvas;

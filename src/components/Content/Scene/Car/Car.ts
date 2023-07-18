@@ -14,7 +14,7 @@ class Car {
   width: number;
   constructor(width: number) {
     this.position = 0;
-    this.velocity = 4;
+    this.velocity = 6;
     this.flipX = this.velocity > 0 ? 1 : -1;
     this.width = width;
   }
@@ -35,27 +35,32 @@ class Car {
 }
 
 export default class CarRender implements Render {
-  canvas: HTMLCanvasElement;
-  context: CanvasRenderingContext2D;
+  canvas: HTMLCanvasElement | undefined;
+  context: CanvasRenderingContext2D | undefined;
   restart: boolean;
   car: Car;
   image: HTMLImageElement;
   blur: boolean;
-  constructor(
-    canvas: HTMLCanvasElement,
-    carWidth: number,
-    image: HTMLImageElement,
-    context: CanvasRenderingContext2D
-  ) {
+  ready: boolean = false;
+
+  initializeCanvas(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
+    this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+  }
+
+  constructor(carWidth: number, image: HTMLImageElement) {
     this.image = image;
     this.restart = false;
-    this.context = context;
     this.car = new Car(carWidth);
     this.blur = false;
+    this.image.onload = () => {
+      this.ready = true;
+    };
   }
 
   update() {
+    if (!this.canvas || !this.context || !this.ready) return;
+
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (
       (this.car.velocity > 0 && this.car.position <= this.car.width) ||
@@ -72,9 +77,17 @@ export default class CarRender implements Render {
   }
 
   render() {
+    if (!this.canvas || !this.context || !this.ready) return;
+
     this.context.globalCompositeOperation = "source-over";
     this.context.save();
     this.context.scale(this.car.flipX, 1);
+
+    const carDisplayHeight = (6 / 10) * this.canvas.height;
+    const carDisplayWidth =
+      this.image.width * (carDisplayHeight / this.image.height);
+
+    console.log(this.canvas.height / 3 - carDisplayHeight / 3);
     this.car.velocity
       ? this.context.drawImage(
           this.image,
@@ -91,18 +104,16 @@ export default class CarRender implements Render {
           this.image.height,
 
           // dx
-          -this.canvas.width + this.car.position,
+          -carDisplayWidth + this.car.position,
 
           // dy
-          this.canvas.height / 2 - ((6 / 10) * this.canvas.height) / 2,
+          this.canvas.height / 1.75 - carDisplayHeight / 1.75,
 
-          // dw - this is the computed width that will help with fitting the image on the canvas. The 200px offset
-          // is used to scale the image down even further as to not touch the borders of the canvas.
-          (this.image.width * ((6 / 10) * this.canvas.height)) /
-            this.image.height,
+          // dw - this is the computed width that will help fit the image on the canvas.
+          carDisplayWidth,
 
           // dh
-          (6 / 10) * this.canvas.height
+          carDisplayHeight
         )
       : 0;
 

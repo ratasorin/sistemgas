@@ -5,20 +5,19 @@ import TextRenderer from "../Text/Text";
 // import type { FontConfigurationsProps } from "../Text/TextCustomizations";
 // import CanvasText from "../Text/TextCustomizations
 import { Render } from "../Scene";
-import { FontConfigurationsProps } from "../Text/helpers/fonts/config";
-import { customize, textToBuild } from "../Text/helpers/customize";
+import { Text } from "../Text/helpers/text";
 
 interface Props {
   width: number;
   height: number;
-  toDraw: "car" | "text";
+  render: Render;
 }
 
 interface Canvas extends HTMLCanvasElement {
   context: CanvasRenderingContext2D;
 }
 
-const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
+const Canvas: NextPage<Props> = ({ width, height, render }) => {
   const canvasRef = useRef<Canvas>(null);
   // const { setShouldBlur } = useContext(BlurContext);
   /**
@@ -32,96 +31,57 @@ const Canvas: NextPage<Props> = ({ width, height, toDraw }) => {
    */
   const time = {
     elapsed: 1000 / 60,
-    start: -1,
+    start: 1000 / 60,
     duration: 1000 / 60,
   };
 
   useEffect(() => {
     if (width && height) {
-      const image = new Image() as HTMLImageElement;
-      image.onload = () => {
-        const canvas = canvasRef.current as Canvas;
-        [canvas.width, canvas.height] = [width, height];
-        const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-        /**
-         * **frameID** is will be a unique number that every requestAnimationFrame call will return.
-         * We will need it in the cleanup function to stop the animation once the component is unmounted
-         */
-        let frameID: number;
+      const canvas = canvasRef.current as Canvas;
+      [canvas.width, canvas.height] = [width, height];
+      render.initializeCanvas(canvas);
+      /**
+       * **frameID** is a unique number that every requestAnimationFrame call will return.
+       * We will need it in the cleanup function to stop the animation once the component is unmounted
+       */
+      let frameID: number;
 
-        // Customizing the presentation title
-        const fontSizeCustomizations: FontConfigurationsProps = {
-          firstValueDefault: true,
-          options: [64],
-        };
-        const fontColorCustomizations: FontConfigurationsProps = {
-          firstValueDefault: true,
-          options: ["black"],
-        };
-        const fontFamilyCustomizations: FontConfigurationsProps = {
-          firstValueDefault: true,
-          options: ["Arial", "Noto Sans Mono"],
-          keywords: "alternativa",
-        };
-
-        /**
-         * The **presentationTitle** will be revealed on the canvas by the car. The payload is fully customizable,
-         * as are the font family, size and color, as well as the positioning of the text (which can be customized both
-         * in absolute units or relative to other text).
-         */
-        const customizations = customize({
-          color: fontColorCustomizations,
-          fontFamily: fontFamilyCustomizations,
-          fontSize: fontSizeCustomizations,
-          payload: ["Solutia", "pentru", "furnizarea", "gazelor", "naturale"],
-          positions: ["start", "right", "newline", "right", "right"],
+      if (render.dimensions)
+        console.log({
+          dimensions: render.dimensions([
+            { x: 200, y: canvas.height / 2 },
+            "right",
+            "newline",
+            "right",
+            "newline",
+          ]),
+          canvas: { width, height },
         });
-        const draw: Render =
-          toDraw === "car"
-            ? new CarRender(canvas, image.width, image, context)
-            : new TextRenderer(customizations, canvas, context);
-
-        if (draw.dimensions)
-          console.log({
-            dimensions: draw.dimensions([
-              { x: 200, y: canvas.height / 2 },
-              "right",
-              "newline",
-              "right",
-              "newline",
-            ]),
-            canvas: { width, height },
-          });
-        /**
-         * The **render** function paints the browser at a certain framerate
-         * @param now **now** is the timestamp that requestAnimationFrame passes to the callback (that being
-         * the **render** function). In other words is the current timestamp
-         */
-        const loop = (now: number) => {
-          // the first time the render function is called, we have no time.start, meaning time.elapsed will be negative
-          // and this is not a behavior we intent for it. So if this is the case, time.elapsed will have it's default value
-          // which is equal to the time.duration value. This way we make sure that the first paint is instantaneous.
-          time.start ? (time.elapsed = now - time.start) : time.elapsed;
-          draw.update();
-          // draw.blur ? setShouldBlur(draw.blur) : 0;
-          if (time.elapsed >= time.duration) {
-            time.start = now;
-            draw.update();
-          }
-          draw.render();
-          frameID = window.requestAnimationFrame(loop);
-        };
-
-        window.requestAnimationFrame(loop);
+      /**
+       * The **render** function paints the browser at a certain framerate
+       * @param now **now** is the timestamp that requestAnimationFrame passes to the callback (that being
+       * the **render** function). In other words is the current timestamp
+       */
+      const loop = (now: number) => {
+        time.elapsed = now - time.start;
+        render.update();
+        if (time.elapsed >= time.duration) {
+          time.start = now;
+          render.update();
+        }
+        render.render();
+        frameID = window.requestAnimationFrame(loop);
       };
-      image.src = "/gas_truck.svg";
+
+      window.requestAnimationFrame(loop);
     }
   }, [width, height]);
 
   return (
     <canvas
       ref={canvasRef}
-      className='relative w-full h-full bg-transparent border-black border-8'></canvas>
+      className="relative w-full h-full bg-transparent"
+    ></canvas>
   );
 };
 

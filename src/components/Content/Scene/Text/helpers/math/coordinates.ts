@@ -1,4 +1,4 @@
-import { CustomizedText } from "../customize";
+import { Text } from "../text";
 
 export type Coordinates = { x: number; y: number };
 export type RelativePositions = "start" | "right" | "newline";
@@ -12,73 +12,60 @@ interface Dimensions {
   height: number;
 }
 
+export type TextWithCoordinates = Text & { coordinates: Coordinates };
+
 export const getTextDimensions = (
-  text: CustomizedText | CustomizedText[],
+  text: Text[],
   context: CanvasRenderingContext2D
 ): Dimensions => {
   console.log({ text });
-  if (!Array.isArray(text)) {
-    if (Array.isArray(text.position))
-      throw new Error(
-        "You cannot provide an array of positions for a single word"
-      );
-    context.font = `${text.fontSize}px ${text.fontFamily}`;
-    const { fontBoundingBoxDescent, fontBoundingBoxAscent, width } =
-      context.measureText(text.payload as string);
 
-    return {
-      width,
-      height: fontBoundingBoxAscent + fontBoundingBoxDescent,
-    };
-  } else {
-    const { height, maxWidth, width } = text.reduce(
-      (prev, text_) => {
-        context.font = `${text_.fontSize}px ${text_.fontFamily}`;
-        const metrics = context.measureText(text_.payload as string);
-        const fontWidth = metrics.width;
-        const fontHeight =
-          metrics.actualBoundingBoxAscent + metrics.fontBoundingBoxDescent;
+  const { height, maxWidth, width } = text.reduce(
+    (prev, text_) => {
+      context.font = `${text_.fontSize}px ${text_.fontFamily}`;
+      const metrics = context.measureText(text_.payload as string);
+      const fontWidth = metrics.width;
+      const fontHeight =
+        metrics.actualBoundingBoxAscent + metrics.fontBoundingBoxDescent;
 
-        const position = text_.position as RelativePositions;
-        if (position === "start")
-          return {
-            maxWidth: fontWidth,
-            width: fontWidth,
-            height: prev.height + fontHeight,
-          };
-        if (position === "right")
-          return {
-            maxWidth: prev.maxWidth,
-            width: prev.width + fontWidth,
-            height: prev.height,
-          };
+      const position = text_.position as RelativePositions;
+      if (position === "start")
+        return {
+          maxWidth: fontWidth,
+          width: fontWidth,
+          height: prev.height + fontHeight,
+        };
+      if (position === "right")
+        return {
+          maxWidth: prev.maxWidth,
+          width: prev.width + fontWidth + text_.fontPadding,
+          height: prev.height,
+        };
 
-        console.log({ fontHeight });
-        if (position === "newline")
-          return {
-            maxWidth: prev.maxWidth > prev.width ? prev.maxWidth : prev.width,
-            width: fontWidth,
-            height: prev.height + fontHeight,
-          };
+      if (position === "newline")
+        return {
+          maxWidth: prev.maxWidth > prev.width ? prev.maxWidth : prev.width,
+          width: fontWidth,
+          height: prev.height + fontHeight,
+        };
 
-        return prev;
-      },
-      {
-        maxWidth: 0,
-        width: 0,
-        height: 0,
-      }
-    );
+      return prev;
+    },
+    {
+      maxWidth: 0,
+      width: 0,
+      height: 0,
+    }
+  );
 
-    return {
-      width: maxWidth > width ? maxWidth : width,
-      height,
-    };
-  }
+  return {
+    width: maxWidth > width ? maxWidth : width,
+    height,
+  };
 };
 
 export const getFirstWordPosition = (
-  text: CustomizedText | CustomizedText[],
+  text: Text[],
   context: CanvasRenderingContext2D,
   canvasDimensions: Dimensions
 ) => {
@@ -87,37 +74,22 @@ export const getFirstWordPosition = (
     x: canvasDimensions.width / 2 - textDimensions.width / 2,
     y: canvasDimensions.height / 2 - textDimensions.height / 2,
   } as Coordinates;
-  console.log({ textDimensions });
+  console.log(
+    { textDimensions },
+    {
+      canvasWidth: canvasDimensions.width,
+      canvasHeight: canvasDimensions.height,
+    }
+  );
   return coordinates;
 };
 
-export interface Text {
-  payload: string;
-  fontSize: number;
-  fontColor: string;
-  fontFamily: string;
-  fontPadding: number;
-  position: Coordinates;
-}
-
-interface Reducer {
-  text: Text[];
-  start: Coordinates;
-}
-
-export const getTextPosition = (
-  text: CustomizedText | CustomizedText[],
+export const textWithAbsoluteCoordinates = (
+  text: Text[],
   context: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement
-): Text | Text[] => {
-  console.log({ text });
-  if (!Array.isArray(text))
-    return {
-      ...text,
-      position: getFirstWordPosition(text, context, canvas),
-    };
-
-  const firstWordPosition = getFirstWordPosition(text, context, canvas);
+): TextWithCoordinates[] => {
+  const firstWordCoordinates = getFirstWordPosition(text, context, canvas);
   return text.reduce(
     (prev, currText) => {
       const lastText = prev.text[prev.text.length - 1];
@@ -128,7 +100,9 @@ export const getTextPosition = (
       const height =
         Math.abs(measurements.actualBoundingBoxDescent) +
         Math.abs(measurements.actualBoundingBoxAscent);
-      if (currText.position === "start") return prev;
+
+      // if no relative position was provided, this is the first text
+      if (!currText.position) return prev;
       if (currText.position === "right")
         return {
           ...prev,
@@ -136,28 +110,28 @@ export const getTextPosition = (
             ...prev.text,
             {
               ...currText,
-              position: {
-                x: lastText.position.x + currText.fontPadding + width,
-                y: lastText.position.y,
+              coordinates: {
+                x: lastText.coordinates.x + width + currText.fontPadding,
+                y: lastText.coordinates.y,
               },
-            } as Text,
+            },
           ],
         };
       if (currText.position === "newline")
         return {
           start: {
             x: prev.start.x,
-            y: prev.start.y + height,
+            y: 0,
           },
           text: [
             ...prev.text,
             {
               ...currText,
-              position: {
+              coordinates: {
                 x: prev.start.x,
-                y: prev.start.y + height,
+                y: prev.start.y + height + currText.fontPadding,
               },
-            } as Text,
+            },
           ],
         };
       return prev;
@@ -166,10 +140,10 @@ export const getTextPosition = (
       text: [
         {
           ...text[0],
-          position: firstWordPosition,
-        } as Text,
+          coordinates: firstWordCoordinates,
+        },
       ],
-      start: firstWordPosition,
+      start: firstWordCoordinates,
     }
   ).text;
 };

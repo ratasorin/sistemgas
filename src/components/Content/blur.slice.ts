@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const blurSlice = createSlice({
-  initialState: true,
+  initialState: false,
   name: "blur",
   reducers: {
     blur: () => true,

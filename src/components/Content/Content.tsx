@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, FC } from "react";
-import main_scene from "./content.module.css";
+import content from "./content.module.css";
 import Street from "./Street/Street";
 import Scene from "./Scene/Scene";
 // import BlurProvider from "context/animationContext";
@@ -31,6 +31,10 @@ const MainScene: FC = () => {
     >
       <Scene width={dimensions.width} height={dimensions.height}></Scene>
       <Street></Street>
+      <div className={content.clouds_back}></div>
+      <div className={content.mountains}></div>
+      <div className={content.clouds_front}></div>
+      <div className={content.trees}></div>
     </div>
   );
 };

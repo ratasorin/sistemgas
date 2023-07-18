@@ -1,0 +1,61 @@
+.trees {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: url("/background-trees.svg");
+    width: calc(4023/1080 * 4/5 * 100vh * 2);
+    height: calc(4/5 * 100vh);
+    background-position: left;
+    background-repeat: repeat-x;
+    background-size: contain;
+    animation: slide 8s linear infinite;
+    /* transform: translateX(-4032px); */
+}
+.mountains {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: url("/background-mountains.svg");
+    width: calc(4023/1080 * 4/5 * 100vh * 2);
+    height: calc(4/5 * 100vh);
+    background-position: left;
+    background-repeat: repeat-x;
+    background-size: contain;
+    animation: slide 12s linear infinite;
+}
+
+.clouds_front {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: url("/background-clouds-front.svg");
+    width: calc(4023/1080 * 4/5 * 100vh * 2);
+    height: calc(4/5 * 100vh);
+    background-position: left;
+    background-repeat: repeat-x;
+    background-size: contain;
+    animation: slide 10s linear infinite;
+}
+
+.clouds_back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: url("/background-clouds-back.svg");
+    width: calc(4023/1080 * 4/5 * 100vh * 2);
+    height: calc(4/5 * 100vh);
+    background-position: left;
+    background-repeat: repeat-x;
+    background-size: contain;
+    animation: slide 14s linear infinite;
+}
+
+
+@keyframes slide {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-4023/1080 * 4/5 * 100vh)); /* The image width */
+    }
+  }

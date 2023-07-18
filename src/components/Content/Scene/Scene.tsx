@@ -1,4 +1,3 @@
-import { useAppSelector } from "hooks/redux";
 import type { NextPage } from "next";
 import Canvas from "./Canvas/Canvas";
 import { Positions } from "./Text/helpers/math/coordinates";
@@ -43,7 +42,6 @@ const Scene: NextPage<{ width: number; height: number }> = ({
   width,
   height,
 }) => {
-  const blur = useAppSelector(({ blur }) => blur);
 
   const text = useMemo(() => {
     let fontSize: number = fonts["text-lg"];
@@ -52,10 +50,10 @@ const Scene: NextPage<{ width: number; height: number }> = ({
     if (width > screens["md"] && width < screens["lg"])
       fontSize = fonts["text-3xl"];
     if (width > screens["lg"] && width < screens["xl"])
-      fontSize = fonts["text-5xl"];
+      fontSize = fonts["text-4xl"];
     if (width > screens["xl"] && width < screens["2xl"])
-      fontSize = fonts["text-7xl"];
-    if (width > screens["2xl"]) fontSize = fonts["text-7xl"];
+      fontSize = fonts["text-5xl"];
+    if (width > screens["2xl"]) fontSize = fonts["text-6xl"];
     return [
       new Text("Solutia", fontSize, "#172554", "monospace"),
       new Text(
@@ -88,15 +86,6 @@ const Scene: NextPage<{ width: number; height: number }> = ({
           render={new TextRenderer(text, image)}
         ></Canvas>
       </div>
-      {blur ? (
-        <div className="absolute w-full h-full overflow-hidden blur-sm z-0">
-          <Canvas
-            width={width}
-            height={height}
-            render={new CarRender(image.width, image)}
-          ></Canvas>
-        </div>
-      ) : (
         <div className="absolute w-full h-full z-20 overflow-hidden">
           <Canvas
             width={width}
@@ -104,7 +93,6 @@ const Scene: NextPage<{ width: number; height: number }> = ({
             render={new CarRender(image.width, image)}
           ></Canvas>
         </div>
-      )}
     </div>
   );
 };

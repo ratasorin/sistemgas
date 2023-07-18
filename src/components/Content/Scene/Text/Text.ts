@@ -1,5 +1,7 @@
 import { Render } from "../Scene";
 import {
+  Coordinates,
+  Dimensions,
   TextWithCoordinates,
   getFirstWordPosition,
   getTextDimensions,
@@ -14,6 +16,9 @@ export default class TextRenderer implements Render {
   context: CanvasRenderingContext2D | undefined;
   x: number;
   image: HTMLImageElement;
+  textBox: Dimensions | undefined;
+  textBoxCoordinates: Coordinates | undefined;
+
 
   ready() {
     return true;
@@ -23,6 +28,8 @@ export default class TextRenderer implements Render {
     this.canvas = canvas;
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
     this.text = textWithAbsoluteCoordinates(this.initialText, this.context, this.canvas);
+    this.textBox = getTextDimensions(this.text, this.context);
+    this.textBoxCoordinates = getFirstWordPosition(this.text, this.context, this.canvas);
   }
 
   constructor(providedText: Text[], carImage: HTMLImageElement) {
@@ -41,7 +48,7 @@ export default class TextRenderer implements Render {
   }
 
   render() {
-    if (!this.canvas || !this.context || !this.text) return;
+    if (!this.canvas || !this.context || !this.text || !this.textBoxCoordinates || !this.textBox) return;
 
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -52,15 +59,21 @@ export default class TextRenderer implements Render {
 
     this.context.save();
     this.context.globalCompositeOperation = "source-over";
-    const textBox = getTextDimensions(this.text, this.context);
-    const textBoxStart = getFirstWordPosition(this.text, this.context, this.canvas);
+
+    const wordPadding = this.text[0].fontPadding;
+    const textBoxPadding = wordPadding * 3;
+    const outlineWidth = wordPadding / 3;
+    
+    // text box outline
     this.context.beginPath();
     this.context.fillStyle = "#e2e8f0";
-    this.context.roundRect(textBoxStart.x - 35, textBoxStart.y - 35, textBox.width + 70, textBox.height + 70, 10);
+    this.context.roundRect(this.textBoxCoordinates.x - textBoxPadding - outlineWidth, this.textBoxCoordinates.y - textBoxPadding - outlineWidth, this.textBox.width + 2 * (textBoxPadding + outlineWidth), this.textBox.height +  2 * (textBoxPadding + outlineWidth), 10);
     this.context.fill();
+
+    // text box background
     this.context.beginPath();
     this.context.fillStyle = "#f1f5f9";
-    this.context.roundRect(textBoxStart.x - 30, textBoxStart.y - 30, textBox.width + 60, textBox.height + 60, 10);
+    this.context.roundRect(this.textBoxCoordinates.x - textBoxPadding, this.textBoxCoordinates.y - textBoxPadding, this.textBox.width + 2 * textBoxPadding, this.textBox.height + 2 * textBoxPadding, 10);
     this.context.fill();
     this.context.restore();
 

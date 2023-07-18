@@ -4,7 +4,7 @@ export type Coordinates = { x: number; y: number };
 export type RelativePositions = "start" | "right" | "newline";
 export type Positions = RelativePositions | Coordinates | (RelativePositions | Coordinates)[];
 
-interface Dimensions {
+export interface Dimensions {
   width: number;
   height: number;
 }

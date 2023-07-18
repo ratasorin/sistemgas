@@ -8,7 +8,7 @@ interface Component {
 
 const Layout: FC<Component> = ({ Header, Content, Navbar }) => {
   return (
-    <div className="w-screen h-screen flex flex-col bg-slate-100">
+    <div className="w-screen h-screen flex flex-col bg-cyan-100">
       <Content />
     </div>
   );

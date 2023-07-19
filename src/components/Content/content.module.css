@@ -56,7 +56,7 @@
   left: 0;
   background: url("/road.svg");
   height: calc((1 / 5) * 100vh);
-  width: calc(4028.5 / 721 * (1 / 5) * 100vh * 3);
+  width: calc(4029 / 721 * (1 / 5) * 100vh * 3);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
@@ -77,6 +77,6 @@
     transform: translateX(0);
   }
   100% {
-    transform: translateX(calc((-4028.5 / 721) * (1 / 5) * 100vh));
+    transform: translateX(calc((-4029 / 721) * (1 / 5) * 100vh));
   }
 }

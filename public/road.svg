@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 4035 721">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="2017.5" y1="721" x2="2017.5" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#545454"/>
+      <stop offset="1" stop-color="#787878"/>
+      <stop offset="1" stop-color="#7a7a7a"/>
+      <stop offset="1" stop-color="#4c4c4c"/>
+    </linearGradient>
+  </defs>
+  <g id="Layer_2-2" data-name="Layer 2">
+    <rect class="cls-2" width="4035" height="721"/>
+    <polygon class="cls-1" points="468.34 372.67 115.34 372.67 164.66 314.62 517.66 314.62 468.34 372.67"/>
+    <polygon class="cls-1" points="1130.34 372.67 777.34 372.67 826.66 314.62 1179.66 314.62 1130.34 372.67"/>
+    <polygon class="cls-1" points="1790.34 372.67 1437.34 372.67 1486.66 314.62 1839.66 314.62 1790.34 372.67"/>
+    <polygon class="cls-1" points="2442.34 372.67 2089.34 372.67 2138.66 314.62 2491.66 314.62 2442.34 372.67"/>
+    <polygon class="cls-1" points="3156.34 372.67 2803.34 372.67 2852.66 314.62 3205.66 314.62 3156.34 372.67"/>
+    <polygon class="cls-1" points="3839.34 372.67 3486.34 372.67 3535.66 314.62 3888.66 314.62 3839.34 372.67"/>
+  </g>
+</svg>

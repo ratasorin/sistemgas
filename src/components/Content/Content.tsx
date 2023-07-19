@@ -25,7 +25,7 @@ const MainScene: FC = () => {
   return (
     <div
       ref={sceneRef}
-      className="relative overflow-hidden w-screen flex-1 flex flex-col-reverse"
+      className="relative overflow-x-hidden w-screen flex-1 flex flex-col-reverse"
     >
       <Scene width={dimensions.width} height={dimensions.height}></Scene>
       <div className={content.clouds_back}></div>

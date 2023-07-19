@@ -1,12 +1,11 @@
 import { ComponentType, FC } from "react";
 interface Component {
-  Header: FC;
   Content: ComponentType;
   Navbar?: FC<{ images: HTMLImageElement[] }>;
   Body?: FC;
 }
 
-const Layout: FC<Component> = ({ Header, Content, Navbar }) => {
+const Layout: FC<Component> = ({ Content, Navbar }) => {
   return (
     <div className="w-screen h-screen flex flex-col bg-cyan-100">
       <Content />

@@ -2,7 +2,10 @@ import { Text } from "../text";
 
 export type Coordinates = { x: number; y: number };
 export type RelativePositions = "start" | "right" | "newline";
-export type Positions = RelativePositions | Coordinates | (RelativePositions | Coordinates)[];
+export type Positions =
+  | RelativePositions
+  | Coordinates
+  | (RelativePositions | Coordinates)[];
 
 export interface Dimensions {
   width: number;
@@ -11,7 +14,10 @@ export interface Dimensions {
 
 export type TextWithCoordinates = Text & { coordinates: Coordinates };
 
-export const getTextDimensions = (text: Text[], context: CanvasRenderingContext2D): Dimensions => {
+export const getTextDimensions = (
+  text: Text[],
+  context: CanvasRenderingContext2D
+): Dimensions => {
   console.log({ text });
 
   const { height, maxWidth, width } = text.reduce(
@@ -19,7 +25,8 @@ export const getTextDimensions = (text: Text[], context: CanvasRenderingContext2
       context.font = `${text_.fontSize}px ${text_.fontFamily}`;
       const metrics = context.measureText(text_.payload as string);
       const fontWidth = metrics.width;
-      const fontHeight = metrics.actualBoundingBoxAscent + metrics.fontBoundingBoxDescent;
+      const fontHeight =
+        metrics.actualBoundingBoxAscent + metrics.fontBoundingBoxDescent;
 
       const position = text_.position as RelativePositions;
       if (position === "start")
@@ -65,7 +72,11 @@ export const getTextDimensions = (text: Text[], context: CanvasRenderingContext2
   };
 };
 
-export const getFirstWordPosition = (text: Text[], context: CanvasRenderingContext2D, canvasDimensions: Dimensions) => {
+export const getFirstWordPosition = (
+  text: Text[],
+  context: CanvasRenderingContext2D,
+  canvasDimensions: Dimensions
+) => {
   const textDimensions = getTextDimensions(text, context);
   const coordinates = {
     x: canvasDimensions.width / 2 - textDimensions.width / 2,
@@ -84,8 +95,12 @@ export const textWithAbsoluteCoordinates = (
     (prev, currText) => {
       const lastText = prev.text[prev.text.length - 1];
       const measurements = context.measureText(lastText.payload);
-      const width = Math.abs(measurements.actualBoundingBoxLeft) + Math.abs(measurements.actualBoundingBoxRight);
-      const height = Math.abs(measurements.actualBoundingBoxDescent) + Math.abs(measurements.actualBoundingBoxAscent);
+      const width =
+        Math.abs(measurements.actualBoundingBoxLeft) +
+        Math.abs(measurements.actualBoundingBoxRight);
+      const height =
+        Math.abs(measurements.actualBoundingBoxDescent) +
+        Math.abs(measurements.actualBoundingBoxAscent);
 
       // if no relative position was provided, this is the first text
       if (!currText.position) return prev;
@@ -107,7 +122,7 @@ export const textWithAbsoluteCoordinates = (
         return {
           start: {
             x: prev.start.x,
-            y: 0,
+            y: prev.start.y + height + currText.fontPadding,
           },
           text: [
             ...prev.text,

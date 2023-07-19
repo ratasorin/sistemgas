@@ -56,7 +56,15 @@ const Scene: NextPage<{ width: number; height: number }> = ({
       fontSize = fonts["text-5xl"];
     if (width > screens["2xl"]) fontSize = fonts["text-6xl"];
     return [
-      new Text("Solutia", fontSize, "#172554", "monospace"),
+      new Text(
+        "Sistemgas:",
+        fontSize,
+        "#172554",
+        "monospace",
+        undefined,
+        "italic bold"
+      ),
+      new Text("Solutia", fontSize, "#172554", "monospace", "newline"),
       new Text(
         "alternativa",
         fontSize,

@@ -96,7 +96,7 @@ export default class TextRenderer implements Render {
 
     // text box background
     this.context.beginPath();
-    this.context.fillStyle = "#f1f5f9";
+    this.context.fillStyle = "#f8fafc";
     this.context.roundRect(
       this.textBoxCoordinates.x - textBoxPadding,
       this.textBoxCoordinates.y - textBoxPadding,

@@ -77,6 +77,7 @@ export default class TextRenderer implements Render {
 
     this.context.save();
     this.context.globalCompositeOperation = "source-over";
+    this.context.globalAlpha = 0.7;
 
     const wordPadding = this.text[0].fontPadding;
     const textBoxPadding = wordPadding * 3;

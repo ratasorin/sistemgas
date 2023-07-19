@@ -4,7 +4,7 @@ import { Positions } from "./Text/helpers/math/coordinates";
 import TextRenderer from "./Text/Text";
 import { Text } from "./Text/helpers/text";
 import { useMemo } from "react";
-import CarRender from "./Car/Car";
+import CarRender, { useAnimtationState } from "./Car/Car";
 
 export interface Render {
   render: () => void;
@@ -42,6 +42,7 @@ const Scene: NextPage<{ width: number; height: number }> = ({
   width,
   height,
 }) => {
+  const finished = useAnimtationState((state) => state.finished);
 
   const text = useMemo(() => {
     let fontSize: number = fonts["text-lg"];
@@ -71,10 +72,12 @@ const Scene: NextPage<{ width: number; height: number }> = ({
     ];
   }, [width]);
 
-  const image = useMemo(() => {
-    const image = new Image() as HTMLImageElement;
-    image.src = "/gas_truck.svg";
-    return image;
+  const images = useMemo(() => {
+    const gasTruck = new Image() as HTMLImageElement;
+    const mirroredGasTruck = new Image() as HTMLImageElement;
+    gasTruck.src = "/gas_truck.svg";
+    mirroredGasTruck.src = "/mirrored-gas-truck.png";
+    return { gasTruck, mirroredGasTruck };
   }, []);
 
   return (
@@ -83,16 +86,26 @@ const Scene: NextPage<{ width: number; height: number }> = ({
         <Canvas
           width={width}
           height={height}
-          render={new TextRenderer(text, image)}
+          render={new TextRenderer(text, images.gasTruck)}
         ></Canvas>
       </div>
+      {finished ? (
+        <div className="absolute w-full h-full z-10 overflow-hidden">
+          <Canvas
+            width={width}
+            height={height}
+            render={new CarRender(images.gasTruck, images.mirroredGasTruck)}
+          ></Canvas>
+        </div>
+      ) : (
         <div className="absolute w-full h-full z-20 overflow-hidden">
           <Canvas
             width={width}
             height={height}
-            render={new CarRender(image.width, image)}
+            render={new CarRender(images.gasTruck, images.mirroredGasTruck)}
           ></Canvas>
         </div>
+      )}
     </div>
   );
 };

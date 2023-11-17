@@ -56,11 +56,11 @@
   left: 0;
   background: url("/road.svg");
   height: calc((1 / 5) * 100vh);
-  width: calc(4029 / 721 * (1 / 5) * 100vh * 3);
+  width: calc(4027 / 721 * (1 / 5) * 100vh * 3);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
-  animation: slide-road 2s linear infinite;
+  animation: slide-road 2.5s linear infinite;
 }
 
 @keyframes slide {

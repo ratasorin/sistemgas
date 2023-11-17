@@ -1,4 +1,4 @@
-import { INITIAL_CAR_VELOCITY, imageDisplayDimensions } from "../Car/Car";
+import { imageDisplayDimensions } from "../Car/Car";
 import { Render } from "../Scene";
 import {
   Coordinates,
@@ -16,9 +16,11 @@ export default class TextRenderer implements Render {
   canvas: HTMLCanvasElement | undefined;
   context: CanvasRenderingContext2D | undefined;
   x: number;
-  image: HTMLImageElement;
+  carImage: HTMLImageElement;
   textBox: Dimensions | undefined;
   textBoxCoordinates: Coordinates | undefined;
+  carVelocity: number = 0;
+  heightFactor: number = 0;
 
   ready() {
     return true;
@@ -26,36 +28,54 @@ export default class TextRenderer implements Render {
 
   initializeCanvas(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
+    const { carDisplayHeight } = imageDisplayDimensions(
+      this.carImage,
+      this.canvas.height,
+      this.heightFactor
+    );
+
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
     this.text = textWithAbsoluteCoordinates(
       this.initialText,
       this.context,
-      this.canvas
+      this.canvas,
+      this.heightFactor,
+      carDisplayHeight
     );
     this.textBox = getTextDimensions(this.text, this.context);
     this.textBoxCoordinates = getFirstWordPosition(
       this.text,
       this.context,
-      this.canvas
+      this.canvas,
+      this.heightFactor,
+      carDisplayHeight
     );
   }
 
-  constructor(providedText: Text[], carImage: HTMLImageElement) {
+  constructor(
+    providedText: Text[],
+    carImage: HTMLImageElement,
+    carVelocity: number,
+    heightFactor: number
+  ) {
     this.initialText = providedText;
     this.x = 0;
-    this.image = carImage;
+    this.carImage = carImage;
+    this.carVelocity = carVelocity;
+    this.heightFactor = heightFactor;
   }
 
   update() {
     if (!this.canvas || !this.context || !this.text) return;
 
     const { carDisplayWidth } = imageDisplayDimensions(
-      this.image,
-      this.canvas.height
+      this.carImage,
+      this.canvas.height,
+      this.heightFactor
     );
 
     if (this.x <= carDisplayWidth + this.canvas.width)
-      this.x += INITIAL_CAR_VELOCITY;
+      this.x += this.carVelocity;
   }
 
   render() {
@@ -79,9 +99,11 @@ export default class TextRenderer implements Render {
     this.context.globalCompositeOperation = "source-over";
     this.context.globalAlpha = 0.7;
 
-    const wordPadding = this.text[0].fontPadding;
-    const textBoxPadding = wordPadding * 3;
-    const outlineWidth = wordPadding / 3;
+    const averageWordPadding =
+      this.text.reduce((prev, curr) => prev + curr.fontPadding.x, 0) /
+      this.text.length;
+    const textBoxPadding = averageWordPadding * 3;
+    const outlineWidth = averageWordPadding / 3;
 
     // text box outline
     this.context.beginPath();
@@ -124,8 +146,9 @@ export default class TextRenderer implements Render {
       );
 
       const { carDisplayWidth } = imageDisplayDimensions(
-        this.image,
-        this.canvas.height
+        this.carImage,
+        this.canvas.height,
+        this.heightFactor
       );
 
       // because we cannot render the car and the text on the same canvas, we emulate

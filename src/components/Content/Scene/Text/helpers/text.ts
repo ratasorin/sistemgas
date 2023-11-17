@@ -1,4 +1,4 @@
-export type Positions = "right" | "newline";
+export type RelativePositions = "right" | "newline" | "start";
 export type Styles =
   | "bold"
   | "italic"
@@ -11,23 +11,23 @@ export class Text {
   fontSize: number;
   fontColor: string;
   fontFamily: string;
-  fontPadding: number;
+  fontPadding: { x: number; y: number };
   fontStyle: Styles | undefined;
-  position: Positions | undefined;
+  position: RelativePositions | undefined;
 
   constructor(
     payload: string,
     fontSize: number,
     fontColor: string,
     fontFamily: string,
-    position?: Positions,
+    position?: RelativePositions,
     fontStyle?: Styles
   ) {
     this.payload = payload;
     this.fontSize = fontSize;
     this.fontColor = fontColor;
     this.fontFamily = fontFamily;
-    this.fontPadding = fontSize / 3;
+    this.fontPadding = { x: fontSize / 3, y: fontSize / 2.5 };
     this.position = position;
     this.fontStyle = fontStyle;
   }

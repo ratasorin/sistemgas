@@ -4,7 +4,7 @@ import { Positions } from "./Text/helpers/math/coordinates";
 import TextRenderer from "./Text/Text";
 import { Text } from "./Text/helpers/text";
 import { useMemo } from "react";
-import CarRender, { useAnimtationState } from "./Car/Car";
+import CarRender, { useAnimationState } from "./Car/Car";
 
 export interface Render {
   render: () => void;
@@ -38,30 +38,65 @@ const fonts = {
   "text-9xl": 128,
 } as const;
 
+const getResponsiveFontSize = (screenWidth: number) => {
+  let fontSize: number = fonts["text-lg"];
+  if (screenWidth > screens["sm"] && screenWidth < screens["md"])
+    fontSize = fonts["text-xl"];
+  if (screenWidth > screens["md"] && screenWidth < screens["lg"])
+    fontSize = fonts["text-2xl"];
+  if (screenWidth > screens["lg"] && screenWidth < screens["xl"])
+    fontSize = fonts["text-3xl"];
+  if (screenWidth > screens["xl"] && screenWidth < screens["2xl"])
+    fontSize = fonts["text-4xl"];
+  if (screenWidth > screens["2xl"]) fontSize = fonts["text-4xl"];
+
+  return fontSize;
+};
+
+const getResponsiveCarVelocity = (screenWidth: number) => {
+  let speed: number = 3;
+  if (screenWidth < screens["xl"]) speed = 2.75;
+  if (screenWidth < screens["lg"]) speed = 2.5;
+  if (screenWidth < screens["md"]) speed = 2;
+  if (screenWidth < screens["sm"]) speed = 1.75;
+
+  return speed;
+};
+
+const getResponsiveHeightFactor = (screenWidth: number) => {
+  let heightFactor = 0.6;
+  if (screenWidth < screens["xl"]) heightFactor = 0.55;
+  if (screenWidth < screens["lg"]) heightFactor = 0.5;
+  if (screenWidth < screens["md"]) heightFactor = 0.45;
+  if (screenWidth < screens["sm"]) heightFactor = 0.4;
+
+  return heightFactor;
+};
+
 const Scene: NextPage<{ width: number; height: number }> = ({
   width,
   height,
 }) => {
-  const finished = useAnimtationState((state) => state.finished);
+  const finished = useAnimationState((state) => state.finished);
+
+  const carVelocity = useMemo(() => {
+    return getResponsiveCarVelocity(width);
+  }, [width]);
+
+  const heightFactor = useMemo(() => {
+    return getResponsiveHeightFactor(width);
+  }, [width]);
 
   const text = useMemo(() => {
-    let fontSize: number = fonts["text-lg"];
-    if (width > screens["sm"] && width < screens["md"])
-      fontSize = fonts["text-xl"];
-    if (width > screens["md"] && width < screens["lg"])
-      fontSize = fonts["text-3xl"];
-    if (width > screens["lg"] && width < screens["xl"])
-      fontSize = fonts["text-4xl"];
-    if (width > screens["xl"] && width < screens["2xl"])
-      fontSize = fonts["text-5xl"];
-    if (width > screens["2xl"]) fontSize = fonts["text-6xl"];
+    const fontSize = getResponsiveFontSize(width);
+
     return [
       new Text(
         "Sistemgas:",
-        fontSize,
+        fontSize + 0.4 * fontSize,
         "#172554",
         "monospace",
-        undefined,
+        "start",
         "italic bold"
       ),
       new Text("Solutia", fontSize, "#172554", "monospace", "newline"),
@@ -94,7 +129,9 @@ const Scene: NextPage<{ width: number; height: number }> = ({
         <Canvas
           width={width}
           height={height}
-          render={new TextRenderer(text, images.gasTruck)}
+          render={
+            new TextRenderer(text, images.gasTruck, carVelocity, heightFactor)
+          }
         ></Canvas>
       </div>
       {finished ? (
@@ -102,7 +139,14 @@ const Scene: NextPage<{ width: number; height: number }> = ({
           <Canvas
             width={width}
             height={height}
-            render={new CarRender(images.gasTruck, images.mirroredGasTruck)}
+            render={
+              new CarRender(
+                images.gasTruck,
+                images.mirroredGasTruck,
+                carVelocity,
+                heightFactor
+              )
+            }
           ></Canvas>
         </div>
       ) : (
@@ -110,7 +154,14 @@ const Scene: NextPage<{ width: number; height: number }> = ({
           <Canvas
             width={width}
             height={height}
-            render={new CarRender(images.gasTruck, images.mirroredGasTruck)}
+            render={
+              new CarRender(
+                images.gasTruck,
+                images.mirroredGasTruck,
+                carVelocity,
+                heightFactor
+              )
+            }
           ></Canvas>
         </div>
       )}

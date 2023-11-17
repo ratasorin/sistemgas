@@ -1,17 +1,17 @@
 import { Render } from "../Scene";
 import { create } from "zustand";
 
-export const useAnimtationState = create<{ finished: boolean }>((set) => ({
+export const useAnimationState = create<{ finished: boolean }>((set) => ({
   finished: false,
   finishAnimation: () => set(() => ({ finished: true })),
 }));
 
-export const INITIAL_CAR_VELOCITY = 4;
 export const imageDisplayDimensions = (
   image: HTMLImageElement,
-  canvasHeight: number
+  canvasHeight: number,
+  heightFactor: number
 ) => {
-  const carDisplayHeight = (6 / 10) * canvasHeight;
+  const carDisplayHeight = heightFactor * canvasHeight;
   const carDisplayWidth = image.width * (carDisplayHeight / image.height);
 
   return { carDisplayHeight, carDisplayWidth };
@@ -20,10 +20,11 @@ export const imageDisplayDimensions = (
 class Car {
   position: number = 0;
   mirror: boolean = false;
-  velocity: number = INITIAL_CAR_VELOCITY;
+  velocity: number = 0;
   width: number;
-  constructor(width: number) {
+  constructor(width: number, velocity: number) {
     this.width = width;
+    this.velocity = velocity;
   }
   update() {
     this.position += this.velocity;
@@ -35,10 +36,10 @@ class Car {
 
   restart(screenWidth: number, carWidth: number) {
     const random = Math.random();
-    useAnimtationState.setState({ finished: true });
+    useAnimationState.setState({ finished: true });
     setTimeout(() => {
       this.mirror = random > 0.5 ? false : true;
-      this.velocity = random > 0.5 ? 4 : 6;
+      this.velocity = random > 0.5 ? this.velocity : 1.5 * this.velocity;
 
       if (this.mirror) this.velocity = -this.velocity;
 
@@ -56,17 +57,24 @@ export default class CarRender implements Render {
   image: HTMLImageElement;
   ready: boolean = false;
   mirroredImage: HTMLImageElement;
+  heightFactor: number = 0;
 
   initializeCanvas(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
   }
 
-  constructor(image: HTMLImageElement, mirroredImage: HTMLImageElement) {
+  constructor(
+    image: HTMLImageElement,
+    mirroredImage: HTMLImageElement,
+    velocity: number,
+    heightFactor: number
+  ) {
     this.image = image;
     this.mirroredImage = mirroredImage;
+    this.heightFactor = heightFactor;
     this.image.onload = () => {
-      this.car = new Car(image.width);
+      this.car = new Car(image.width, velocity);
       this.ready = true;
     };
   }
@@ -79,7 +87,8 @@ export default class CarRender implements Render {
 
     const { carDisplayWidth } = imageDisplayDimensions(
       image,
-      this.canvas.height
+      this.canvas.height,
+      this.heightFactor
     );
 
     if (
@@ -108,36 +117,38 @@ export default class CarRender implements Render {
 
     const { carDisplayWidth, carDisplayHeight } = imageDisplayDimensions(
       image,
-      this.canvas.height
+      this.canvas.height,
+      this.heightFactor
     );
 
-    this.car.velocity
-      ? this.context.drawImage(
-          image,
-          // sx
-          0,
+    if (!this.car.velocity) return;
 
-          // sy
-          0,
+    this.context.drawImage(
+      image,
+      // sx
+      0,
 
-          // sw
-          image.width,
+      // sy
+      0,
 
-          // sh
-          image.height,
+      // sw
+      image.width,
 
-          // dx
-          -carDisplayWidth + this.car.position,
+      // sh
+      image.height,
 
-          // dy
-          this.canvas.height / 1.75 - carDisplayHeight / 1.75,
+      // dx
+      -carDisplayWidth + this.car.position,
 
-          // dw - this is the computed width that will help fit the image on the canvas.
-          carDisplayWidth,
+      // dy
+      this.canvas.height / (0.95 + this.heightFactor) -
+        carDisplayHeight / (0.95 + this.heightFactor),
 
-          // dh
-          carDisplayHeight
-        )
-      : 0;
+      // dw - this is the computed width that will help fit the image on the canvas.
+      carDisplayWidth,
+
+      // dh
+      carDisplayHeight
+    );
   }
 }

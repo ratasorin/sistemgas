@@ -92,7 +92,7 @@ const Scene: NextPage<{ width: number; height: number }> = ({
 
     return [
       new Text(
-        "Sistemgas:",
+        "SistemgaS:",
         fontSize + 0.4 * fontSize,
         "#172554",
         "monospace",
@@ -119,7 +119,7 @@ const Scene: NextPage<{ width: number; height: number }> = ({
     const gasTruck = new Image() as HTMLImageElement;
     const mirroredGasTruck = new Image() as HTMLImageElement;
     gasTruck.src = "/gas_truck.svg";
-    mirroredGasTruck.src = "/mirrored-gas-truck.png";
+    mirroredGasTruck.src = "/mirrored_gas_truck.svg";
     return { gasTruck, mirroredGasTruck };
   }, []);
 

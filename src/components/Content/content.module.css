@@ -1,5 +1,6 @@
 .parallax {
-  --parallax-width-svg: calc(4023 / 1080 * 4 / 5 * 100vh * 2);
+  --background-svg-width: calc(4023 / 1080 * 4 / 5 * 100vh * 2);
+  --road-svg-width: calc((4029 / 721) * (1 / 5) * 100vh);
 }
 
 .stop {
@@ -11,7 +12,7 @@
   top: 0;
   left: 0;
   background: url("/grass.svg");
-  width: var(--parallax-width-svg);
+  width: var(--background-svg-width);
   height: calc(4 / 5 * 100vh);
   background-size: contain;
 }
@@ -21,13 +22,11 @@
   top: 0;
   left: 0;
   background: url("/forest-front.svg");
-  width: var(--parallax-width-svg);
+  width: var(--background-svg-width);
   height: calc(4 / 5 * 100vh);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
-  animation: slide 9s linear infinite;
-  transform: translateX(-4032px);
 }
 
 .forest-mid {
@@ -35,13 +34,11 @@
   top: 0;
   left: 0;
   background: url("/forest-mid.svg");
-  width: var(--parallax-width-svg);
+  width: var(--background-svg-width);
   height: calc(4 / 5 * 100vh);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
-  animation: slide 12s linear infinite;
-  /* transform: translateX(-4032px); */
 }
 
 .forest-back {
@@ -49,13 +46,11 @@
   top: 0;
   left: 0;
   background: url("/forest-back.svg");
-  width: var(--parallax-width-svg);
+  width: var(--background-svg-width);
   height: calc(4 / 5 * 100vh);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
-  animation: slide 14s linear infinite;
-  /* transform: translateX(-4032px); */
 }
 
 .mountains-front {
@@ -63,12 +58,11 @@
   top: 0;
   left: 0;
   background: url("/mountains-front.svg");
-  width: var(--parallax-width-svg);
+  width: var(--background-svg-width);
   height: calc(4 / 5 * 100vh);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
-  animation: slide 14s linear infinite;
 }
 
 .mountains-back {
@@ -76,12 +70,11 @@
   top: 0;
   left: 0;
   background: url("/mountains-back.svg");
-  width: var(--parallax-width-svg);
+  width: var(--background-svg-width);
   height: calc(4 / 5 * 100vh);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
-  animation: slide 17s linear infinite;
 }
 
 .clouds-front {
@@ -89,12 +82,11 @@
   top: 0;
   left: 0;
   background: url("/clouds-front.svg");
-  width: var(--parallax-width-svg);
+  width: var(--background-svg-width);
   height: calc(4 / 5 * 100vh);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
-  animation: slide 10s linear infinite;
 }
 
 .clouds-back {
@@ -102,15 +94,11 @@
   top: 0;
   left: 0;
   background: url("/clouds-back.svg");
-  width: var(--parallax-width-svg);
+  width: var(--background-svg-width);
   height: calc(4 / 5 * 100vh);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
-}
-
-.animate-clouds-back {
-  animation: slide 13s linear infinite;
 }
 
 .street {
@@ -119,36 +107,8 @@
   left: 0;
   background: url("/road.svg");
   height: calc((1 / 5) * 100vh);
-  width: calc(4027 / 721 * (1 / 5) * 100vh * 3);
+  width: calc(var(--road-svg-width) * 4);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
-  animation: slide-road 2.5s linear infinite;
-}
-
-@keyframes slide {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(calc(-1 / 2 * var(--parallax-width-svg)));
-  }
-}
-
-@keyframes slide-road {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(calc((-4029 / 721) * (1 / 5) * 100vh));
-  }
-}
-
-@keyframes slide-road-stop {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-1000px);
-  }
 }

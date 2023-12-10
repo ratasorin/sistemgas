@@ -3,8 +3,17 @@
   --road-svg-width: calc((4029 / 721) * (1 / 5) * 100vh);
 }
 
-.stop {
-  animation-play-state: paused !important;
+.transition-down {
+  animation: 4s cubic-bezier(0.33, 0.27, 0.58, 1) forwards down;
+}
+
+@keyframes down {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(calc(1 / 5 * 100vh));
+  }
 }
 
 .grass {
@@ -15,6 +24,30 @@
   width: var(--background-svg-width);
   height: calc(4 / 5 * 100vh);
   background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.sistemgas-hq {
+  position: absolute;
+  left: 50%;
+  bottom: calc(1 / 5 * 100vh);
+  z-index: 100;
+  width: clamp(900px, 100vw, 1500px);
+  transform: translateX(100vw);
+}
+
+.sistemgas-hq-animate-in {
+  animation: 4s cubic-bezier(0.33, 0.27, 0.58, 1) forwards sistemgas-hq-in;
+}
+
+@keyframes sistemgas-hq-in {
+  0% {
+    transform: translateX(100vw) translateY(0);
+  }
+
+  100% {
+    transform: translateX(-50%) translateY(calc(1 / 5 * 100vh));
+  }
 }
 
 .forest-front {

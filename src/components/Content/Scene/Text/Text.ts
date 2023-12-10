@@ -21,6 +21,7 @@ export default class TextRenderer implements Render {
   textBoxCoordinates: Coordinates | undefined;
   carVelocity: number = 0;
   heightFactor: number = 0;
+  coordinates: Coordinates | undefined;
 
   ready() {
     return true;
@@ -44,6 +45,13 @@ export default class TextRenderer implements Render {
     );
     this.textBox = getTextDimensions(this.text, this.context);
     this.textBoxCoordinates = getFirstWordPosition(
+      this.text,
+      this.context,
+      this.canvas,
+      this.heightFactor,
+      carDisplayHeight
+    );
+    this.coordinates = getFirstWordPosition(
       this.text,
       this.context,
       this.canvas,
@@ -130,6 +138,11 @@ export default class TextRenderer implements Render {
     this.context.fill();
     this.context.restore();
 
+    const offsetX =
+      (this.coordinates?.x || 0) - (this.textBoxCoordinates.x || 0);
+    const offsetY =
+      (this.coordinates?.y || 0) - (this.textBoxCoordinates.y || 0);
+
     this.text.forEach((text_) => {
       if (!this.canvas || !this.context || !this.text) return;
 
@@ -141,8 +154,8 @@ export default class TextRenderer implements Render {
       this.context.textBaseline = "top";
       this.context.fillText(
         `${text_.payload}`,
-        text_.coordinates.x,
-        text_.coordinates.y
+        -offsetX + text_.coordinates.x,
+        -offsetY + text_.coordinates.y
       );
 
       const { carDisplayWidth } = imageDisplayDimensions(

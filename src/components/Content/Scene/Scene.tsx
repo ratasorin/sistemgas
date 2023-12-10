@@ -3,8 +3,9 @@ import Canvas from "./Canvas/Canvas";
 import { Positions } from "./Text/helpers/math/coordinates";
 import TextRenderer from "./Text/Text";
 import { Text } from "./Text/helpers/text";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import CarRender, { useAnimationState } from "./Car/Car";
+import { gsap } from "gsap";
 
 export interface Render {
   render: () => void;
@@ -123,16 +124,28 @@ const Scene: NextPage<{ width: number; height: number }> = ({
     return { gasTruck, mirroredGasTruck };
   }, []);
 
+  const textRenderer = useMemo(
+    () => new TextRenderer(text, images.gasTruck, carVelocity, heightFactor),
+    [text, images, carVelocity, heightFactor]
+  );
+
+  useEffect(() => {
+    if (finished) {
+      gsap.to(textRenderer.textBoxCoordinates!, {
+        y: 60,
+        onUpdate: () => {
+          textRenderer.render();
+        },
+        duration: 4,
+        ease: "expo.out",
+      });
+    }
+  }, [finished]);
+
   return (
     <div className="relative w-full flex-1 overflow-hidden z-10">
       <div className="absolute w-full h-full z-20 overflow-hidden">
-        <Canvas
-          width={width}
-          height={height}
-          render={
-            new TextRenderer(text, images.gasTruck, carVelocity, heightFactor)
-          }
-        ></Canvas>
+        <Canvas width={width} height={height} render={textRenderer}></Canvas>
       </div>
       {finished ? (
         <div className="absolute w-full h-full z-10 overflow-hidden">

@@ -1,13 +1,15 @@
 import { FC, useRef } from "react";
 import { useAnimationState } from "../Scene/Car/Car";
+import content from "../content.module.css";
 
 const END_TRANSITION_DURATION = 4000;
 
 const AnimatedBackground: FC<{
   baseClassName: string;
   speed: number;
+  transitionDown?: boolean;
   widthType: "--background-svg-width" | "--road-svg-width";
-}> = ({ baseClassName, speed, widthType }) => {
+}> = ({ baseClassName, speed, widthType, transitionDown }) => {
   const { finished } = useAnimationState();
   const animationRef = useRef<Animation | undefined>(undefined);
   const width =
@@ -39,12 +41,14 @@ const AnimatedBackground: FC<{
           animationRef.current = element.animate(
             [
               {
-                transform: `translateX(0px)`,
+                transform: `translate(0, 0)`,
               },
               {
-                transform: `translateX(calc(${
+                transform: `translate(calc(${
                   END_TRANSITION_DURATION / (speed * 1000)
-                } * ${width}`,
+                } * ${width}), ${
+                  transitionDown ? "calc(1 / 5 * 100vh)" : "0"
+                })`,
               },
             ],
             {
@@ -60,7 +64,7 @@ const AnimatedBackground: FC<{
           animationRef.current = element.animate(
             [
               {
-                transform: "translateX(0)",
+                transform: "translateX(0px)",
               },
               {
                 transform: `translateX(${width})`,

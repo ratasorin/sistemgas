@@ -1,6 +1,7 @@
 .parallax {
   --background-svg-width: calc(4023 / 1080 * 4 / 5 * 100vh * 2);
   --road-svg-width: calc((4029 / 721) * (1 / 5) * 100vh);
+  overflow-y: hidden;
 }
 
 .transition-down {
@@ -18,7 +19,6 @@
 
 .grass {
   position: absolute;
-  top: 0;
   left: 0;
   background: url("/grass.svg");
   width: var(--background-svg-width);
@@ -138,6 +138,18 @@
   top: calc(4 / 5 * 100vh);
   left: 0;
   background: url("/road.svg");
+  height: calc((1 / 5) * 100vh);
+  width: calc(var(--road-svg-width) * 4);
+  background-position: left;
+  background-repeat: repeat-x;
+  background-size: contain;
+}
+
+.street-background {
+  position: absolute;
+  top: calc(4 / 5 * 100vh);
+  left: 0;
+  background: url("/road-background.svg");
   height: calc((1 / 5) * 100vh);
   width: calc(var(--road-svg-width) * 4);
   background-position: left;

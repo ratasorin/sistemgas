@@ -1,7 +1,5 @@
 import { FC, useMemo, useRef, useState } from "react";
 import { useAnimationState } from "../Scene/Car/Car";
-import content from "../content.module.css";
-import { useSelector } from "react-redux";
 
 const END_TRANSITION_DURATION = 4000;
 

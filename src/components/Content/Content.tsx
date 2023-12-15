@@ -101,6 +101,11 @@ const MainScene: FC = () => {
             finished ? content["transition-down"] : ""
           }`}
         ></div>
+        <div
+          className={`${content["street-background"]} ${
+            finished ? content["transition-down"] : ""
+          }`}
+        ></div>
         <AnimatedBackground
           baseClassName={content["street"]}
           speed={2.5}
@@ -108,6 +113,7 @@ const MainScene: FC = () => {
           transitionDown={true}
           widthType="--road-svg-width"
         />
+
         <div
           ref={(elem) => {
             if (!elem) return;

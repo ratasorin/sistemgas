@@ -32,7 +32,6 @@
   left: 50%;
   bottom: calc(1 / 5 * 100vh);
   z-index: 100;
-  width: clamp(900px, 100vw, 1500px);
   transform: translateX(100vw);
 }
 

@@ -22,6 +22,7 @@ export default class TextRenderer implements Render {
   carVelocity: number = 0;
   heightFactor: number = 0;
   coordinates: Coordinates | undefined;
+  averageWordPadding: number = 0;
 
   ready() {
     return true;
@@ -58,6 +59,12 @@ export default class TextRenderer implements Render {
       this.heightFactor,
       carDisplayHeight
     );
+
+    const averageWordPadding =
+      this.text.reduce((prev, curr) => prev + curr.fontPadding.x, 0) /
+      this.text.length;
+
+    this.averageWordPadding = averageWordPadding;
   }
 
   constructor(
@@ -102,16 +109,12 @@ export default class TextRenderer implements Render {
     // this.context.fillRect(this.canvas.width / 2, 0, 2, this.canvas.height);
     // vertical line
     // this.context.fillRect(0, this.canvas.height / 2, this.canvas.width, 2);
+    const textBoxPadding = this.averageWordPadding * 3;
+    const outlineWidth = this.averageWordPadding / 3;
 
     this.context.save();
     this.context.globalCompositeOperation = "source-over";
     this.context.globalAlpha = 0.7;
-
-    const averageWordPadding =
-      this.text.reduce((prev, curr) => prev + curr.fontPadding.x, 0) /
-      this.text.length;
-    const textBoxPadding = averageWordPadding * 3;
-    const outlineWidth = averageWordPadding / 3;
 
     // text box outline
     this.context.beginPath();

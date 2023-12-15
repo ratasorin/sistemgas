@@ -1,8 +1,16 @@
-import { useState, useRef, useEffect, FC } from "react";
+import { useState, useRef, useEffect, FC, useMemo } from "react";
 import content from "./content.module.css";
 import Scene from "./Scene/Scene";
 import AnimatedBackground from "./helper/animated-background";
 import { useAnimationState } from "./Scene/Car/Car";
+
+const screens = {
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  "2xl": 1536,
+} as const;
 
 const backgroundAnimations = [
   {
@@ -45,6 +53,7 @@ const MainScene: FC = () => {
     width: 0,
     height: 0,
   });
+  const [imageHeight, setImageHeight] = useState(0);
   const sceneRef = useRef<HTMLDivElement>(null);
   const { finished } = useAnimationState();
 
@@ -63,12 +72,26 @@ const MainScene: FC = () => {
     });
   }, []);
 
+  const width = useMemo(() => {
+    // this will be displayed on the biggest screens
+    let w = "1550px";
+    if (dimensions.width < screens["lg"]) w = "1450px";
+    if (dimensions.width < screens["md"]) w = "1350px";
+    if (dimensions.width < screens["sm"]) w = "960px";
+
+    return w;
+  }, [dimensions]);
+
   return (
     <div
       ref={sceneRef}
       className="relative overflow-x-hidden w-screen flex-1 flex flex-col-reverse"
     >
-      <Scene width={dimensions.width} height={dimensions.height}></Scene>
+      <Scene
+        width={dimensions.width}
+        height={dimensions.height}
+        imageHeight={imageHeight}
+      ></Scene>
       <div className={`${content.parallax} z-0`}>
         {backgroundAnimations.map((elem) => (
           <AnimatedBackground {...elem} widthType="--background-svg-width" />
@@ -86,6 +109,11 @@ const MainScene: FC = () => {
           widthType="--road-svg-width"
         />
         <div
+          ref={(elem) => {
+            if (!elem) return;
+            setImageHeight(elem.clientHeight);
+          }}
+          style={{ width }}
           className={`${content["sistemgas-hq"]} ${
             finished ? content["sistemgas-hq-animate-in"] : ""
           }`}

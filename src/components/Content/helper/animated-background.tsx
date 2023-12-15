@@ -1,6 +1,7 @@
-import { FC, useRef } from "react";
+import { FC, useMemo, useRef, useState } from "react";
 import { useAnimationState } from "../Scene/Car/Car";
 import content from "../content.module.css";
+import { useSelector } from "react-redux";
 
 const END_TRANSITION_DURATION = 4000;
 
@@ -12,20 +13,26 @@ const AnimatedBackground: FC<{
 }> = ({ baseClassName, speed, widthType, transitionDown }) => {
   const { finished } = useAnimationState();
   const animationRef = useRef<Animation | undefined>(undefined);
-  const width =
-    widthType === "--background-svg-width"
-      ? `calc(-1/2 * var(${widthType}))`
-      : `calc(-1 * var(${widthType}))`;
+  const width = useMemo(
+    () =>
+      widthType === "--background-svg-width"
+        ? `calc(-1/2 * var(${widthType}))`
+        : `calc(-1 * var(${widthType}))`,
+    [widthType]
+  );
+  const [running, setRunning] = useState(false);
 
   return (
     <div
       key={baseClassName}
       ref={(element) => {
-        if (!element) return;
+        if (!element || running) return;
         if (finished && animationRef.current) {
           animationRef.current?.commitStyles();
           // Cancel the animation
           animationRef.current?.cancel();
+
+          setRunning(true);
 
           let translateX = new DOMMatrixReadOnly(
             window.getComputedStyle(element).getPropertyValue("transform")

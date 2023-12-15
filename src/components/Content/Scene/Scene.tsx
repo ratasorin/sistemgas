@@ -26,7 +26,7 @@ const screens = {
 const fonts = {
   "text-xs": 12,
   "text-sm": 14,
-  "text-base": 16,
+  "text-base": 17,
   "text-lg": 18,
   "text-xl": 20,
   "text-2xl": 24,
@@ -40,7 +40,7 @@ const fonts = {
 } as const;
 
 const getResponsiveFontSize = (screenWidth: number) => {
-  let fontSize: number = fonts["text-lg"];
+  let fontSize: number = fonts["text-base"];
   if (screenWidth > screens["sm"] && screenWidth < screens["md"])
     fontSize = fonts["text-xl"];
   if (screenWidth > screens["md"] && screenWidth < screens["lg"])
@@ -74,10 +74,11 @@ const getResponsiveHeightFactor = (screenWidth: number) => {
   return heightFactor;
 };
 
-const Scene: NextPage<{ width: number; height: number }> = ({
-  width,
-  height,
-}) => {
+const Scene: NextPage<{
+  width: number;
+  height: number;
+  imageHeight: number;
+}> = ({ width, height, imageHeight }) => {
   const finished = useAnimationState((state) => state.finished);
 
   const carVelocity = useMemo(() => {
@@ -130,9 +131,20 @@ const Scene: NextPage<{ width: number; height: number }> = ({
   );
 
   useEffect(() => {
-    if (finished) {
+    if (finished && imageHeight && height) {
+      console.log({
+        imageHeight,
+        textHeight:
+          (textRenderer.textBox?.height || 0) +
+          2 * textRenderer.averageWordPadding * 3,
+      });
       gsap.to(textRenderer.textBoxCoordinates!, {
-        y: 60,
+        y:
+          height -
+          imageHeight -
+          (textRenderer.textBox?.height ||
+            0 + 2 * textRenderer.averageWordPadding * 3) -
+          75,
         onUpdate: () => {
           textRenderer.render();
         },
@@ -140,7 +152,7 @@ const Scene: NextPage<{ width: number; height: number }> = ({
         ease: "expo.out",
       });
     }
-  }, [finished]);
+  }, [finished, imageHeight, height]);
 
   return (
     <div className="relative w-full flex-1 overflow-hidden z-10">

@@ -2,6 +2,50 @@ import Head from "next/head";
 import React, { useCallback, useEffect, useRef } from "react";
 import { motionBlur } from "lib/motion-blur";
 
+const rotateElementAroundAnchorPoint = (
+  elementId: string,
+  keyframes: [number, number, number],
+  enableMotionBlur: boolean = false
+) => {
+  const element = document.getElementById(elementId);
+  const elementAnchorPoint = document.getElementById(
+    `${elementId}_anchor_point`
+  );
+  const elementAnchorPointX = elementAnchorPoint?.getAttribute("cx");
+  const elementAnchorPointY = elementAnchorPoint?.getAttribute("cy");
+
+  if (!elementAnchorPointX || !elementAnchorPointY) return;
+
+  const elementAnimation = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "animateTransform"
+  );
+
+  elementAnimation.setAttribute("id", elementId);
+  elementAnimation.setAttributeNS(null, "attributeName", "transform");
+  elementAnimation.setAttributeNS(null, "attributeType", "XML");
+  elementAnimation.setAttributeNS(null, "type", "rotate");
+  elementAnimation.setAttributeNS(null, "calcMode", "spline");
+  elementAnimation.setAttributeNS(
+    null,
+    "values",
+    // DO NOT ADD SPACES BETWEEN SEMICOLON AND NUMBER! SAFARI ISSUE: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/keyTimes
+    `${keyframes[0]} ${elementAnchorPointX} ${elementAnchorPointY};${keyframes[1]} ${elementAnchorPointX} ${elementAnchorPointY};${keyframes[2]} ${elementAnchorPointX} ${elementAnchorPointY}`
+  );
+  elementAnimation.setAttributeNS(null, "keyTimes", "0; 0.5; 1");
+  elementAnimation.setAttributeNS(
+    null,
+    "keySplines",
+    "0.5 0 0.5 1; 0.5 0 0.5 1"
+  );
+  elementAnimation.setAttributeNS(null, "dur", "1.5s");
+  elementAnimation.setAttributeNS(null, "repeatCount", "indefinite");
+
+  element?.append(elementAnimation);
+
+  if (enableMotionBlur) motionBlur(elementId);
+};
+
 const Animation = () => {
   const svgCreated = useRef(0);
   const getSVG = useCallback(async () => {
@@ -27,52 +71,10 @@ const Animation = () => {
       getSVG().then((svg) => {
         if (!svg) return null;
         document.getElementById("employee-container")?.append(svg);
-        const anchorPoint = document.getElementById("anchor_point");
-        const anchorPointX = anchorPoint?.getAttribute("cx");
-        const anchorPointY = anchorPoint?.getAttribute("cy");
 
-        if (!anchorPointX || !anchorPointY) return;
-
-        console.log({ anchorPointX, anchorPointY });
-
-        /**
-                <animateTransform
-                    attributeName="transform"
-                    attributeType="XML"
-                    type="rotate"
-                    from="0 60 70"
-                    to="360 60 70"
-                    dur="10s"
-                    repeatCount="indefinite" 
-                />
-        */
-        const forearmAnimation = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "animateTransform"
-        );
-
-        forearmAnimation.setAttributeNS(null, "attributeName", "transform");
-        forearmAnimation.setAttributeNS(null, "attributeType", "XML");
-        forearmAnimation.setAttributeNS(null, "type", "rotate");
-        forearmAnimation.setAttributeNS(null, "calcMode", "spline");
-        forearmAnimation.setAttributeNS(
-          null,
-          "values",
-          // DO NOT ADD SPACES BETWEEN SEMICOLON AND NUMBER! SAFARI ISSUE: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/keyTimes
-          `0 ${anchorPointX} ${anchorPointY}; 25 ${anchorPointX} ${anchorPointY}; 0 ${anchorPointX} ${anchorPointY}`
-        );
-        forearmAnimation.setAttributeNS(null, "keyTimes", "0; 0.5; 1");
-        forearmAnimation.setAttributeNS(
-          null,
-          "keySplines",
-          "0.5 0 0.5 1; 0.5 0 0.5 1"
-        );
-        forearmAnimation.setAttributeNS(null, "dur", "1.5s");
-        forearmAnimation.setAttributeNS(null, "repeatCount", "indefinite");
-
-        const forearm = document.getElementById("forearm");
-        forearm?.append(forearmAnimation);
-        motionBlur("forearm");
+        rotateElementAroundAnchorPoint("hand", [-15, 15, -15], false);
+        rotateElementAroundAnchorPoint("forearm", [0, 18, 0], false);
+        rotateElementAroundAnchorPoint("right_arm", [0, 12, 0], true);
 
         return null;
       });

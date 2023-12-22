@@ -1,6 +1,9 @@
-import React, { useCallback, useEffect } from "react";
+import Head from "next/head";
+import React, { useCallback, useEffect, useRef } from "react";
+import { motionBlur } from "lib/motion-blur";
 
 const Animation = () => {
+  const svgCreated = useRef(0);
   const getSVG = useCallback(async () => {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", "sistemgas-employee.svg", false);
@@ -19,7 +22,8 @@ const Animation = () => {
     return svg;
   }, []);
   useEffect(() => {
-    if (document)
+    if (document && !svgCreated.current) {
+      svgCreated.current = 1;
       getSVG().then((svg) => {
         if (!svg) return null;
         document.getElementById("employee-container")?.append(svg);
@@ -46,6 +50,7 @@ const Animation = () => {
           "http://www.w3.org/2000/svg",
           "animateTransform"
         );
+
         forearmAnimation.setAttributeNS(null, "attributeName", "transform");
         forearmAnimation.setAttributeNS(null, "attributeType", "XML");
         forearmAnimation.setAttributeNS(null, "type", "rotate");
@@ -67,11 +72,17 @@ const Animation = () => {
 
         const forearm = document.getElementById("forearm");
         forearm?.append(forearmAnimation);
+        motionBlur("forearm");
 
         return null;
       });
+    }
   }, []);
-  return <div id="employee-container"></div>;
+  return (
+    <>
+      <div id="employee-container"></div>;
+    </>
+  );
 };
 
 export default Animation;

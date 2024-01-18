@@ -3,7 +3,8 @@ import content from "./content.module.css";
 import Scene from "./Scene/Scene";
 import AnimatedBackground from "./helper/animated-background";
 import { useAnimationState } from "./Scene/Car/Car";
-import EmbedSvg from "lib/embed-svg";
+import EmbedSvg, { useSvg } from "lib/embed-svg";
+import { rotateElementAroundAnchorPoint } from "lib/rotate-svg";
 
 const screens = {
   sm: 640,
@@ -52,6 +53,16 @@ const backgroundAnimations = [
 const SISTEMGAS_HQ_SVG_ID = "sistemgas-hq-svg2834902838";
 
 const MainScene: FC = () => {
+  const svg = useSvg(SISTEMGAS_HQ_SVG_ID);
+
+  useEffect(() => {
+    if (svg) {
+      rotateElementAroundAnchorPoint("hand", [-10, 10, -10], false);
+      rotateElementAroundAnchorPoint("forearm", [0, 15, 0], false);
+      rotateElementAroundAnchorPoint("right_arm", [0, 10, 0], true);
+    }
+  }, [svg]);
+
   const [dimensions, setDimensions] = useState({
     width: 0,
     height: 0,
@@ -129,7 +140,7 @@ const MainScene: FC = () => {
         >
           <EmbedSvg
             elementId={SISTEMGAS_HQ_SVG_ID}
-            svgName="sistemgas-hq.svg"
+            svgName="sistemgas-hq_10.svg"
           ></EmbedSvg>
         </div>
       </div>

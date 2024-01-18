@@ -9,6 +9,11 @@ export const rotateElementAroundAnchorPoint = (
   const elementAnchorPoint = document.getElementById(
     `${elementId}_anchor_point`
   );
+  if (!elementAnchorPoint) {
+    console.error(
+      `There is no anchor point named: "${elementId}_anchor_point", please check: "${elementId}"!`
+    );
+  }
   const elementAnchorPointX = elementAnchorPoint?.getAttribute("cx");
   const elementAnchorPointY = elementAnchorPoint?.getAttribute("cy");
 

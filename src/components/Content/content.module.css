@@ -30,9 +30,9 @@
 .sistemgas-hq {
   position: absolute;
   left: 50%;
+  transform: translateX(100%);
   bottom: calc(1 / 5 * 100vh);
   z-index: 100;
-  transform: translateX(100vw);
 }
 
 .sistemgas-hq-animate-in {
@@ -41,7 +41,7 @@
 
 @keyframes sistemgas-hq-in {
   0% {
-    transform: translateX(100vw) translateY(0);
+    transform: translateX(100%) translateY(0);
   }
 
   100% {
@@ -120,7 +120,6 @@
   background-repeat: repeat-x;
   background-size: contain;
 }
-
 .clouds-back {
   position: absolute;
   top: 0;

@@ -3,6 +3,7 @@ import content from "./content.module.css";
 import Scene from "./Scene/Scene";
 import AnimatedBackground from "./helper/animated-background";
 import { useAnimationState } from "./Scene/Car/Car";
+import EmbedSvg from "lib/embed-svg";
 
 const screens = {
   sm: 640,
@@ -47,6 +48,8 @@ const backgroundAnimations = [
     transitionDown: true,
   },
 ];
+
+const SISTEMGAS_HQ_SVG_ID = "sistemgas-hq-svg2834902838";
 
 const MainScene: FC = () => {
   const [dimensions, setDimensions] = useState({
@@ -124,7 +127,10 @@ const MainScene: FC = () => {
             finished ? content["sistemgas-hq-animate-in"] : ""
           }`}
         >
-          <img src="./sistemgas-hq.svg" />
+          <EmbedSvg
+            elementId={SISTEMGAS_HQ_SVG_ID}
+            svgName="sistemgas-hq.svg"
+          ></EmbedSvg>
         </div>
       </div>
     </div>

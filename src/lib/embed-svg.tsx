@@ -20,18 +20,20 @@ export const useSvg = (elementId: string) => {
   return svgCollection[elementId];
 };
 
-const EmbedSvg: FC<{ elementId: string; svgName: string }> = ({
-  elementId,
-  svgName,
-}) => {
+const EmbedSvg: FC<{
+  className?: string;
+  svgClassName?: string;
+  elementId: string;
+  svgName: string;
+}> = ({ elementId, svgName, className, svgClassName }) => {
   const svgCreated = useRef(false);
   const { setSvg } = useSvgStore();
   const getSVG = useCallback(async () => {
-    const svg = fetch(svgName).then((r) =>
-      r.text().then((t) => {
+    const svg = fetch(svgName).then((response) =>
+      response.text().then((text) => {
         const parser = new DOMParser();
         const parsedSvg = parser.parseFromString(
-          t,
+          text,
           "image/svg+xml"
         ).documentElement;
         return parsedSvg;
@@ -47,10 +49,11 @@ const EmbedSvg: FC<{ elementId: string; svgName: string }> = ({
         if (!svg) return null;
         document.getElementById(elementId)!.appendChild(svg);
         setSvg(svg, elementId);
+        if (svgClassName) svg.classList.add(svgClassName);
       });
     }
   });
-  return <div id={elementId}></div>;
+  return <div className={className} id={elementId}></div>;
 };
 
 export default EmbedSvg;

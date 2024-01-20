@@ -51,6 +51,34 @@ const backgroundAnimations = [
 ];
 
 const SISTEMGAS_HQ_SVG_ID = "sistemgas-hq-svg2834902838";
+const BUILDING_ID = "Building";
+const EMPLOYEE_ID = "Employee";
+const TRUCKS_ID = "Trucks";
+const GAS_TANK_ID = "Gas_Tank";
+
+const animateComponentOnHover = (
+  componentId: string,
+  shadowBlur1: number = 0,
+  shadowBlur2: number = 0
+) => {
+  const component = document.getElementById(componentId);
+  if (!component) {
+    console.error(`There is no component with id: ${componentId}!`);
+    return;
+  }
+
+  component.classList.add(content["svg-original"]);
+  component.style.setProperty("--shadow-blur-1", `${shadowBlur1}px`);
+  component.style.setProperty("--shadow-blur-2", `${shadowBlur2}px`);
+
+  component.addEventListener("mouseenter", () => {
+    component.classList.add(content["svg-hover"]);
+  });
+
+  component.addEventListener("mouseleave", () => {
+    component.classList.remove(content["svg-hover"]);
+  });
+};
 
 const MainScene: FC = () => {
   const svg = useSvg(SISTEMGAS_HQ_SVG_ID);
@@ -60,6 +88,12 @@ const MainScene: FC = () => {
       rotateElementAroundAnchorPoint("hand", [-10, 10, -10], false);
       rotateElementAroundAnchorPoint("forearm", [0, 15, 0], false);
       rotateElementAroundAnchorPoint("right_arm", [0, 10, 0], true);
+
+      animateComponentOnHover(BUILDING_ID, 10, 20);
+      animateComponentOnHover(EMPLOYEE_ID, 5, 10);
+      animateComponentOnHover(TRUCKS_ID, 5, 10);
+      animateComponentOnHover(GAS_TANK_ID, 5, 10);
+      setImageHeight(svg.clientHeight);
     }
   }, [svg]);
 
@@ -106,6 +140,21 @@ const MainScene: FC = () => {
         height={dimensions.height}
         imageHeight={imageHeight}
       ></Scene>
+
+      <div
+        style={{ width }}
+        className={`${content["sistemgas-hq"]} ${
+          finished ? content["sistemgas-hq-animate-in"] : ""
+        }`}
+      >
+        <EmbedSvg
+          className="h-screen flex flex-col justify-end"
+          svgClassName="overflow-visible"
+          elementId={SISTEMGAS_HQ_SVG_ID}
+          svgName="sistemgas-hq.svg"
+        ></EmbedSvg>
+      </div>
+
       <div className={`${content.parallax} z-0`}>
         {backgroundAnimations.map((elem) => (
           <AnimatedBackground {...elem} widthType="--background-svg-width" />
@@ -127,22 +176,6 @@ const MainScene: FC = () => {
           transitionDown={true}
           widthType="--road-svg-width"
         />
-
-        <div
-          ref={(elem) => {
-            if (!elem) return;
-            setImageHeight(elem.clientHeight);
-          }}
-          style={{ width }}
-          className={`${content["sistemgas-hq"]} ${
-            finished ? content["sistemgas-hq-animate-in"] : ""
-          }`}
-        >
-          <EmbedSvg
-            elementId={SISTEMGAS_HQ_SVG_ID}
-            svgName="sistemgas-hq_10.svg"
-          ></EmbedSvg>
-        </div>
       </div>
     </div>
   );

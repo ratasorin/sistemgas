@@ -35,6 +35,20 @@
   z-index: 100;
 }
 
+.svg-hover {
+  cursor: pointer;
+  transform: scale(1.05);
+  transform-origin: 50% bottom;
+  filter: drop-shadow(0 0 var(--shadow-blur-1) #ffffff)
+    drop-shadow(0 0 var(--shadow-blur-2) #ffffff);
+  transition: transform 0.4s ease-in-out, filter 0.4s ease-in-out;
+}
+
+.svg-original {
+  transform-origin: 50% bottom;
+  transition: transform 0.4s ease-in-out, filter 0.4s ease-in-out;
+}
+
 .sistemgas-hq-animate-in {
   animation: 4s cubic-bezier(0.33, 0.27, 0.58, 1) forwards sistemgas-hq-in;
 }

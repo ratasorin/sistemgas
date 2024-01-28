@@ -47,6 +47,7 @@
 .svg-original {
   transform-origin: 50% bottom;
   transition: transform 0.4s ease-in-out, filter 0.4s ease-in-out;
+  cursor: pointer;
 }
 
 .sistemgas-hq-animate-in {

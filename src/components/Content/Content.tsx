@@ -56,6 +56,44 @@ const EMPLOYEE_ID = "Employee";
 const TRUCKS_ID = "Trucks";
 const GAS_TANK_ID = "Gas_Tank";
 
+const elementsHovered: HTMLElement[] = [];
+let lastElementHovered: HTMLElement | undefined = undefined;
+
+let hoverOverElementCountdown: NodeJS.Timer | null = null;
+let hoverOutCountdown: NodeJS.Timer | null = null;
+
+const updateLastElementHovered = (element: HTMLElement) => {
+  if (hoverOverElementCountdown) clearTimeout(hoverOverElementCountdown);
+  if (hoverOutCountdown) clearTimeout(hoverOutCountdown);
+
+  const elementIndexInStack = elementsHovered.findIndex((el) => el === element);
+  if (elementIndexInStack !== -1) {
+    elementsHovered.splice(elementIndexInStack, 1);
+  }
+  elementsHovered.push(element);
+  hoverOverElementCountdown = setTimeout(() => {
+    const currentElementHovered = elementsHovered[elementsHovered.length - 1];
+
+    if (!currentElementHovered) return;
+    lastElementHovered?.classList.remove(content["svg-hover"]);
+    currentElementHovered?.classList.add(content["svg-hover"]);
+    lastElementHovered = currentElementHovered;
+  }, 200);
+};
+
+const shouldExit = (element: HTMLElement) => {
+  const elementIndexInStack = elementsHovered.findIndex((el) => el === element);
+  if (elementIndexInStack !== -1) {
+    elementsHovered.splice(elementIndexInStack, 1);
+  }
+  if (elementsHovered.length === 0) {
+    hoverOutCountdown = setTimeout(() => {
+      console.log("REMOVE");
+      lastElementHovered?.classList.remove(content["svg-hover"]);
+    }, 200);
+  }
+};
+
 const animateComponentOnHover = (
   componentId: string,
   shadowBlur1: number = 0,
@@ -72,11 +110,11 @@ const animateComponentOnHover = (
   component.style.setProperty("--shadow-blur-2", `${shadowBlur2}px`);
 
   component.addEventListener("mouseenter", () => {
-    component.classList.add(content["svg-hover"]);
+    updateLastElementHovered(component);
   });
 
   component.addEventListener("mouseleave", () => {
-    component.classList.remove(content["svg-hover"]);
+    shouldExit(component);
   });
 };
 

@@ -1,0 +1,13 @@
+import {
+  LANDING_PAGE_BUILDING_SVG_ID,
+  LANDING_PAGE_EMPLOYEE_SVG_ID,
+  LANDING_PAGE_GAS_TANK_SVG_ID,
+  LANDING_PAGE_TRUCKS_SVG_ID,
+} from "constant";
+
+export const landingPageTooltips = [
+  { title: "ACASA", id: LANDING_PAGE_BUILDING_SVG_ID },
+  { title: "DESPRE NOI", id: LANDING_PAGE_EMPLOYEE_SVG_ID },
+  { title: "SERVICII", id: LANDING_PAGE_GAS_TANK_SVG_ID },
+  { title: "NOUTATI", id: LANDING_PAGE_TRUCKS_SVG_ID },
+];

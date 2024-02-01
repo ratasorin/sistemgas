@@ -5,6 +5,16 @@ import AnimatedBackground from "./helper/animated-background";
 import { useAnimationState } from "./Scene/Car/Car";
 import EmbedSvg, { useSvg } from "lib/embed-svg";
 import { rotateElementAroundAnchorPoint } from "lib/rotate-svg";
+import tippy, { DelegateInstance, Props, delegate, roundArrow } from "tippy.js";
+import {
+  LANDING_PAGE_BUILDING_SVG_ID,
+  LANDING_PAGE_EMPLOYEE_SVG_ID,
+  LANDING_PAGE_GAS_TANK_SVG_ID,
+  LANDING_PAGE_SISTEMGAS_HQ_SVG_ID,
+  LANDING_PAGE_TRUCKS_SVG_ID,
+} from "constant";
+import { shouldExit, updateLastElementHovered } from "lib/debounce-hover";
+import "tippy.js/animations/scale.css";
 
 const screens = {
   sm: 640,
@@ -50,49 +60,7 @@ const backgroundAnimations = [
   },
 ];
 
-const SISTEMGAS_HQ_SVG_ID = "sistemgas-hq-svg2834902838";
-const BUILDING_ID = "Building";
-const EMPLOYEE_ID = "Employee";
-const TRUCKS_ID = "Trucks";
-const GAS_TANK_ID = "Gas_Tank";
-
-const elementsHovered: HTMLElement[] = [];
-let lastElementHovered: HTMLElement | undefined = undefined;
-
-let hoverOverElementCountdown: NodeJS.Timer | null = null;
-let hoverOutCountdown: NodeJS.Timer | null = null;
-
-const updateLastElementHovered = (element: HTMLElement) => {
-  if (hoverOverElementCountdown) clearTimeout(hoverOverElementCountdown);
-  if (hoverOutCountdown) clearTimeout(hoverOutCountdown);
-
-  const elementIndexInStack = elementsHovered.findIndex((el) => el === element);
-  if (elementIndexInStack !== -1) {
-    elementsHovered.splice(elementIndexInStack, 1);
-  }
-  elementsHovered.push(element);
-  hoverOverElementCountdown = setTimeout(() => {
-    const currentElementHovered = elementsHovered[elementsHovered.length - 1];
-
-    if (!currentElementHovered) return;
-    lastElementHovered?.classList.remove(content["svg-hover"]);
-    currentElementHovered?.classList.add(content["svg-hover"]);
-    lastElementHovered = currentElementHovered;
-  }, 200);
-};
-
-const shouldExit = (element: HTMLElement) => {
-  const elementIndexInStack = elementsHovered.findIndex((el) => el === element);
-  if (elementIndexInStack !== -1) {
-    elementsHovered.splice(elementIndexInStack, 1);
-  }
-  if (elementsHovered.length === 0) {
-    hoverOutCountdown = setTimeout(() => {
-      console.log("REMOVE");
-      lastElementHovered?.classList.remove(content["svg-hover"]);
-    }, 200);
-  }
-};
+export let poppers: DelegateInstance<Props>[] = [];
 
 const animateComponentOnHover = (
   componentId: string,
@@ -110,16 +78,41 @@ const animateComponentOnHover = (
   component.style.setProperty("--shadow-blur-2", `${shadowBlur2}px`);
 
   component.addEventListener("mouseenter", () => {
-    updateLastElementHovered(component);
+    updateLastElementHovered(
+      component,
+      (currentElementHovered) => {
+        currentElementHovered?.classList.add(content["svg-hover"]);
+        const popper = poppers.find(
+          (popper) => popper.reference === currentElementHovered
+        );
+
+        setTimeout(() => {
+          popper?.show();
+        }, 200);
+      },
+      (lastElementHovered) => {
+        if (lastElementHovered === component) return;
+
+        lastElementHovered?.classList.remove(content["svg-hover"]);
+        const popper = poppers.find(
+          (popper) => popper.reference === lastElementHovered
+        );
+        popper?.hide();
+      }
+    );
   });
 
   component.addEventListener("mouseleave", () => {
-    shouldExit(component);
+    shouldExit(component, (element) => {
+      element.classList.remove(content["svg-hover"]);
+      const popper = poppers.find((popper) => popper.reference === element);
+      popper?.hide();
+    });
   });
 };
 
 const MainScene: FC = () => {
-  const svg = useSvg(SISTEMGAS_HQ_SVG_ID);
+  const svg = useSvg(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
 
   useEffect(() => {
     if (svg) {
@@ -127,10 +120,24 @@ const MainScene: FC = () => {
       rotateElementAroundAnchorPoint("forearm", [0, 15, 0], false);
       rotateElementAroundAnchorPoint("right_arm", [0, 10, 0], true);
 
-      animateComponentOnHover(BUILDING_ID, 10, 20);
-      animateComponentOnHover(EMPLOYEE_ID, 5, 10);
-      animateComponentOnHover(TRUCKS_ID, 5, 10);
-      animateComponentOnHover(GAS_TANK_ID, 5, 10);
+      animateComponentOnHover(LANDING_PAGE_BUILDING_SVG_ID, 10, 20);
+      animateComponentOnHover(LANDING_PAGE_EMPLOYEE_SVG_ID, 5, 10);
+      animateComponentOnHover(LANDING_PAGE_TRUCKS_SVG_ID, 5, 10);
+      animateComponentOnHover(LANDING_PAGE_GAS_TANK_SVG_ID, 5, 10);
+
+      poppers = tippy(`.${content["svg-original"]}`, {
+        appendTo: document.body,
+        trigger: "manual",
+        placement: "top",
+        animation: "scale",
+        interactive: true,
+        content: (reference) => {
+          const template = document.getElementById(`tooltip-${reference.id}`);
+          if (!template) return "";
+
+          return template;
+        },
+      });
       setImageHeight(svg.clientHeight);
     }
   }, [svg]);
@@ -188,7 +195,7 @@ const MainScene: FC = () => {
         <EmbedSvg
           className="h-screen flex flex-col justify-end"
           svgClassName="overflow-visible"
-          elementId={SISTEMGAS_HQ_SVG_ID}
+          elementId={LANDING_PAGE_SISTEMGAS_HQ_SVG_ID}
           svgName="sistemgas-hq.svg"
         ></EmbedSvg>
       </div>

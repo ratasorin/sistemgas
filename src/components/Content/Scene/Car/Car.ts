@@ -39,6 +39,7 @@ class Car {
 export default class CarRender implements Render {
   canvas: HTMLCanvasElement | undefined;
   context: CanvasRenderingContext2D | undefined;
+  restart: boolean = false;
   car: Car | undefined;
   image: HTMLImageElement;
   ready: boolean = false;
@@ -95,6 +96,7 @@ export default class CarRender implements Render {
       (this.car.velocity < 0 && this.car.position >= 0)
     )
       this.car.update();
+    else useAnimationState.setState({ finished: true });
   }
 
   render() {

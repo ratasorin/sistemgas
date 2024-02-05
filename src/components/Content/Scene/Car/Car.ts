@@ -149,11 +149,12 @@ export default class CarRender implements Render {
       carDisplayWidth / getCanvasDimensions(this.canvas).width;
     if (
       this.car.position <=
-      2 * coefficient * getCanvasDimensions(this.canvas).width
+      (1 + coefficient) * getCanvasDimensions(this.canvas).width
     ) {
       console.log("UPDATE?");
       this.car.update();
     } else {
+      console.log("STOP!");
       useAnimationState.setState({ finished: true });
     }
   }

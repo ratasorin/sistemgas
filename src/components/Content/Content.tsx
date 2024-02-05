@@ -5,7 +5,7 @@ import AnimatedBackground from "./helper/animated-background";
 import { useAnimationState } from "./Scene/Car/Car";
 import EmbedSvg, { useSvg } from "lib/embed-svg";
 import { rotateElementAroundAnchorPoint } from "lib/rotate-svg";
-import tippy, { DelegateInstance, Props, delegate, roundArrow } from "tippy.js";
+import tippy, { DelegateInstance, Props } from "tippy.js";
 import {
   LANDING_PAGE_BUILDING_SVG_ID,
   LANDING_PAGE_EMPLOYEE_SVG_ID,
@@ -27,35 +27,35 @@ const screens = {
 const backgroundAnimations = [
   {
     baseClassName: content["clouds-back"],
-    speed: 13,
+    speed: 16,
   },
   {
     baseClassName: content["mountains-back"],
-    speed: 17,
+    speed: 20,
     transitionDown: true,
   },
   {
     baseClassName: content["mountains-front"],
-    speed: 14,
+    speed: 17,
     transitionDown: true,
   },
   {
     baseClassName: content["clouds-front"],
-    speed: 10,
+    speed: 14,
   },
   {
     baseClassName: content["forest-back"],
-    speed: 14,
+    speed: 18,
     transitionDown: true,
   },
   {
     baseClassName: content["forest-mid"],
-    speed: 12,
+    speed: 15,
     transitionDown: true,
   },
   {
     baseClassName: content["forest-front"],
-    speed: 9,
+    speed: 12,
     transitionDown: true,
   },
 ];

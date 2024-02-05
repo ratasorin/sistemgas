@@ -1,3 +1,4 @@
+import { getCanvasDimensions } from "../Canvas/helper/canvas-dimensions";
 import { Render } from "../Scene";
 import { create } from "zustand";
 
@@ -33,35 +34,31 @@ class Car {
   timeout() {
     this.velocity = 0;
   }
-
-  restart(screenWidth: number, carWidth: number) {
-    const random = Math.random();
-    useAnimationState.setState({ finished: true });
-    setTimeout(() => {
-      this.mirror = random > 0.5 ? false : true;
-      this.velocity = random > 0.5 ? this.velocity : 1.5 * this.velocity;
-
-      if (this.mirror) this.velocity = -this.velocity;
-
-      if (this.mirror) this.position = screenWidth + carWidth;
-      if (!this.mirror) this.position = 0 - screenWidth;
-    }, random * 2000 + 2000);
-  }
 }
 
 export default class CarRender implements Render {
   canvas: HTMLCanvasElement | undefined;
   context: CanvasRenderingContext2D | undefined;
-  restart: boolean = false;
   car: Car | undefined;
   image: HTMLImageElement;
   ready: boolean = false;
   mirroredImage: HTMLImageElement;
   heightFactor: number = 0;
 
-  initializeCanvas(canvas: HTMLCanvasElement) {
+  initializeCanvas(canvas: HTMLCanvasElement, dpr: number) {
     this.canvas = canvas;
-    this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+    this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
+    // Scale the context to ensure correct drawing operations
+    // Set actual size in memory (scaled to account for extra pixel density).
+    this.canvas.width = Math.floor(
+      Number(canvas.style.width.replace("px", "")) * dpr
+    );
+    this.canvas.height = Math.floor(
+      Number(canvas.style.height.replace("px", "")) * dpr
+    );
+
+    // Normalize coordinate system to use CSS pixels.
+    this.context.scale(dpr, dpr);
   }
 
   constructor(
@@ -87,37 +84,35 @@ export default class CarRender implements Render {
 
     const { carDisplayWidth } = imageDisplayDimensions(
       image,
-      this.canvas.height,
+      getCanvasDimensions(this.canvas).height,
       this.heightFactor
     );
 
     if (
       (this.car.velocity > 0 &&
-        this.car.position <= this.canvas.width + carDisplayWidth) ||
+        this.car.position <=
+          getCanvasDimensions(this.canvas).width + carDisplayWidth) ||
       (this.car.velocity < 0 && this.car.position >= 0)
-    ) {
-      this.restart = false;
+    )
       this.car.update();
-    } else {
-      this.car.timeout();
-      !this.restart
-        ? (this.car.restart(this.canvas.width, carDisplayWidth),
-          (this.restart = true))
-        : (this.restart = true);
-    }
   }
 
   render() {
     if (!this.canvas || !this.context || !this.ready || !this.car) return;
 
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.clearRect(
+      0,
+      0,
+      getCanvasDimensions(this.canvas).width,
+      getCanvasDimensions(this.canvas).height
+    );
 
     let image = this.image;
     if (this.car.mirror) image = this.mirroredImage;
 
     const { carDisplayWidth, carDisplayHeight } = imageDisplayDimensions(
       image,
-      this.canvas.height,
+      getCanvasDimensions(this.canvas).height,
       this.heightFactor
     );
 
@@ -132,23 +127,25 @@ export default class CarRender implements Render {
       0,
 
       // sw
-      image.width,
+      Math.floor(image.width),
 
       // sh
-      image.height,
+      Math.floor(image.height),
 
       // dx
-      -carDisplayWidth + this.car.position,
+      Math.floor(-carDisplayWidth + this.car.position),
 
       // dy
-      this.canvas.height / (0.95 + this.heightFactor) -
-        carDisplayHeight / (0.95 + this.heightFactor),
+      Math.floor(
+        getCanvasDimensions(this.canvas).height / (0.95 + this.heightFactor) -
+          carDisplayHeight / (0.95 + this.heightFactor)
+      ),
 
       // dw - this is the computed width that will help fit the image on the canvas.
-      carDisplayWidth,
+      Math.floor(carDisplayWidth),
 
       // dh
-      carDisplayHeight
+      Math.floor(carDisplayHeight)
     );
   }
 }

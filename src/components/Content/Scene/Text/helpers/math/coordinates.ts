@@ -91,14 +91,14 @@ export const getFirstWordPosition = (
 export const textWithAbsoluteCoordinates = (
   text: Text[],
   context: CanvasRenderingContext2D,
-  canvas: HTMLCanvasElement,
+  canvasDimensions: Dimensions,
   carHeightFactor: number,
   carDisplayHeight: number
 ): TextWithCoordinates[] => {
   const firstWordCoordinates = getFirstWordPosition(
     text,
     context,
-    canvas,
+    canvasDimensions,
     carHeightFactor,
     carDisplayHeight
   );

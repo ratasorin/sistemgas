@@ -1,6 +1,7 @@
 import { NextPage } from "next";
 import React, { useRef, useEffect } from "react";
 import { Render } from "../Scene";
+import { useAnimationState } from "../Car/Car";
 
 interface Props {
   width: number;
@@ -14,17 +15,18 @@ interface Canvas extends HTMLCanvasElement {
 
 const Canvas: NextPage<Props> = ({ width, height, render }) => {
   const canvasRef = useRef<Canvas>(null);
+  const { finished } = useAnimationState();
 
   useEffect(() => {
+    let frameID: number | undefined = undefined;
     if (width && height) {
       const canvas = canvasRef.current as Canvas;
-      [canvas.width, canvas.height] = [width, height];
-      render.initializeCanvas(canvas);
+      const dpr = window.devicePixelRatio;
+      render.initializeCanvas(canvas, dpr);
       /**
        * **frameID** is a unique number that every requestAnimationFrame call will return.
        * We will need it in the cleanup function to stop the animation once the component is unmounted
        */
-      let frameID: number;
       const loop = () => {
         render.update();
         render.render();
@@ -32,13 +34,20 @@ const Canvas: NextPage<Props> = ({ width, height, render }) => {
       };
 
       window.requestAnimationFrame(loop);
+      if (finished && frameID) {
+      }
     }
+
+    return () => {
+      if (frameID) window.cancelAnimationFrame(frameID);
+    };
   }, [width, height]);
 
   return (
     <canvas
+      style={{ width, height }}
       ref={canvasRef}
-      className="relative w-full h-full bg-transparent"
+      className="relative bg-transparent"
     ></canvas>
   );
 };

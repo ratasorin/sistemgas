@@ -10,7 +10,7 @@ import { gsap } from "gsap";
 export interface Render {
   render: () => void;
   update: () => void;
-  initializeCanvas: (canvas: HTMLCanvasElement) => void;
+  initializeCanvas: (canvas: HTMLCanvasElement, dpr: number) => void;
   dimensions?: (
     coordinates: Positions
   ) => { width: number; height: number } | Error;
@@ -55,11 +55,11 @@ const getResponsiveFontSize = (screenWidth: number) => {
 };
 
 const getResponsiveCarVelocity = (screenWidth: number) => {
-  let speed: number = 3;
-  if (screenWidth < screens["xl"]) speed = 2.75;
-  if (screenWidth < screens["lg"]) speed = 2.5;
-  if (screenWidth < screens["md"]) speed = 2;
-  if (screenWidth < screens["sm"]) speed = 1.75;
+  let speed: number = 5;
+  if (screenWidth < screens["xl"]) speed = speed - 0.25;
+  if (screenWidth < screens["lg"]) speed = speed - 0.5;
+  if (screenWidth < screens["md"]) speed = speed - 1;
+  if (screenWidth < screens["sm"]) speed = speed - 1.25;
 
   return speed;
 };
@@ -95,13 +95,19 @@ const Scene: NextPage<{
     return [
       new Text(
         "SistemgaS:",
-        fontSize + 0.4 * fontSize,
+        Math.floor(fontSize + 0.4 * fontSize),
         "#172554",
         "monospace",
         "start",
         "italic bold"
       ),
-      new Text("Solutia", fontSize, "#172554", "monospace", "newline"),
+      new Text(
+        "Solutia",
+        Math.floor(fontSize),
+        "#172554",
+        "monospace",
+        "newline"
+      ),
       new Text(
         "alternativa",
         fontSize,
@@ -110,10 +116,34 @@ const Scene: NextPage<{
         "right",
         "italic bold"
       ),
-      new Text("pentru", fontSize, "#172554", "monospace", "newline"),
-      new Text("furnizarea", fontSize, "#172554", "monospace", "right"),
-      new Text("gazelor", fontSize, "#172554", "monospace", "right"),
-      new Text("naturale", fontSize, "#172554", "monospace", "right"),
+      new Text(
+        "pentru",
+        Math.floor(fontSize),
+        "#172554",
+        "monospace",
+        "newline"
+      ),
+      new Text(
+        "furnizarea",
+        Math.floor(fontSize),
+        "#172554",
+        "monospace",
+        "right"
+      ),
+      new Text(
+        "gazelor",
+        Math.floor(fontSize),
+        "#172554",
+        "monospace",
+        "right"
+      ),
+      new Text(
+        "naturale",
+        Math.floor(fontSize),
+        "#172554",
+        "monospace",
+        "right"
+      ),
     ];
   }, [width]);
 
@@ -132,12 +162,6 @@ const Scene: NextPage<{
 
   useEffect(() => {
     if (finished && imageHeight && height) {
-      console.log({
-        imageHeight,
-        textHeight:
-          (textRenderer.textBox?.height || 0) +
-          2 * textRenderer.averageWordPadding * 3,
-      });
       gsap.to(textRenderer.textBoxCoordinates!, {
         y:
           height -

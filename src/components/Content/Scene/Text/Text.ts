@@ -1,3 +1,4 @@
+import { getCanvasDimensions } from "../Canvas/helper/canvas-dimensions";
 import { imageDisplayDimensions } from "../Car/Car";
 import { Render } from "../Scene";
 import {
@@ -28,11 +29,11 @@ export default class TextRenderer implements Render {
     return true;
   }
 
-  initializeCanvas(canvas: HTMLCanvasElement) {
+  initializeCanvas(canvas: HTMLCanvasElement, dpr: number) {
     this.canvas = canvas;
     const { carDisplayHeight } = imageDisplayDimensions(
       this.carImage,
-      this.canvas.height,
+      getCanvasDimensions(this.canvas).height,
       this.heightFactor
     );
 
@@ -40,7 +41,7 @@ export default class TextRenderer implements Render {
     this.text = textWithAbsoluteCoordinates(
       this.initialText,
       this.context,
-      this.canvas,
+      getCanvasDimensions(this.canvas),
       this.heightFactor,
       carDisplayHeight
     );
@@ -48,14 +49,14 @@ export default class TextRenderer implements Render {
     this.textBoxCoordinates = getFirstWordPosition(
       this.text,
       this.context,
-      this.canvas,
+      getCanvasDimensions(this.canvas),
       this.heightFactor,
       carDisplayHeight
     );
     this.coordinates = getFirstWordPosition(
       this.text,
       this.context,
-      this.canvas,
+      getCanvasDimensions(this.canvas),
       this.heightFactor,
       carDisplayHeight
     );
@@ -65,6 +66,16 @@ export default class TextRenderer implements Render {
       this.text.length;
 
     this.averageWordPadding = averageWordPadding;
+
+    this.canvas.width = Math.floor(
+      Number(canvas.style.width.replace("px", "")) * dpr
+    );
+    this.canvas.height = Math.floor(
+      Number(canvas.style.height.replace("px", "")) * dpr
+    );
+
+    // Normalize coordinate system to use CSS pixels.
+    this.context.scale(dpr, dpr);
   }
 
   constructor(
@@ -85,11 +96,11 @@ export default class TextRenderer implements Render {
 
     const { carDisplayWidth } = imageDisplayDimensions(
       this.carImage,
-      this.canvas.height,
+      getCanvasDimensions(this.canvas).height,
       this.heightFactor
     );
 
-    if (this.x <= carDisplayWidth + this.canvas.width)
+    if (this.x <= carDisplayWidth + getCanvasDimensions(this.canvas).width)
       this.x += this.carVelocity;
   }
 
@@ -103,12 +114,6 @@ export default class TextRenderer implements Render {
     )
       return;
 
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    // horizontal line
-    // this.context.fillRect(this.canvas.width / 2, 0, 2, this.canvas.height);
-    // vertical line
-    // this.context.fillRect(0, this.canvas.height / 2, this.canvas.width, 2);
     const textBoxPadding = this.averageWordPadding * 3;
     const outlineWidth = this.averageWordPadding / 3;
 
@@ -116,14 +121,25 @@ export default class TextRenderer implements Render {
     this.context.globalCompositeOperation = "source-over";
     this.context.globalAlpha = 0.7;
 
+    this.context.clearRect(
+      Math.floor(this.textBoxCoordinates.x - textBoxPadding - outlineWidth),
+      Math.floor(this.textBoxCoordinates.y - textBoxPadding - outlineWidth),
+      Math.floor(
+        this.textBox.width + 2 * (textBoxPadding + outlineWidth) + 100
+      ),
+      Math.floor(
+        this.textBox.height + 2 * (textBoxPadding + outlineWidth) + 100
+      )
+    );
+
     // text box outline
     this.context.beginPath();
     this.context.fillStyle = "#e2e8f0";
     this.context.roundRect(
-      this.textBoxCoordinates.x - textBoxPadding - outlineWidth,
-      this.textBoxCoordinates.y - textBoxPadding - outlineWidth,
-      this.textBox.width + 2 * (textBoxPadding + outlineWidth),
-      this.textBox.height + 2 * (textBoxPadding + outlineWidth),
+      Math.floor(this.textBoxCoordinates.x - textBoxPadding - outlineWidth),
+      Math.floor(this.textBoxCoordinates.y - textBoxPadding - outlineWidth),
+      Math.floor(this.textBox.width + 2 * (textBoxPadding + outlineWidth)),
+      Math.floor(this.textBox.height + 2 * (textBoxPadding + outlineWidth)),
       10
     );
     this.context.fill();
@@ -132,10 +148,10 @@ export default class TextRenderer implements Render {
     this.context.beginPath();
     this.context.fillStyle = "#f8fafc";
     this.context.roundRect(
-      this.textBoxCoordinates.x - textBoxPadding,
-      this.textBoxCoordinates.y - textBoxPadding,
-      this.textBox.width + 2 * textBoxPadding,
-      this.textBox.height + 2 * textBoxPadding,
+      Math.floor(this.textBoxCoordinates.x - textBoxPadding),
+      Math.floor(this.textBoxCoordinates.y - textBoxPadding),
+      Math.floor(this.textBox.width + 2 * textBoxPadding),
+      Math.floor(this.textBox.height + 2 * textBoxPadding),
       10
     );
     this.context.fill();
@@ -157,13 +173,13 @@ export default class TextRenderer implements Render {
       this.context.textBaseline = "top";
       this.context.fillText(
         `${text_.payload}`,
-        -offsetX + text_.coordinates.x,
-        -offsetY + text_.coordinates.y
+        Math.floor(-offsetX + text_.coordinates.x),
+        Math.floor(-offsetY + text_.coordinates.y)
       );
 
       const { carDisplayWidth } = imageDisplayDimensions(
         this.carImage,
-        this.canvas.height,
+        getCanvasDimensions(this.canvas).height,
         this.heightFactor
       );
 
@@ -171,10 +187,10 @@ export default class TextRenderer implements Render {
       // how the car would mask the text using this empty rectangle
       this.context.globalCompositeOperation = "destination-out";
       this.context.fillRect(
-        this.x - carDisplayWidth + carDisplayWidth / 10,
+        Math.floor(this.x - carDisplayWidth + carDisplayWidth / 10),
         0,
-        carDisplayWidth + this.canvas.width,
-        this.canvas.height
+        Math.floor(carDisplayWidth + getCanvasDimensions(this.canvas).width),
+        Math.floor(getCanvasDimensions(this.canvas).height)
       );
 
       this.context.restore();

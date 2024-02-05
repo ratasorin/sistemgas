@@ -147,10 +147,7 @@ export default class CarRender implements Render {
 
     const coefficient =
       carDisplayWidth / getCanvasDimensions(this.canvas).width;
-    if (
-      this.car.position <=
-      2 * coefficient * getCanvasDimensions(this.canvas).width
-    ) {
+    if (this.car.position <= 2 * getCanvasDimensions(this.canvas).width) {
       console.log("UPDATE?");
       this.car.update();
     } else {
@@ -174,7 +171,7 @@ export default class CarRender implements Render {
     const coefficient =
       carDisplayWidth / getCanvasDimensions(this.canvas).width;
     this.canvas.style.transform = `translateX(${
-      -coefficient * getCanvasDimensions(this.canvas).width + this.car.position
+      -getCanvasDimensions(this.canvas).width + this.car.position
     }px) ${otherTransforms}`;
   }
 }

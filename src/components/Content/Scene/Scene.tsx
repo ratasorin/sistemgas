@@ -149,18 +149,22 @@ const Scene: NextPage<{
 
   const images = useMemo(() => {
     const gasTruck = new Image() as HTMLImageElement;
-    const mirroredGasTruck = new Image() as HTMLImageElement;
     gasTruck.src = "/gas_truck.svg";
-    mirroredGasTruck.src = "/mirrored_gas_truck.svg";
-    return { gasTruck, mirroredGasTruck };
+    return { gasTruck };
   }, []);
 
-  const textRenderer = useMemo(
-    () => new TextRenderer(text, images.gasTruck, carVelocity, heightFactor),
-    [text, images, carVelocity, heightFactor]
-  );
+  const textRenderer = useMemo(() => {
+    if (images.gasTruck)
+      return new TextRenderer(text, images.gasTruck, carVelocity, heightFactor);
+  }, [text, images, carVelocity, heightFactor]);
+
+  const carRenderer = useMemo(() => {
+    if (images.gasTruck)
+      return new CarRender(images.gasTruck, carVelocity, heightFactor);
+  }, [images.gasTruck, carVelocity, heightFactor]);
 
   useEffect(() => {
+    if (!textRenderer) return;
     if (finished && imageHeight && height) {
       gsap.to(textRenderer.textBoxCoordinates!, {
         y:
@@ -178,42 +182,15 @@ const Scene: NextPage<{
     }
   }, [finished, imageHeight, height]);
 
+  if (!textRenderer || !carRenderer) return null;
   return (
     <div className="relative w-full flex-1 overflow-hidden z-10">
-      <div className="absolute w-full h-full z-20 overflow-hidden">
+      <div className="absolute w-full h-full z-10 overflow-hidden">
         <Canvas width={width} height={height} render={textRenderer}></Canvas>
       </div>
-      {finished ? (
-        <div className="absolute w-full h-full z-10 overflow-hidden">
-          <Canvas
-            width={width}
-            height={height}
-            render={
-              new CarRender(
-                images.gasTruck,
-                images.mirroredGasTruck,
-                carVelocity,
-                heightFactor
-              )
-            }
-          ></Canvas>
-        </div>
-      ) : (
-        <div className="absolute w-full h-full z-20 overflow-hidden">
-          <Canvas
-            width={width}
-            height={height}
-            render={
-              new CarRender(
-                images.gasTruck,
-                images.mirroredGasTruck,
-                carVelocity,
-                heightFactor
-              )
-            }
-          ></Canvas>
-        </div>
-      )}
+      <div className="absolute w-full h-full z-20 overflow-hidden">
+        <Canvas width={width} height={height} render={carRenderer}></Canvas>
+      </div>
     </div>
   );
 };

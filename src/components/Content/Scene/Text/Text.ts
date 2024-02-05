@@ -187,7 +187,7 @@ export default class TextRenderer implements Render {
       // how the car would mask the text using this empty rectangle
       this.context.globalCompositeOperation = "destination-out";
       this.context.fillRect(
-        Math.floor(this.x - carDisplayWidth + carDisplayWidth / 10),
+        Math.floor(this.x - getCanvasDimensions(this.canvas).width),
         0,
         Math.floor(carDisplayWidth + getCanvasDimensions(this.canvas).width),
         Math.floor(getCanvasDimensions(this.canvas).height)

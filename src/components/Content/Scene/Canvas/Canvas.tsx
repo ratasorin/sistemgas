@@ -16,9 +16,9 @@ interface Canvas extends HTMLCanvasElement {
 const Canvas: NextPage<Props> = ({ width, height, render }) => {
   const canvasRef = useRef<Canvas>(null);
   const { finished } = useAnimationState();
+  const frameID = useRef(-1);
 
   useEffect(() => {
-    let frameID: number | undefined = undefined;
     if (width && height) {
       const canvas = canvasRef.current as Canvas;
       const dpr = window.devicePixelRatio;
@@ -30,18 +30,22 @@ const Canvas: NextPage<Props> = ({ width, height, render }) => {
       const loop = () => {
         render.update();
         render.render();
-        frameID = window.requestAnimationFrame(loop);
+        frameID.current = window.requestAnimationFrame(loop);
       };
 
       window.requestAnimationFrame(loop);
-      if (finished && frameID) {
-      }
     }
 
     return () => {
-      if (frameID) window.cancelAnimationFrame(frameID);
+      if (frameID) window.cancelAnimationFrame(frameID.current);
     };
   }, [width, height]);
+
+  useEffect(() => {
+    if (finished && frameID) {
+      window.cancelAnimationFrame(frameID.current);
+    }
+  }, [finished]);
 
   return (
     <canvas

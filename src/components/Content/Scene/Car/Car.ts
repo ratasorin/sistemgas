@@ -131,7 +131,7 @@ export default class CarRender implements Render {
       coefficient,
     });
 
-    this.canvas.style.transformOrigin = `50% 100%`;
+    this.canvas.style.transformOrigin = `100% 100%`;
     this.canvas.style.transform = `translateY(-${Math.floor(
       getCanvasDimensions(this.canvas).height / 8
     )}px) scale(${coefficient})`;

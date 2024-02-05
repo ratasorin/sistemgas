@@ -183,13 +183,23 @@ export default class TextRenderer implements Render {
         this.heightFactor
       );
 
+      const coefficient =
+        carDisplayWidth / getCanvasDimensions(this.canvas).width;
+
       // because we cannot render the car and the text on the same canvas, we emulate
       // how the car would mask the text using this empty rectangle
       this.context.globalCompositeOperation = "destination-out";
       this.context.fillRect(
-        Math.floor(this.x - getCanvasDimensions(this.canvas).width),
+        Math.floor(
+          this.x -
+            (coefficient * getCanvasDimensions(this.canvas).width -
+              (1 / 10) * coefficient * getCanvasDimensions(this.canvas).width)
+        ),
         0,
-        Math.floor(carDisplayWidth + getCanvasDimensions(this.canvas).width),
+        Math.floor(
+          coefficient * getCanvasDimensions(this.canvas).width +
+            getCanvasDimensions(this.canvas).width
+        ),
         Math.floor(getCanvasDimensions(this.canvas).height)
       );
 

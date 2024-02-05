@@ -147,7 +147,10 @@ export default class CarRender implements Render {
 
     const coefficient =
       carDisplayWidth / getCanvasDimensions(this.canvas).width;
-    if (this.car.position <= 2 * getCanvasDimensions(this.canvas).width) {
+    if (
+      this.car.position <=
+      2 * coefficient * getCanvasDimensions(this.canvas).width
+    ) {
       console.log("UPDATE?");
       this.car.update();
     } else {

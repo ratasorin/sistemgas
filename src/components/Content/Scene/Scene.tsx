@@ -46,10 +46,10 @@ const getResponsiveFontSize = (screenWidth: number) => {
   if (screenWidth > screens["md"] && screenWidth < screens["lg"])
     fontSize = fonts["text-2xl"];
   if (screenWidth > screens["lg"] && screenWidth < screens["xl"])
-    fontSize = fonts["text-3xl"];
+    fontSize = fonts["text-2xl"];
   if (screenWidth > screens["xl"] && screenWidth < screens["2xl"])
-    fontSize = fonts["text-4xl"];
-  if (screenWidth > screens["2xl"]) fontSize = fonts["text-4xl"];
+    fontSize = fonts["text-2xl"];
+  if (screenWidth > screens["2xl"]) fontSize = fonts["text-2xl"];
 
   return fontSize;
 };

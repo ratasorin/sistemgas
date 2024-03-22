@@ -49,7 +49,10 @@ const EmbedSvg: FC<{
         if (!svg) return null;
         document.getElementById(elementId)!.appendChild(svg);
         setSvg(svg, elementId);
-        if (svgClassName) svg.classList.add(svgClassName);
+        if (svgClassName) {
+          const classes = svgClassName.split(" ");
+          svg.classList.add(...classes);
+        }
       });
     }
   });

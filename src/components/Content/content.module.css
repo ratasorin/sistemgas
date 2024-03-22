@@ -33,6 +33,7 @@
   transform: translateX(100%);
   bottom: calc(1 / 5 * 100vh);
   z-index: 100;
+  overflow: visible;
 }
 
 .svg-hover {

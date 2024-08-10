@@ -57,13 +57,13 @@
 
 .sistemgas-hq-animate-in {
   animation: 4s cubic-bezier(0.33, 0.27, 0.58, 1) forwards sistemgas-hq-in;
-  left: 50%;
-  transform: translateX(-50%) translateY(calc(1 / 5 * 100vh + 5px));
+  left: 0;
+  transform: translateX(0) translateY(calc(1 / 5 * 100vh + 5px));
 }
 
 .sistemgas-hq-force-end {
-  left: 50%;
-  transform: translateX(-50%) translateY(calc(1 / 5 * 100vh + 5px));
+  left: 0;
+  transform: translateX(0) translateY(calc(1 / 5 * 100vh + 5px));
 }
 
 @keyframes sistemgas-hq-in {
@@ -73,8 +73,8 @@
   }
 
   100% {
-    left: 50%;
-    transform: translateX(-50%) translateY(calc(1 / 5 * 100vh + 5px));
+    left: 0;
+    transform: translateX(0) translateY(calc(1 / 5 * 100vh + 5px));
   }
 }
 

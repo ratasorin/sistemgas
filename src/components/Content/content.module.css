@@ -59,6 +59,11 @@
   animation: 4s cubic-bezier(0.33, 0.27, 0.58, 1) forwards sistemgas-hq-in;
 }
 
+.sistemgas-hq-force-end {
+  left: 50%;
+  transform: translateX(-50%) translateY(calc(1 / 5 * 100vh + 5px));
+}
+
 @keyframes sistemgas-hq-in {
   0% {
     left: 110vw;

@@ -81,7 +81,7 @@ export default class TextRenderer implements Render {
     heightFactor: number
   ) {
     this.initialText = providedText;
-    this.x = -600;
+    this.x = 0;
     this.carImage = carImage;
     this.carVelocity = carVelocity;
     this.heightFactor = heightFactor;
@@ -268,8 +268,7 @@ export default class TextRenderer implements Render {
         0,
         Math.floor(
           coefficient * getCanvasDimensions(this.canvas).width +
-            getCanvasDimensions(this.canvas).width +
-            600
+            getCanvasDimensions(this.canvas).width
         ),
         Math.floor(getCanvasDimensions(this.canvas).height)
       );

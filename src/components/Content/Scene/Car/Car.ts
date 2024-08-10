@@ -24,7 +24,7 @@ export const imageDisplayDimensions = (
 };
 
 class Car {
-  position: number = -600;
+  position: number = 0;
   velocity: number = 0;
   width: number;
   constructor(width: number, velocity: number) {

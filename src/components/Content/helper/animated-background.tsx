@@ -11,7 +11,7 @@ const AnimatedBackground: FC<{
   zoomOut?: number;
   origin?: string;
 }> = ({ baseClassName, speed, widthType, transitionDown, zoomOut, origin }) => {
-  const { finished } = useAnimationState();
+  const { finished, forceEnd } = useAnimationState();
   const animationRef = useRef<Animation | undefined>(undefined);
   const width = useMemo(
     () =>
@@ -27,7 +27,42 @@ const AnimatedBackground: FC<{
       key={baseClassName}
       ref={(element) => {
         if (!element || running) return;
-        if (finished && animationRef.current) {
+        if (!animationRef.current && !forceEnd) {
+          console.log({ forceEnd });
+          animationRef.current = element.animate(
+            [
+              {
+                transform: "translateX(0px)",
+              },
+              {
+                transform: `translateX(${width})`,
+              },
+            ],
+            {
+              duration: speed * 1000,
+              iterations: Infinity,
+            }
+          );
+        }
+
+        if (forceEnd) {
+          animationRef.current?.cancel();
+          let translateX = new DOMMatrixReadOnly(
+            window.getComputedStyle(element).getPropertyValue("transform")
+          ).m41;
+          element.setAttribute(
+            "style",
+            `transform: translateX(0); left: ${translateX}px`
+          );
+          element.setAttribute(
+            "style",
+            `transform: translate(calc(${
+              END_TRANSITION_DURATION / (speed * 1000)
+            } * ${width}), ${
+              transitionDown ? "calc(1 / 5 * 100vh)" : "0"
+            }) scale(${zoomOut ?? 1})`
+          );
+        } else if (finished && animationRef.current) {
           animationRef.current?.commitStyles();
           // Cancel the animation
           animationRef.current?.cancel();
@@ -64,22 +99,6 @@ const AnimatedBackground: FC<{
             }
           );
         }
-
-        if (!animationRef.current)
-          animationRef.current = element.animate(
-            [
-              {
-                transform: "translateX(0px)",
-              },
-              {
-                transform: `translateX(${width})`,
-              },
-            ],
-            {
-              duration: speed * 1000,
-              iterations: Infinity,
-            }
-          );
       }}
       className={
         origin ? `${baseClassName} z-10 origin-bottom` : `${baseClassName} z-10`

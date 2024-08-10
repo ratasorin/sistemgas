@@ -15,7 +15,7 @@ interface Canvas extends HTMLCanvasElement {
 
 const Canvas: NextPage<Props> = ({ width, height, render }) => {
   const canvasRef = useRef<Canvas>(null);
-  const { finished } = useAnimationState();
+  const { finished, forceEnd } = useAnimationState();
   const frameID = useRef(-1);
 
   useEffect(() => {
@@ -26,9 +26,6 @@ const Canvas: NextPage<Props> = ({ width, height, render }) => {
       const MIN_REFRESH_RATE_FPS = 60;
       const MIN_DELAY_MILLIS = Math.floor(1000 / MIN_REFRESH_RATE_FPS); // 1 second has 1000 millis
       let prevTime: number | undefined;
-      setInterval(() => {
-        render.update();
-      }, 1000);
 
       /**
        * **frameID** is a unique number that every requestAnimationFrame call will return.
@@ -36,10 +33,6 @@ const Canvas: NextPage<Props> = ({ width, height, render }) => {
        */
       const loop = (time: number) => {
         let delta = Math.floor(time - (prevTime ?? 0));
-        console.log(delta, MIN_DELAY_MILLIS);
-        // totalTimeBetweenUpdates += delta;
-        // updateCount++;
-
         if (delta <= MIN_DELAY_MILLIS) {
           render.update();
           render.render();
@@ -48,6 +41,7 @@ const Canvas: NextPage<Props> = ({ width, height, render }) => {
             render.update();
             delta -= MIN_DELAY_MILLIS;
           }
+          render.render();
         }
 
         prevTime = time;
@@ -58,15 +52,17 @@ const Canvas: NextPage<Props> = ({ width, height, render }) => {
     }
 
     return () => {
-      if (frameID) window.cancelAnimationFrame(frameID.current);
+      window.cancelAnimationFrame(frameID.current);
     };
-  }, [width, height]);
+  }, [width, height, render]);
 
   useEffect(() => {
-    if (finished && frameID) {
-      window.cancelAnimationFrame(frameID.current);
-    }
-  }, [finished]);
+    if (width && height)
+      if ((finished || forceEnd) && frameID) {
+        render.end();
+        window.cancelAnimationFrame(frameID.current);
+      }
+  }, [finished, forceEnd, width, height]);
 
   return (
     <canvas

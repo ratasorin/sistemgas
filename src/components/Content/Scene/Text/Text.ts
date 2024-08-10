@@ -25,10 +25,6 @@ export default class TextRenderer implements Render {
   coordinates: Coordinates | undefined;
   averageWordPadding: number = 0;
 
-  ready() {
-    return true;
-  }
-
   initializeCanvas(canvas: HTMLCanvasElement, dpr: number) {
     this.canvas = canvas;
     const { carDisplayHeight } = imageDisplayDimensions(
@@ -85,7 +81,7 @@ export default class TextRenderer implements Render {
     heightFactor: number
   ) {
     this.initialText = providedText;
-    this.x = 0;
+    this.x = -600;
     this.carImage = carImage;
     this.carVelocity = carVelocity;
     this.heightFactor = heightFactor;
@@ -102,6 +98,76 @@ export default class TextRenderer implements Render {
 
     if (this.x <= carDisplayWidth + getCanvasDimensions(this.canvas).width)
       this.x += this.carVelocity;
+  }
+
+  end() {
+    if (
+      !this.canvas ||
+      !this.context ||
+      !this.text ||
+      !this.textBoxCoordinates ||
+      !this.textBox
+    )
+      return;
+
+    const textBoxPadding = this.averageWordPadding * 3;
+    const outlineWidth = this.averageWordPadding / 3;
+
+    this.context.save();
+    this.context.globalCompositeOperation = "source-over";
+    this.context.globalAlpha = 0.7;
+
+    this.context.clearRect(
+      0,
+      0,
+      getCanvasDimensions(this.canvas).width,
+      getCanvasDimensions(this.canvas).height
+    );
+
+    // text box outline
+    this.context.beginPath();
+    this.context.fillStyle = "#e2e8f0";
+    this.context.roundRect(
+      Math.floor(this.textBoxCoordinates.x - textBoxPadding - outlineWidth),
+      Math.floor(this.textBoxCoordinates.y - textBoxPadding - outlineWidth),
+      Math.floor(this.textBox.width + 2 * (textBoxPadding + outlineWidth)),
+      Math.floor(this.textBox.height + 2 * (textBoxPadding + outlineWidth)),
+      10
+    );
+    this.context.fill();
+
+    // text box background
+    this.context.beginPath();
+    this.context.fillStyle = "#f8fafc";
+    this.context.roundRect(
+      Math.floor(this.textBoxCoordinates.x - textBoxPadding),
+      Math.floor(this.textBoxCoordinates.y - textBoxPadding),
+      Math.floor(this.textBox.width + 2 * textBoxPadding),
+      Math.floor(this.textBox.height + 2 * textBoxPadding),
+      10
+    );
+    this.context.fill();
+    this.context.restore();
+
+    const offsetX =
+      (this.coordinates?.x || 0) - (this.textBoxCoordinates.x || 0);
+    const offsetY =
+      (this.coordinates?.y || 0) - (this.textBoxCoordinates.y || 0);
+
+    this.text.forEach((text_) => {
+      if (!this.canvas || !this.context || !this.text) return;
+
+      this.context.fillStyle = `${text_.fontColor}`;
+      this.context.font = `${text_.fontStyle ? text_.fontStyle : ""} ${
+        text_.fontSize
+      }px ${text_.fontFamily}`;
+      this.context.textBaseline = "top";
+      this.context.fillText(
+        `${text_.payload}`,
+        Math.floor(-offsetX + text_.coordinates.x),
+        Math.floor(-offsetY + text_.coordinates.y)
+      );
+    });
   }
 
   render() {

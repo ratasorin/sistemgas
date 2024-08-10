@@ -122,6 +122,19 @@ const animateComponentOnHover = (
 
 const MainScene: FC = () => {
   const svg = useSvg(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (loading) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    console.log({ loading });
+  }, [loading]);
 
   useEffect(() => {
     if (svg) {
@@ -157,9 +170,11 @@ const MainScene: FC = () => {
   });
   const [imageHeight, setImageHeight] = useState(0);
   const sceneRef = useRef<HTMLDivElement>(null);
-  const { finished } = useAnimationState();
+  const { finished, forceEnd } = useAnimationState();
 
   useEffect(() => {
+    if (loading) return;
+
     const scene = sceneRef.current as HTMLDivElement;
     setDimensions({
       width: scene.getBoundingClientRect().width,
@@ -172,7 +187,7 @@ const MainScene: FC = () => {
         height: scene.getBoundingClientRect().height,
       });
     });
-  }, []);
+  }, [loading]);
 
   const width = useMemo(() => {
     // this will be displayed on the biggest screens
@@ -185,53 +200,76 @@ const MainScene: FC = () => {
   }, [dimensions]);
 
   return (
-    <div
-      ref={sceneRef}
-      className="relative overflow-x-hidden overflow-y-hidden w-screen flex-1 flex flex-col-reverse z-0"
-    >
-      <Scene
-        width={dimensions.width}
-        height={dimensions.height}
-        imageHeight={imageHeight}
-      ></Scene>
-
+    <>
+      {/* {loading && (
+        <div className="absolute z-10 w-screen h-screen bg-white">Loading</div>
+      )} */}
       <div
-        style={{ width }}
-        className={`${content["sistemgas-hq"]} ${
-          finished ? content["sistemgas-hq-animate-in"] : ""
-        }`}
+        ref={sceneRef}
+        className="relative overflow-x-hidden overflow-y-hidden w-screen flex-1 flex flex-col-reverse z-0"
       >
-        <EmbedSvg
-          className="h-screen flex flex-col justify-end items-center overflow-visible"
-          svgClassName="h-2/3 overflow-visible"
-          elementId={LANDING_PAGE_SISTEMGAS_HQ_SVG_ID}
-          svgName="sistemgas-hq.svg"
-        ></EmbedSvg>
-      </div>
+        <button
+          className="absolute z-[1000] right-0 top-0 hover:cursor-pointer"
+          onClick={() => useAnimationState.setState(() => ({ forceEnd: true }))}
+        >
+          END
+        </button>
+        <Scene
+          width={dimensions.width}
+          height={dimensions.height}
+          imageHeight={imageHeight}
+        ></Scene>
 
-      <div className={`${content.parallax} z-0`}>
-        {backgroundAnimations.map((elem) => (
-          <AnimatedBackground {...elem} widthType="--background-svg-width" />
-        ))}
         <div
-          className={`${content["grass"]} z-0 ${
-            finished ? `${content["transition-down"]}` : ""
+          style={{ width }}
+          className={`${content["sistemgas-hq"]} ${
+            finished
+              ? content["sistemgas-hq-animate-in"]
+              : forceEnd
+              ? content["sistemgas-hq-force-end"]
+              : ""
           }`}
-        ></div>
-        <div
-          className={`${content["street-background"]} ${
-            finished ? `${content["transition-down"]}` : ""
-          }`}
-        ></div>
-        <AnimatedBackground
-          baseClassName={content["street"]}
-          speed={2.5}
-          key={content["street"]}
-          transitionDown={true}
-          widthType="--road-svg-width"
-        />
+        >
+          <EmbedSvg
+            className="h-screen flex flex-col justify-end items-center overflow-visible"
+            svgClassName="h-2/3 overflow-visible"
+            elementId={LANDING_PAGE_SISTEMGAS_HQ_SVG_ID}
+            svgName="sistemgas-hq.svg"
+          ></EmbedSvg>
+        </div>
+
+        <div className={`${content.parallax} z-0`}>
+          {backgroundAnimations.map((elem) => (
+            <AnimatedBackground {...elem} widthType="--background-svg-width" />
+          ))}
+          <div
+            className={`${content["grass"]} z-0 ${
+              finished
+                ? `${content["transition-down"]}`
+                : forceEnd
+                ? content["force-end"]
+                : ""
+            }`}
+          ></div>
+          <div
+            className={`${content["street-background"]} ${
+              finished
+                ? `${content["transition-down"]}`
+                : forceEnd
+                ? content["force-end"]
+                : ""
+            }`}
+          ></div>
+          <AnimatedBackground
+            baseClassName={content["street"]}
+            speed={2.5}
+            key={content["street"]}
+            transitionDown={true}
+            widthType="--road-svg-width"
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

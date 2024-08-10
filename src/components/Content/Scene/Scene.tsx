@@ -14,6 +14,7 @@ export interface Render {
   dimensions?: (
     coordinates: Positions
   ) => { width: number; height: number } | Error;
+  end: () => void;
 }
 const screens = {
   sm: 640,
@@ -79,7 +80,7 @@ const Scene: NextPage<{
   height: number;
   imageHeight: number;
 }> = ({ width, height, imageHeight }) => {
-  const finished = useAnimationState((state) => state.finished);
+  const { finished, forceEnd } = useAnimationState();
 
   const carVelocity = useMemo(() => {
     return getResponsiveCarVelocity(width);
@@ -164,8 +165,33 @@ const Scene: NextPage<{
   }, [images.gasTruck, carVelocity, heightFactor]);
 
   useEffect(() => {
-    if (!textRenderer) return;
-    if (finished && imageHeight && height) {
+    if (!textRenderer || !height || !imageHeight) return;
+
+    console.log({
+      height,
+      imageHeight,
+      textRenderer,
+      y:
+        height -
+        imageHeight -
+        (textRenderer.textBox?.height ||
+          0 + 2 * textRenderer.averageWordPadding * 3) -
+        75,
+    });
+    if (forceEnd) {
+      gsap.to(textRenderer.textBoxCoordinates!, {
+        y:
+          height -
+          imageHeight -
+          (textRenderer.textBox?.height ||
+            0 + 2 * textRenderer.averageWordPadding * 3) -
+          75,
+        onUpdate: () => {
+          textRenderer.end();
+        },
+        duration: 0,
+      });
+    } else if (finished && imageHeight && height) {
       gsap.to(textRenderer.textBoxCoordinates!, {
         y:
           height -
@@ -180,7 +206,7 @@ const Scene: NextPage<{
         ease: "expo.out",
       });
     }
-  }, [finished, imageHeight, height]);
+  }, [finished, imageHeight, height, forceEnd]);
 
   if (!textRenderer || !carRenderer) return null;
   return (

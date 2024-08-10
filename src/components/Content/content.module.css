@@ -17,6 +17,10 @@
   }
 }
 
+.force-end {
+  transform: translateY(calc(1 / 5 * 100vh));
+}
+
 .grass {
   position: absolute;
   left: 0;
@@ -29,7 +33,7 @@
 
 .sistemgas-hq {
   position: absolute;
-  left: 50%;
+  left: 100%;
   transform: translateX(100%);
   bottom: calc(1 / 5 * 100vh);
   z-index: 100;
@@ -57,12 +61,16 @@
 
 @keyframes sistemgas-hq-in {
   0% {
-    transform: translateX(100%) translateY(0);
+    transform: translateX(0) translateY(0);
   }
 
   100% {
-    transform: translateX(-50%) translateY(calc(1 / 5 * 100vh));
+    transform: translateX(-100%) translateY(calc(1 / 5 * 100vh));
   }
+}
+
+.sistemgas-hq-force-end {
+  transform: translateX(-100%) translateY(calc(1 / 5 * 100vh));
 }
 
 .forest-front {

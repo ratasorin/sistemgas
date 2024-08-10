@@ -2,9 +2,14 @@ import { getCanvasDimensions } from "../Canvas/helper/canvas-dimensions";
 import { Render } from "../Scene";
 import { create } from "zustand";
 
-export const useAnimationState = create<{ finished: boolean }>((set) => ({
+export const useAnimationState = create<{
+  finished: boolean;
+  forceEnd: boolean;
+}>((set) => ({
   finished: false,
-  finishAnimation: () => set(() => ({ finished: true })),
+  forceEnd: false,
+  finishAnimation: () => set((s) => ({ ...s, finished: true })),
+  forceEndAnimation: () => set((s) => ({ ...s, forceEnd: true })),
 }));
 
 export const imageDisplayDimensions = (
@@ -19,7 +24,7 @@ export const imageDisplayDimensions = (
 };
 
 class Car {
-  position: number = 0;
+  position: number = -600;
   velocity: number = 0;
   width: number;
   constructor(width: number, velocity: number) {
@@ -34,11 +39,11 @@ class Car {
 export default class CarRender implements Render {
   canvas: HTMLCanvasElement | undefined;
   context: CanvasRenderingContext2D | undefined;
-  restart: boolean = false;
   car: Car | undefined;
   image: HTMLImageElement;
   heightFactor: number = 0;
   carVelocity: number = 0;
+  ended: boolean = false;
 
   initializeCanvas(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -53,22 +58,55 @@ export default class CarRender implements Render {
     );
 
     this.context.scale(3, 3);
+    console.log({
+      context: this.context,
+      canvas: this.canvas,
+      image: this.image,
+      car: this.car,
+    });
     this.drawCar();
+    this.render();
   }
 
   constructor(image: HTMLImageElement, velocity: number, heightFactor: number) {
     this.image = image;
     this.heightFactor = heightFactor;
     this.carVelocity = velocity;
+    this.car = new Car(this.image.width, this.carVelocity);
 
     this.image.onload = () => {
       console.log({ image });
       this.car = new Car(this.image.width, this.carVelocity);
+      console.log({
+        context: this.context,
+        canvas: this.canvas,
+        image: this.image,
+        car: this.car,
+      });
       this.drawCar();
+      this.render();
     };
   }
 
+  end() {
+    if (!this.context || !this.canvas) {
+      this.ended = true;
+      return;
+    }
+    this.ended = true;
+    this.context.clearRect(
+      0,
+      0,
+      getCanvasDimensions(this.canvas).width,
+      getCanvasDimensions(this.canvas).height
+    );
+  }
+
   drawCar() {
+    if (this.ended) {
+      console.error("YOU SHOULDN'T UPDATE AFTER END WAS TRIGGERED");
+      return;
+    }
     if (!this.context || !this.canvas) {
       console.error("THE CANVAS WAS NOT LOADED PROPERLY!");
       return;
@@ -138,6 +176,10 @@ export default class CarRender implements Render {
   }
 
   update() {
+    if (this.ended) {
+      console.error("YOU SHOULDN'T UPDATE AFTER END WAS TRIGGERED");
+      return;
+    }
     if (!this.canvas || !this.context || !this.car) return;
     const { carDisplayWidth } = imageDisplayDimensions(
       this.image,
@@ -155,7 +197,8 @@ export default class CarRender implements Render {
       this.car.update();
     } else {
       console.log("STOP!");
-      useAnimationState.setState({ finished: true });
+      useAnimationState.setState(() => ({ finished: true }));
+      this.end();
     }
   }
 
@@ -166,14 +209,7 @@ export default class CarRender implements Render {
       /translateX\([^)]+\)\s*/g,
       ""
     );
-    const { carDisplayWidth } = imageDisplayDimensions(
-      this.image,
-      getCanvasDimensions(this.canvas).height,
-      this.heightFactor
-    );
 
-    const coefficient =
-      carDisplayWidth / getCanvasDimensions(this.canvas).width;
     this.canvas.style.transform = `translateX(${
       -getCanvasDimensions(this.canvas).width + this.car.position
     }px) ${otherTransforms}`;

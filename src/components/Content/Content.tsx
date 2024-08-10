@@ -15,6 +15,7 @@ import {
 } from "constant";
 import { shouldExit, updateLastElementHovered } from "lib/debounce-hover";
 import "tippy.js/animations/scale.css";
+import { IoPlaySkipForward } from "react-icons/io5";
 
 const screens = {
   sm: 640,
@@ -123,17 +124,12 @@ const animateComponentOnHover = (
 const MainScene: FC = () => {
   const svg = useSvg(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     if (loading) {
       setTimeout(() => {
         setLoading(false);
       }, 1000);
     }
-  }, [loading]);
-
-  useEffect(() => {
-    console.log({ loading });
   }, [loading]);
 
   useEffect(() => {
@@ -230,12 +226,16 @@ const MainScene: FC = () => {
         ref={sceneRef}
         className="relative overflow-x-hidden overflow-y-hidden w-screen flex-1 flex flex-col-reverse z-0"
       >
-        <button
-          className="absolute z-[1000] right-0 top-0 hover:cursor-pointer"
-          onClick={() => useAnimationState.setState(() => ({ forceEnd: true }))}
-        >
-          END
-        </button>
+        {!forceEnd && (
+          <button
+            className="absolute right-5 top-5 sm:right-7 sm:top-7 lg:top-10 lg:right-10 p-2 rounded-full bg-zinc-800/75 text hover:cursor-pointer z-30"
+            onClick={() =>
+              useAnimationState.setState(() => ({ forceEnd: true }))
+            }
+          >
+            <IoPlaySkipForward className="text-3xl sm:text-4xl lg:text-5xl text-white" />
+          </button>
+        )}
         <Scene
           width={dimensions.width}
           height={dimensions.height}

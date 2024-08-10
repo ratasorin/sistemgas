@@ -39,7 +39,7 @@ const Canvas: NextPage<Props> = ({ width, height, render, start }) => {
           render.update();
           render.render();
         } else {
-          while (delta > MIN_DELAY_MILLIS && delta <= 10 * MIN_DELAY_MILLIS) {
+          while (delta > 0 && delta <= 10 * MIN_DELAY_MILLIS) {
             render.update();
             delta -= MIN_DELAY_MILLIS;
           }

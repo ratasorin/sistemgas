@@ -23,13 +23,34 @@ const Canvas: NextPage<Props> = ({ width, height, render }) => {
       const canvas = canvasRef.current as Canvas;
       const dpr = window.devicePixelRatio;
       render.initializeCanvas(canvas, dpr);
+      const MIN_REFRESH_RATE_FPS = 60;
+      const MIN_DELAY_MILLIS = Math.floor(1000 / MIN_REFRESH_RATE_FPS); // 1 second has 1000 millis
+      let prevTime: number | undefined;
+      setInterval(() => {
+        render.update();
+      }, 1000);
+
       /**
        * **frameID** is a unique number that every requestAnimationFrame call will return.
        * We will need it in the cleanup function to stop the animation once the component is unmounted
        */
-      const loop = () => {
-        render.update();
-        render.render();
+      const loop = (time: number) => {
+        let delta = Math.floor(time - (prevTime ?? 0));
+        console.log(delta, MIN_DELAY_MILLIS);
+        // totalTimeBetweenUpdates += delta;
+        // updateCount++;
+
+        if (delta <= MIN_DELAY_MILLIS) {
+          render.update();
+          render.render();
+        } else {
+          while (delta > MIN_DELAY_MILLIS) {
+            render.update();
+            delta -= MIN_DELAY_MILLIS;
+          }
+        }
+
+        prevTime = time;
         frameID.current = window.requestAnimationFrame(loop);
       };
 

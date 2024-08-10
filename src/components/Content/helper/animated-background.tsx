@@ -8,7 +8,9 @@ const AnimatedBackground: FC<{
   speed: number;
   transitionDown?: boolean;
   widthType: "--background-svg-width" | "--road-svg-width";
-}> = ({ baseClassName, speed, widthType, transitionDown }) => {
+  zoomOut?: number;
+  origin?: string;
+}> = ({ baseClassName, speed, widthType, transitionDown, zoomOut, origin }) => {
   const { finished } = useAnimationState();
   const animationRef = useRef<Animation | undefined>(undefined);
   const width = useMemo(
@@ -36,8 +38,6 @@ const AnimatedBackground: FC<{
             window.getComputedStyle(element).getPropertyValue("transform")
           ).m41;
 
-          console.log(translateX, widthType);
-
           element.setAttribute(
             "style",
             `transform: translateX(0); left: ${translateX}px`
@@ -46,14 +46,14 @@ const AnimatedBackground: FC<{
           animationRef.current = element.animate(
             [
               {
-                transform: `translate(0, 0)`,
+                transform: `translate(0, 0) scale(1)`,
               },
               {
                 transform: `translate(calc(${
                   END_TRANSITION_DURATION / (speed * 1000)
                 } * ${width}), ${
                   transitionDown ? "calc(1 / 5 * 100vh)" : "0"
-                })`,
+                }) scale(${zoomOut ?? 1})`,
               },
             ],
             {
@@ -81,7 +81,9 @@ const AnimatedBackground: FC<{
             }
           );
       }}
-      className={`${baseClassName} z-10`}
+      className={
+        origin ? `${baseClassName} z-10 origin-bottom` : `${baseClassName} z-10`
+      }
     ></div>
   );
 };

@@ -28,35 +28,44 @@ const backgroundAnimations = [
   {
     baseClassName: content["clouds-back"],
     speed: 16,
+    zoomOut: 0.9,
   },
   {
     baseClassName: content["mountains-back"],
     speed: 20,
     transitionDown: true,
+    zoomOut: 0.95,
+    origin: "bottom",
   },
   {
     baseClassName: content["mountains-front"],
     speed: 17,
     transitionDown: true,
+    zoomOut: 0.9,
+    origin: "bottom",
   },
   {
     baseClassName: content["clouds-front"],
     speed: 14,
+    zoomOut: 0.85,
   },
   {
     baseClassName: content["forest-back"],
     speed: 18,
     transitionDown: true,
+    zoomOut: 0.8,
   },
   {
     baseClassName: content["forest-mid"],
     speed: 15,
     transitionDown: true,
+    zoomOut: 0.8,
   },
   {
     baseClassName: content["forest-front"],
     speed: 12,
     transitionDown: true,
+    zoomOut: 0.8,
   },
 ];
 
@@ -206,12 +215,12 @@ const MainScene: FC = () => {
         ))}
         <div
           className={`${content["grass"]} z-0 ${
-            finished ? content["transition-down"] : ""
+            finished ? `${content["transition-down"]}` : ""
           }`}
         ></div>
         <div
           className={`${content["street-background"]} ${
-            finished ? content["transition-down"] : ""
+            finished ? `${content["transition-down"]}` : ""
           }`}
         ></div>
         <AnimatedBackground

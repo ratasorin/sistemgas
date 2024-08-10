@@ -79,7 +79,8 @@ const Scene: NextPage<{
   width: number;
   height: number;
   imageHeight: number;
-}> = ({ width, height, imageHeight }) => {
+  start: boolean;
+}> = ({ width, height, imageHeight, start }) => {
   const { finished, forceEnd } = useAnimationState();
 
   const carVelocity = useMemo(() => {
@@ -212,10 +213,20 @@ const Scene: NextPage<{
   return (
     <div className="relative w-full flex-1 overflow-hidden z-10">
       <div className="absolute w-full h-full z-10 overflow-hidden">
-        <Canvas width={width} height={height} render={textRenderer}></Canvas>
+        <Canvas
+          width={width}
+          height={height}
+          render={textRenderer}
+          start={start}
+        ></Canvas>
       </div>
       <div className="absolute w-full h-full z-20 overflow-hidden">
-        <Canvas width={width} height={height} render={carRenderer}></Canvas>
+        <Canvas
+          width={width}
+          height={height}
+          render={carRenderer}
+          start={start}
+        ></Canvas>
       </div>
     </div>
   );

@@ -7,13 +7,14 @@ interface Props {
   width: number;
   height: number;
   render: Render;
+  start: boolean;
 }
 
 interface Canvas extends HTMLCanvasElement {
   context: CanvasRenderingContext2D;
 }
 
-const Canvas: NextPage<Props> = ({ width, height, render }) => {
+const Canvas: NextPage<Props> = ({ width, height, render, start }) => {
   const canvasRef = useRef<Canvas>(null);
   const { finished, forceEnd } = useAnimationState();
   const frameID = useRef(-1);
@@ -48,7 +49,7 @@ const Canvas: NextPage<Props> = ({ width, height, render }) => {
         frameID.current = window.requestAnimationFrame(loop);
       };
 
-      window.requestAnimationFrame(loop);
+      if (start) window.requestAnimationFrame(loop);
     }
 
     return () => {

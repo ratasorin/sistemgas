@@ -128,7 +128,7 @@ const MainScene: FC = () => {
     if (loading) {
       setTimeout(() => {
         setLoading(false);
-      }, 500);
+      }, 1000);
     }
   }, [loading]);
 
@@ -201,9 +201,31 @@ const MainScene: FC = () => {
 
   return (
     <>
-      {/* {loading && (
-        <div className="absolute z-10 w-screen h-screen bg-white">Loading</div>
-      )} */}
+      {loading && (
+        <div className="absolute z-10 w-screen h-screen bg-black/50 flex flex-col items-center justify-center">
+          <div className={content["fire"]}>
+            <div className={content["fire-left"]}>
+              <div className={content["fire-left__main-fire"]}></div>
+              <div className={content["fire-left__particle-fire"]}></div>
+            </div>
+            <div className={content["fire-center"]}>
+              <div className={content["fire-center__main-fire"]}></div>
+              <div className={content["fire-center__particle-fire"]}></div>
+            </div>
+            <div className={content["fire-right"]}>
+              <div className={content["fire-right__main-fire"]}></div>
+              <div className={content["fire-right__particle-fire"]}></div>
+            </div>
+
+            <div className={content["fire-bottom"]}>
+              <div className={content["main-fire"]}></div>
+            </div>
+          </div>
+          <h2 className="text-white text-3xl overflow-hidden font-bold mt-4">
+            LOADING...
+          </h2>
+        </div>
+      )}
       <div
         ref={sceneRef}
         className="relative overflow-x-hidden overflow-y-hidden w-screen flex-1 flex flex-col-reverse z-0"
@@ -218,6 +240,7 @@ const MainScene: FC = () => {
           width={dimensions.width}
           height={dimensions.height}
           imageHeight={imageHeight}
+          start={!loading}
         ></Scene>
 
         <div

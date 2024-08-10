@@ -118,10 +118,14 @@ export default class TextRenderer implements Render {
     this.context.globalAlpha = 0.7;
 
     this.context.clearRect(
-      0,
-      0,
-      getCanvasDimensions(this.canvas).width,
-      getCanvasDimensions(this.canvas).height
+      Math.floor(this.textBoxCoordinates.x - textBoxPadding - outlineWidth),
+      Math.floor(this.textBoxCoordinates.y - textBoxPadding - outlineWidth),
+      Math.floor(
+        this.textBox.width + 2 * (textBoxPadding + outlineWidth) + 100
+      ),
+      Math.floor(
+        this.textBox.height + 2 * (textBoxPadding + outlineWidth) + 100
+      )
     );
 
     // text box outline
@@ -264,7 +268,8 @@ export default class TextRenderer implements Render {
         0,
         Math.floor(
           coefficient * getCanvasDimensions(this.canvas).width +
-            getCanvasDimensions(this.canvas).width
+            getCanvasDimensions(this.canvas).width +
+            600
         ),
         Math.floor(getCanvasDimensions(this.canvas).height)
       );

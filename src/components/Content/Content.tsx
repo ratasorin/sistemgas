@@ -244,7 +244,6 @@ const MainScene: FC = () => {
         ></Scene>
 
         <div
-          style={{ width }}
           className={`${content["sistemgas-hq"]} ${
             finished
               ? content["sistemgas-hq-animate-in"]
@@ -254,8 +253,8 @@ const MainScene: FC = () => {
           }`}
         >
           <EmbedSvg
-            className="h-screen flex flex-col justify-end items-center overflow-x-auto"
-            svgClassName="h-2/3 overflow-visible w-[2000px]"
+            className="h-screen flex flex-col justify-end items-center overflow-x-visible min-w-min"
+            svgClassName="h-2/3 overflow-visible"
             elementId={LANDING_PAGE_SISTEMGAS_HQ_SVG_ID}
             svgName="sistemgas-hq.svg"
           ></EmbedSvg>

@@ -27,7 +27,7 @@ const screens = {
 const fonts = {
   "text-xs": 12,
   "text-sm": 14,
-  "text-base": 17,
+  "text-base": 16,
   "text-lg": 18,
   "text-xl": 20,
   "text-2xl": 24,
@@ -63,6 +63,16 @@ const getResponsiveCarVelocity = (screenWidth: number) => {
   if (screenWidth < screens["sm"]) speed = speed - 1.25;
 
   return speed;
+};
+
+const getResponsiveMarginBottom = (screenWidth: number) => {
+  let baseMarginBottom: number = 96;
+  if (screenWidth < screens["xl"]) baseMarginBottom = 80;
+  if (screenWidth < screens["lg"]) baseMarginBottom = 74;
+  if (screenWidth < screens["md"]) baseMarginBottom = 58;
+  if (screenWidth < screens["sm"]) baseMarginBottom = 42;
+
+  return baseMarginBottom;
 };
 
 const getResponsiveHeightFactor = (screenWidth: number) => {
@@ -168,17 +178,6 @@ const Scene: NextPage<{
   useEffect(() => {
     if (!textRenderer || !height || !imageHeight) return;
 
-    console.log({
-      height,
-      imageHeight,
-      textRenderer,
-      y:
-        height -
-        imageHeight -
-        (textRenderer.textBox?.height ||
-          0 + 2 * textRenderer.averageWordPadding * 3) -
-        75,
-    });
     if (forceEnd) {
       gsap.to(textRenderer.textBoxCoordinates!, {
         y:
@@ -186,7 +185,7 @@ const Scene: NextPage<{
           imageHeight -
           (textRenderer.textBox?.height ||
             0 + 2 * textRenderer.averageWordPadding * 3) -
-          75,
+          getResponsiveMarginBottom(width),
         onUpdate: () => {
           textRenderer.end();
         },
@@ -199,7 +198,7 @@ const Scene: NextPage<{
           imageHeight -
           (textRenderer.textBox?.height ||
             0 + 2 * textRenderer.averageWordPadding * 3) -
-          75,
+          getResponsiveMarginBottom(width),
         onUpdate: () => {
           textRenderer.render();
         },

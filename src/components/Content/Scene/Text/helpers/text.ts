@@ -21,15 +21,16 @@ export class Text {
     fontColor: string,
     fontFamily: string,
     position?: RelativePositions,
-    fontStyle?: Styles
+    fontStyle?: Styles,
+    fontPadding?: { x: number; y: number }
   ) {
     this.payload = payload;
     this.fontSize = fontSize;
     this.fontColor = fontColor;
     this.fontFamily = fontFamily;
     this.fontPadding = {
-      x: Math.ceil(fontSize / 2.5),
-      y: Math.ceil(fontSize / 2.5),
+      x: Math.ceil(fontSize / 2.5) + (fontPadding ? fontPadding?.x : 0),
+      y: Math.ceil(fontSize / 3.5) + (fontPadding ? fontPadding?.y : 0),
     };
     console.log({ padding: this.fontPadding });
     this.position = position;

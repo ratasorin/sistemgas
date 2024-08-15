@@ -31,10 +31,10 @@ export default class TextRenderer implements Render {
     bottom: 16,
   };
   border: { top: number; left: number; right: number; bottom: number } = {
-    top: 2,
-    left: 2,
-    right: 2,
-    bottom: 2,
+    top: 3,
+    left: 3,
+    right: 3,
+    bottom: 3,
   };
 
   initializeCanvas(canvas: HTMLCanvasElement, dpr: number) {
@@ -201,7 +201,7 @@ export default class TextRenderer implements Render {
     this.context.globalCompositeOperation = "source-over";
     this.context.globalAlpha = 0.7;
 
-    this.context.roundRect(
+    this.context.clearRect(
       Math.floor(
         this.textBoxCoordinates.x - this.padding.top - this.border.left
       ),
@@ -210,13 +210,10 @@ export default class TextRenderer implements Render {
       ),
       Math.floor(
         this.textBox.width + 2 * (this.padding.left + this.border.right)
-      ) + 100,
+      ) + 200,
       Math.floor(
-        this.textBox.height +
-          2 * (this.padding.bottom + this.border.bottom) +
-          100
-      ),
-      10
+        this.textBox.height + 2 * (this.padding.bottom + this.border.bottom)
+      ) + 200
     );
 
     // text box outline
@@ -230,7 +227,7 @@ export default class TextRenderer implements Render {
         this.textBoxCoordinates.y - this.padding.bottom - this.border.top
       ),
       Math.floor(
-        this.textBox.width + 2 * (this.padding.left + this.border.right)
+        this.textBox.width + 2 * (this.padding.left + this.border.left)
       ),
       Math.floor(
         this.textBox.height + 2 * (this.padding.bottom + this.border.bottom)

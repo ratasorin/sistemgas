@@ -111,7 +111,8 @@ const Scene: NextPage<{
         "#172554",
         "Poppins",
         "start",
-        "bold"
+        "bold",
+        { x: 0, y: 12 }
       ),
       new Text(
         "Solutia",
@@ -126,7 +127,8 @@ const Scene: NextPage<{
         "#f97316",
         "Poppins",
         "right",
-        "italic bold"
+        "italic bold",
+        { y: 2, x: 0 }
       ),
       new Text("pentru", Math.floor(fontSize), "#172554", "Poppins", "newline"),
       new Text(

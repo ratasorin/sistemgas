@@ -1,3 +1,4 @@
+import { useAnimationState } from "components/Content/Scene/Car/Car";
 import { FC, useCallback, useEffect, useRef } from "react";
 import { create } from "zustand";
 
@@ -28,6 +29,9 @@ const EmbedSvg: FC<{
 }> = ({ elementId, svgName, className, svgClassName }) => {
   const svgCreated = useRef(false);
   const { setSvg } = useSvgStore();
+  const element = useRef<HTMLDivElement | null>(null);
+  const { finished, forceEnd } = useAnimationState();
+
   const getSVG = useCallback(async () => {
     const svg = fetch(svgName).then((response) =>
       response.text().then((text) => {
@@ -56,7 +60,7 @@ const EmbedSvg: FC<{
       });
     }
   });
-  return <div className={className} id={elementId}></div>;
+  return <div ref={element} className={className} id={elementId}></div>;
 };
 
 export default EmbedSvg;

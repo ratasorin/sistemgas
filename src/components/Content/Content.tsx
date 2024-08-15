@@ -16,6 +16,7 @@ import {
 import { shouldExit, updateLastElementHovered } from "lib/debounce-hover";
 import "tippy.js/animations/scale.css";
 import { IoPlaySkipForward } from "react-icons/io5";
+import WebFont from "webfontloader";
 
 const screens = {
   sm: 640,
@@ -124,6 +125,15 @@ const animateComponentOnHover = (
 const MainScene: FC = () => {
   const svg = useSvg(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    WebFont.load({
+      google: {
+        families: ["Poppins:100,200,300,400,500,600,700,800,900"],
+      },
+    });
+  }, []);
+
   useEffect(() => {
     if (loading) {
       setTimeout(() => {
@@ -244,6 +254,14 @@ const MainScene: FC = () => {
         ></Scene>
 
         <div
+          ref={(element) => {
+            if (finished || forceEnd) {
+              if (element)
+                element.scroll({
+                  left: element.scrollWidth / 4,
+                });
+            }
+          }}
           className={`${content["sistemgas-hq"]} ${
             finished
               ? content["sistemgas-hq-animate-in"]

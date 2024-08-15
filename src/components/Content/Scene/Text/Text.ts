@@ -24,6 +24,18 @@ export default class TextRenderer implements Render {
   heightFactor: number = 0;
   coordinates: Coordinates | undefined;
   averageWordPadding: number = 0;
+  padding: { top: number; left: number; right: number; bottom: number } = {
+    top: 16,
+    left: 16,
+    right: 16,
+    bottom: 16,
+  };
+  border: { top: number; left: number; right: number; bottom: number } = {
+    top: 2,
+    left: 2,
+    right: 2,
+    bottom: 2,
+  };
 
   initializeCanvas(canvas: HTMLCanvasElement, dpr: number) {
     this.canvas = canvas;
@@ -110,9 +122,6 @@ export default class TextRenderer implements Render {
     )
       return;
 
-    const textBoxPadding = this.averageWordPadding * 3;
-    const outlineWidth = this.averageWordPadding / 3;
-
     this.context.save();
     this.context.globalCompositeOperation = "source-over";
     this.context.globalAlpha = 0.7;
@@ -128,10 +137,18 @@ export default class TextRenderer implements Render {
     this.context.beginPath();
     this.context.fillStyle = "#e2e8f0";
     this.context.roundRect(
-      Math.floor(this.textBoxCoordinates.x - textBoxPadding - outlineWidth),
-      Math.floor(this.textBoxCoordinates.y - textBoxPadding - outlineWidth),
-      Math.floor(this.textBox.width + 2 * (textBoxPadding + outlineWidth)),
-      Math.floor(this.textBox.height + 2 * (textBoxPadding + outlineWidth)),
+      Math.floor(
+        this.textBoxCoordinates.x - this.padding.top - this.border.left
+      ),
+      Math.floor(
+        this.textBoxCoordinates.y - this.padding.bottom - this.border.top
+      ),
+      Math.floor(
+        this.textBox.width + 2 * (this.padding.left + this.border.left)
+      ),
+      Math.floor(
+        this.textBox.height + 2 * (this.padding.bottom + this.border.bottom)
+      ),
       10
     );
     this.context.fill();
@@ -140,10 +157,10 @@ export default class TextRenderer implements Render {
     this.context.beginPath();
     this.context.fillStyle = "#f8fafc";
     this.context.roundRect(
-      Math.floor(this.textBoxCoordinates.x - textBoxPadding),
-      Math.floor(this.textBoxCoordinates.y - textBoxPadding),
-      Math.floor(this.textBox.width + 2 * textBoxPadding),
-      Math.floor(this.textBox.height + 2 * textBoxPadding),
+      Math.floor(this.textBoxCoordinates.x - this.padding.left),
+      Math.floor(this.textBoxCoordinates.y - this.padding.top),
+      Math.floor(this.textBox.width + 2 * this.padding.right),
+      Math.floor(this.textBox.height + 2 * this.padding.bottom),
       10
     );
     this.context.fill();
@@ -180,32 +197,44 @@ export default class TextRenderer implements Render {
     )
       return;
 
-    const textBoxPadding = this.averageWordPadding * 3;
-    const outlineWidth = this.averageWordPadding / 3;
-
     this.context.save();
     this.context.globalCompositeOperation = "source-over";
     this.context.globalAlpha = 0.7;
 
-    this.context.clearRect(
-      Math.floor(this.textBoxCoordinates.x - textBoxPadding - outlineWidth),
-      Math.floor(this.textBoxCoordinates.y - textBoxPadding - outlineWidth),
+    this.context.roundRect(
       Math.floor(
-        this.textBox.width + 2 * (textBoxPadding + outlineWidth) + 100
+        this.textBoxCoordinates.x - this.padding.top - this.border.left
       ),
       Math.floor(
-        this.textBox.height + 2 * (textBoxPadding + outlineWidth) + 100
-      )
+        this.textBoxCoordinates.y - this.padding.bottom - this.border.top
+      ),
+      Math.floor(
+        this.textBox.width + 2 * (this.padding.left + this.border.right)
+      ) + 100,
+      Math.floor(
+        this.textBox.height +
+          2 * (this.padding.bottom + this.border.bottom) +
+          100
+      ),
+      10
     );
 
     // text box outline
     this.context.beginPath();
     this.context.fillStyle = "#e2e8f0";
     this.context.roundRect(
-      Math.floor(this.textBoxCoordinates.x - textBoxPadding - outlineWidth),
-      Math.floor(this.textBoxCoordinates.y - textBoxPadding - outlineWidth),
-      Math.floor(this.textBox.width + 2 * (textBoxPadding + outlineWidth)),
-      Math.floor(this.textBox.height + 2 * (textBoxPadding + outlineWidth)),
+      Math.floor(
+        this.textBoxCoordinates.x - this.padding.top - this.border.left
+      ),
+      Math.floor(
+        this.textBoxCoordinates.y - this.padding.bottom - this.border.top
+      ),
+      Math.floor(
+        this.textBox.width + 2 * (this.padding.left + this.border.right)
+      ),
+      Math.floor(
+        this.textBox.height + 2 * (this.padding.bottom + this.border.bottom)
+      ),
       10
     );
     this.context.fill();
@@ -214,12 +243,13 @@ export default class TextRenderer implements Render {
     this.context.beginPath();
     this.context.fillStyle = "#f8fafc";
     this.context.roundRect(
-      Math.floor(this.textBoxCoordinates.x - textBoxPadding),
-      Math.floor(this.textBoxCoordinates.y - textBoxPadding),
-      Math.floor(this.textBox.width + 2 * textBoxPadding),
-      Math.floor(this.textBox.height + 2 * textBoxPadding),
+      Math.floor(this.textBoxCoordinates.x - this.padding.left),
+      Math.floor(this.textBoxCoordinates.y - this.padding.top),
+      Math.floor(this.textBox.width + 2 * this.padding.right),
+      Math.floor(this.textBox.height + 2 * this.padding.bottom),
       10
     );
+
     this.context.fill();
     this.context.restore();
 

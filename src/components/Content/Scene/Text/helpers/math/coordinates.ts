@@ -19,42 +19,57 @@ export const getTextDimensions = (
 ): Dimensions => {
   console.log({ text });
 
+  let biggestHeight = 0;
   const { height, maxWidth, width } = text.reduce(
     (prev, text_, index) => {
-      context.font = `${text_.fontSize}px ${text_.fontFamily}`;
+      context.font = `${text_.fontStyle ? text_.fontStyle : ""} ${
+        text_.fontSize
+      }px ${text_.fontFamily}`;
       const metrics = context.measureText(text_.payload as string);
       const fontWidth = metrics.width;
       const fontHeight =
-        metrics.actualBoundingBoxAscent + metrics.fontBoundingBoxDescent;
+        Math.abs(metrics.actualBoundingBoxDescent) +
+        Math.abs(metrics.actualBoundingBoxAscent);
+
+      if (
+        index > 0 &&
+        (text[index - 1].position === "newline" ||
+          text[index - 1].position === "start")
+      )
+        biggestHeight = 0;
+
+      if (fontHeight > biggestHeight) biggestHeight = fontHeight;
+
+      console.log({ height: prev.height });
 
       const position = text_.position as RelativePositions;
       if (position === "start")
         return {
           maxWidth: fontWidth,
           width: fontWidth,
-          height: prev.height + fontHeight,
+          height: prev.height + biggestHeight + text_.fontPadding.y,
         };
       if (position === "right")
-        if (index === text.length - 1)
-          return {
-            maxWidth: prev.maxWidth,
-            width: prev.width + fontWidth + text_.fontPadding.x,
-            height: prev.height + fontHeight,
-          };
-        else
-          return {
-            maxWidth: prev.maxWidth,
-            width: prev.width + fontWidth + text_.fontPadding.x,
-            height: prev.height,
-          };
-
-      if (position === "newline")
         return {
-          maxWidth: prev.maxWidth > prev.width ? prev.maxWidth : prev.width,
-          width: fontWidth,
-          height: prev.height + fontHeight,
+          maxWidth: prev.maxWidth,
+          width: prev.width + fontWidth + text_.fontPadding.x,
+          height: prev.height,
         };
 
+      if (position === "newline") {
+        if (text.slice(index + 1).find((t) => t.position === "newline")) {
+          return {
+            maxWidth: prev.maxWidth > prev.width ? prev.maxWidth : prev.width,
+            width: fontWidth,
+            height: prev.height + biggestHeight + text_.fontPadding.y,
+          };
+        } else
+          return {
+            maxWidth: prev.maxWidth > prev.width ? prev.maxWidth : prev.width,
+            width: fontWidth,
+            height: prev.height + biggestHeight,
+          };
+      }
       return prev;
     },
     {
@@ -63,6 +78,8 @@ export const getTextDimensions = (
       height: 0,
     }
   );
+
+  console.log({ height });
 
   return {
     width: maxWidth > width ? maxWidth : width,
@@ -108,16 +125,16 @@ export const textWithAbsoluteCoordinates = (
       if (currText.position === "start" || !currText.position) return prev;
 
       const lastText = prev.text[prev.text.length - 1];
-      context.font = `${lastText.fontSize}px ${lastText.fontFamily}`;
+      context.font = `${lastText.fontStyle ? lastText.fontStyle : ""} ${
+        lastText.fontSize
+      }px ${lastText.fontFamily}`;
       const measurements = context.measureText(lastText.payload);
-      const width =
-        Math.abs(measurements.actualBoundingBoxLeft) +
-        Math.abs(measurements.actualBoundingBoxRight);
+      const width = measurements.width;
       const height =
         Math.abs(measurements.actualBoundingBoxDescent) +
         Math.abs(measurements.actualBoundingBoxAscent);
 
-      console.log(currText.payload, height);
+      console.log(lastText.payload, height);
 
       if (currText.position === "right")
         return {
@@ -127,7 +144,7 @@ export const textWithAbsoluteCoordinates = (
             {
               ...currText,
               coordinates: {
-                x: lastText.coordinates.x + width + currText.fontPadding.x,
+                x: lastText.coordinates.x + width + lastText.fontPadding.x,
                 y: lastText.coordinates.y,
               },
             },

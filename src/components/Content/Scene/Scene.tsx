@@ -106,56 +106,38 @@ const Scene: NextPage<{
 
     return [
       new Text(
-        "SistemgaS:",
-        Math.floor(fontSize + 0.4 * fontSize),
+        "SISTEMGAS",
+        Math.floor(2.5 * fontSize),
         "#172554",
-        "monospace",
+        "Poppins",
         "start",
-        "italic bold"
+        "bold"
       ),
       new Text(
         "Solutia",
         Math.floor(fontSize),
         "#172554",
-        "monospace",
+        "Poppins",
         "newline"
       ),
       new Text(
         "alternativa",
         fontSize,
         "#f97316",
-        "monospace",
+        "Poppins",
         "right",
         "italic bold"
       ),
-      new Text(
-        "pentru",
-        Math.floor(fontSize),
-        "#172554",
-        "monospace",
-        "newline"
-      ),
+      new Text("pentru", Math.floor(fontSize), "#172554", "Poppins", "newline"),
       new Text(
         "furnizarea",
         Math.floor(fontSize),
         "#172554",
-        "monospace",
+        "Poppins",
         "right"
       ),
-      new Text(
-        "gazelor",
-        Math.floor(fontSize),
-        "#172554",
-        "monospace",
-        "right"
-      ),
-      new Text(
-        "naturale",
-        Math.floor(fontSize),
-        "#172554",
-        "monospace",
-        "right"
-      ),
+      new Text("gazelor", Math.floor(fontSize), "#172554", "Poppins", "right"),
+      new Text("naturale", Math.floor(fontSize), "#172554", "Poppins", "right"),
     ];
   }, [width]);
 

@@ -9,14 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/webfontloader": "^1.6.38",
     "eslint-config-next": "^14.1.0",
     "gsap": "^3.12.5",
-    "next": "^13.4.9",
+    "next": "^14.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.12.0",
     "react-redux": "^8.1.1",
     "tippy.js": "^6.3.7",
+    "webfontloader": "^1.6.28",
     "zustand": "^4.3.9"
   },
   "devDependencies": {

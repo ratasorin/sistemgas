@@ -25,10 +25,10 @@ export default class TextRenderer implements Render {
   coordinates: Coordinates | undefined;
   averageWordPadding: number = 0;
   padding: { top: number; left: number; right: number; bottom: number } = {
-    top: 16,
-    left: 16,
-    right: 16,
-    bottom: 16,
+    top: 24,
+    left: 24,
+    right: 24,
+    bottom: 24,
   };
   border: { top: number; left: number; right: number; bottom: number } = {
     top: 3,
@@ -155,7 +155,7 @@ export default class TextRenderer implements Render {
 
     // text box background
     this.context.beginPath();
-    this.context.fillStyle = "#f8fafc";
+    this.context.fillStyle = "#ffffff";
     this.context.roundRect(
       Math.floor(this.textBoxCoordinates.x - this.padding.left),
       Math.floor(this.textBoxCoordinates.y - this.padding.top),
@@ -238,7 +238,7 @@ export default class TextRenderer implements Render {
 
     // text box background
     this.context.beginPath();
-    this.context.fillStyle = "#f8fafc";
+    this.context.fillStyle = "#ffffff";
     this.context.roundRect(
       Math.floor(this.textBoxCoordinates.x - this.padding.left),
       Math.floor(this.textBoxCoordinates.y - this.padding.top),

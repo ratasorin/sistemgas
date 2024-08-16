@@ -12,14 +12,21 @@ export interface Dimensions {
 }
 
 export type TextWithCoordinates = Text & { coordinates: Coordinates };
+type Line = {
+  width: number;
+  startIndex: number;
+};
 
 export const getTextDimensions = (
   text: Text[],
   context: CanvasRenderingContext2D
-): Dimensions => {
+): Dimensions & { lines: Line[] } => {
   console.log({ text });
 
   let biggestHeight = 0;
+  let lineWidth = 0;
+  let start = -1;
+  const lines: Line[] = [];
   const { height, maxWidth, width } = text.reduce(
     (prev, text_, index) => {
       context.font = `${text_.fontStyle ? text_.fontStyle : ""} ${
@@ -35,28 +42,35 @@ export const getTextDimensions = (
         index > 0 &&
         (text[index - 1].position === "newline" ||
           text[index - 1].position === "start")
-      )
+      ) {
         biggestHeight = 0;
+      }
 
       if (fontHeight > biggestHeight) biggestHeight = fontHeight;
 
-      console.log({ height: prev.height });
-
       const position = text_.position as RelativePositions;
-      if (position === "start")
+      if (position === "start") {
+        lineWidth += fontWidth;
+        start = index;
         return {
           maxWidth: fontWidth,
           width: fontWidth,
           height: prev.height + biggestHeight + text_.fontPadding.y,
         };
-      if (position === "right")
+      }
+      if (position === "right") {
+        lineWidth += fontWidth + text_.fontPadding.x;
         return {
           maxWidth: prev.maxWidth,
           width: prev.width + fontWidth + text_.fontPadding.x,
           height: prev.height,
         };
+      }
 
       if (position === "newline") {
+        lines.push({ startIndex: start, width: lineWidth });
+        lineWidth = fontWidth;
+        start = index;
         if (text.slice(index + 1).find((t) => t.position === "newline")) {
           return {
             maxWidth: prev.maxWidth > prev.width ? prev.maxWidth : prev.width,
@@ -79,11 +93,14 @@ export const getTextDimensions = (
     }
   );
 
-  console.log({ height });
+  lines.push({ startIndex: start, width: lineWidth });
+
+  console.log({ lines });
 
   return {
     width: maxWidth > width ? maxWidth : width,
     height,
+    lines,
   };
 };
 
@@ -119,6 +136,14 @@ export const textWithAbsoluteCoordinates = (
     carHeightFactor,
     carDisplayHeight
   );
+
+  const textDimensions = getTextDimensions(text, context);
+  const trueFirstWordCoordinates = { ...firstWordCoordinates };
+
+  firstWordCoordinates.x =
+    firstWordCoordinates.x +
+    (textDimensions.width / 2 - textDimensions.lines[0].width / 2);
+
   return text.reduce(
     (prev, currText, index) => {
       // if no relative position was provided, this is the first text
@@ -152,6 +177,7 @@ export const textWithAbsoluteCoordinates = (
         };
       if (currText.position === "newline") {
         return {
+          ...prev,
           start: {
             x: prev.start.x,
             y: prev.start.y + height + lastText.fontPadding.y,
@@ -162,13 +188,19 @@ export const textWithAbsoluteCoordinates = (
             {
               ...currText,
               coordinates: {
-                x: prev.start.x,
+                x:
+                  prev.trueStartX +
+                  (textDimensions.width / 2 -
+                    (textDimensions.lines.find((l) => l.startIndex === index)
+                      ?.width || 0) /
+                      2),
                 y: prev.start.y + height + lastText.fontPadding.y,
               },
             },
           ],
         };
       }
+
       return { ...prev, prevText: currText };
     },
     {
@@ -179,6 +211,7 @@ export const textWithAbsoluteCoordinates = (
         },
       ],
       start: firstWordCoordinates,
+      trueStartX: trueFirstWordCoordinates.x,
     }
   ).text;
 };

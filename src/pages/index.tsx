@@ -21,7 +21,7 @@ const Home = () => {
       </Head>
       <div
         id="root"
-        className="relative w-screen h-screen flex flex-col overflow-y-hidden"
+        className="relative w-screen h-screen flex flex-col overflow-y-hidden justify-center"
       >
         <Navbar />
         <Content />

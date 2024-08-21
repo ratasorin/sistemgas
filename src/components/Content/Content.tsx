@@ -210,7 +210,7 @@ const MainScene: FC = () => {
   return (
     <>
       {loading && (
-        <div className="absolute z-10 w-screen h-screen bg-black/50 flex flex-col items-center justify-center">
+        <div className="absolute z-50 w-screen h-screen bg-black/50 flex flex-col items-center justify-center">
           <div className={content["fire"]}>
             <div className={content["fire-left"]}>
               <div className={content["fire-left__main-fire"]}></div>
@@ -236,7 +236,7 @@ const MainScene: FC = () => {
       )}
       <div
         ref={sceneRef}
-        className="relative overflow-x-hidden overflow-y-hidden flex-1 flex flex-col-reverse z-0 mb-8 mr-8 ml-8 mt-16 bg-cyan-100 rounded-lg"
+        className="relative overflow-x-hidden overflow-y-hidden flex-1 flex flex-col-reverse z-0 mb-4 mr-4 ml-4 mt-12 bg-cyan-100 rounded-md"
       >
         <Scene
           width={dimensions.width}

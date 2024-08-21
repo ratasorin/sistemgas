@@ -33,8 +33,7 @@
 
 .sistemgas-hq {
   position: absolute;
-  bottom: calc(1 / 5 * 100%);
-  z-index: 100;
+  z-index: 10;
   width: 100%;
   overflow-x: hidden;
 }
@@ -54,15 +53,6 @@
   cursor: pointer;
 }
 
-.sistemgas-hq-animate-in {
-  animation: 4s cubic-bezier(0.33, 0.27, 0.58, 1) forwards sistemgas-hq-in;
-  transform: translateY(calc(1 / 5 * 100%));
-}
-
-.sistemgas-hq-force-end {
-  transform: translateY(calc(1 / 5 * 100%));
-}
-
 .sistemgas-svg-force-end {
   transform: translate(0);
 }
@@ -80,16 +70,6 @@
 
   100% {
     transform: translate(0);
-  }
-}
-
-@keyframes sistemgas-hq-in {
-  0% {
-    transform: translateY(10px);
-  }
-
-  100% {
-    transform: translateY(calc(1 / 5 * 100%));
   }
 }
 

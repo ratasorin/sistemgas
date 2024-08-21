@@ -45,6 +45,21 @@ export default class CarRender implements Render {
   carVelocity: number = 0;
   ended: boolean = false;
 
+  get scaleCoefficient() {
+    if (!this.canvas) return 1;
+
+    const CSS_SCALE = 0.9;
+    const { carDisplayWidth } = imageDisplayDimensions(
+      this.image,
+      getCanvasDimensions(this.canvas).height,
+      this.heightFactor
+    );
+
+    return (
+      carDisplayWidth / (getCanvasDimensions(this.canvas).width * CSS_SCALE)
+    );
+  }
+
   initializeCanvas(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -58,12 +73,7 @@ export default class CarRender implements Render {
     );
 
     this.context.scale(3, 3);
-    console.log({
-      context: this.context,
-      canvas: this.canvas,
-      image: this.image,
-      car: this.car,
-    });
+
     this.drawCar();
     this.render();
   }
@@ -75,14 +85,8 @@ export default class CarRender implements Render {
     this.car = new Car(this.image.width, this.carVelocity);
 
     this.image.onload = () => {
-      console.log({ image });
       this.car = new Car(this.image.width, this.carVelocity);
-      console.log({
-        context: this.context,
-        canvas: this.canvas,
-        image: this.image,
-        car: this.car,
-      });
+
       this.drawCar();
       this.render();
     };
@@ -124,12 +128,6 @@ export default class CarRender implements Render {
       getCanvasDimensions(this.canvas).height
     );
 
-    const { carDisplayWidth } = imageDisplayDimensions(
-      this.image,
-      getCanvasDimensions(this.canvas).height,
-      this.heightFactor
-    );
-
     this.context.drawImage(
       this.image,
       // source start X
@@ -162,17 +160,12 @@ export default class CarRender implements Render {
         Math.floor(this.image.height)
     );
 
-    const coefficient =
-      carDisplayWidth / getCanvasDimensions(this.canvas).width;
-
-    console.log({
-      coefficient,
-    });
-
+    // the transform origin is set on bottom right so that the scaling factor doesn't break the 1:1 relationship
+    // between where the car is rendered and where the business logic perceives it to be
     this.canvas.style.transformOrigin = `100% 100%`;
     this.canvas.style.transform = `translateY(-${Math.floor(
-      getCanvasDimensions(this.canvas).height / 8
-    )}px) scale(${coefficient})`;
+      getCanvasDimensions(this.canvas).height / 20
+    )}px) scale(${this.scaleCoefficient})`;
   }
 
   update() {
@@ -181,22 +174,13 @@ export default class CarRender implements Render {
       return;
     }
     if (!this.canvas || !this.context || !this.car) return;
-    const { carDisplayWidth } = imageDisplayDimensions(
-      this.image,
-      getCanvasDimensions(this.canvas).height,
-      this.heightFactor
-    );
 
-    const coefficient =
-      carDisplayWidth / getCanvasDimensions(this.canvas).width;
     if (
       this.car.position <=
-      (1 + coefficient) * getCanvasDimensions(this.canvas).width
+      (1 + this.scaleCoefficient) * getCanvasDimensions(this.canvas).width
     ) {
-      console.log("UPDATE?");
       this.car.update();
     } else {
-      console.log("STOP!");
       useAnimationState.setState(() => ({ finished: true }));
       this.end();
     }

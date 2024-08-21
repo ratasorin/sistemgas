@@ -6,6 +6,7 @@ import { Text } from "./Text/helpers/text";
 import { useEffect, useMemo } from "react";
 import CarRender, { useAnimationState } from "./Car/Car";
 import { gsap } from "gsap";
+import { createPortal } from "react-dom";
 
 export interface Render {
   render: () => void;
@@ -85,6 +86,19 @@ const getResponsiveHeightFactor = (screenWidth: number) => {
   return heightFactor;
 };
 
+const bringTextCanvasFront = () => {
+  const textRendererDiv = document.getElementById("text__renderer")!;
+
+  const rect = textRendererDiv.getBoundingClientRect();
+
+  textRendererDiv.style.left = `${rect.left}px`;
+  textRendererDiv.style.top = `${rect.top}px`;
+  textRendererDiv.style.width = `${rect.width}px`;
+  textRendererDiv.style.height = `${rect.height}px`;
+
+  document.getElementById("root")!.appendChild(textRendererDiv);
+};
+
 const Scene: NextPage<{
   width: number;
   height: number;
@@ -107,7 +121,7 @@ const Scene: NextPage<{
     return [
       new Text(
         "SISTEMGAS",
-        Math.floor(2.5 * fontSize),
+        Math.floor(2 * fontSize),
         "#172554",
         "Poppins",
         "start",
@@ -127,16 +141,19 @@ const Scene: NextPage<{
         "#f97316",
         "Poppins",
         "right",
-        "italic bold",
-        { y: 2, x: 0 }
+        "bold italic",
+        {
+          y: 2,
+          x: 2,
+        }
       ),
-      new Text("pentru", Math.floor(fontSize), "#172554", "Poppins", "newline"),
+      new Text("pentru", Math.floor(fontSize), "#172554", "Poppins", "right"),
       new Text(
         "furnizarea",
         Math.floor(fontSize),
         "#172554",
         "Poppins",
-        "right"
+        "newline"
       ),
       new Text("gazelor", Math.floor(fontSize), "#172554", "Poppins", "right"),
       new Text("naturale", Math.floor(fontSize), "#172554", "Poppins", "right"),
@@ -162,30 +179,26 @@ const Scene: NextPage<{
   useEffect(() => {
     if (!textRenderer || !height || !imageHeight) return;
 
+    const marginTop = 32; // 2rems in px
+    const destinationY =
+      -(textRenderer.textBoxCoordinates?.y || 0) +
+      textRenderer.padding.top -
+      marginTop;
+
     if (forceEnd) {
-      gsap.to(textRenderer.textBoxCoordinates!, {
-        y:
-          height -
-          imageHeight -
-          (textRenderer.textBox?.height ||
-            0 + 2 * textRenderer.averageWordPadding * 3) -
-          getResponsiveMarginBottom(width),
-        onUpdate: () => {
-          textRenderer.end();
-        },
+      bringTextCanvasFront();
+
+      // if the user forced the end, the text may not have been painted at all, so make sure one paint is done
+      textRenderer.end();
+
+      gsap.to(document.getElementById("text__renderer")!, {
+        y: destinationY,
         duration: 0,
       });
     } else if (finished && imageHeight && height) {
-      gsap.to(textRenderer.textBoxCoordinates!, {
-        y:
-          height -
-          imageHeight -
-          (textRenderer.textBox?.height ||
-            0 + 2 * textRenderer.averageWordPadding * 3) -
-          getResponsiveMarginBottom(width),
-        onUpdate: () => {
-          textRenderer.render();
-        },
+      bringTextCanvasFront();
+      gsap.to(document.getElementById("text__renderer"), {
+        y: destinationY,
         duration: 4,
         ease: "expo.out",
       });
@@ -194,8 +207,11 @@ const Scene: NextPage<{
 
   if (!textRenderer || !carRenderer) return null;
   return (
-    <div className="relative w-full flex-1 overflow-hidden z-10">
-      <div className="absolute w-full h-full z-10 overflow-hidden">
+    <div className="relative bottom-0 w-full flex-1 overflow-hidden z-10">
+      <div
+        id="text__renderer"
+        className="absolute bottom-0 w-full h-full z-10 overflow-hidden"
+      >
         <Canvas
           width={width}
           height={height}
@@ -203,7 +219,7 @@ const Scene: NextPage<{
           start={start}
         ></Canvas>
       </div>
-      <div className="absolute w-full h-full z-20 overflow-hidden">
+      <div className="absolute bottom-0 w-full h-full z-20 overflow-hidden">
         <Canvas
           width={width}
           height={height}

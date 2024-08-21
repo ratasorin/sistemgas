@@ -1,5 +1,5 @@
 .parallax {
-  --background-svg-width: calc(4023 / 1080 * 4 / 5 * 100vh * 2);
+  --background-svg-width: calc(4023 / 1080 * 4 / 5 * 100vw * 2);
   --road-svg-width: calc((4029 / 721) * (1 / 5) * 100vh);
   overflow-y: hidden;
 }
@@ -26,18 +26,17 @@
   left: 0;
   background: url("/grass.svg");
   width: var(--background-svg-width);
-  height: calc(4 / 5 * 100vh);
+  height: calc(4 / 5 * 100%);
   background-size: contain;
   background-repeat: no-repeat;
 }
 
 .sistemgas-hq {
   position: absolute;
-  transform: translateX(100%) translateY(5px);
-  bottom: calc(1 / 5 * 100vh);
+  bottom: calc(1 / 5 * 100%);
   z-index: 100;
   width: 100%;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .svg-hover {
@@ -57,20 +56,40 @@
 
 .sistemgas-hq-animate-in {
   animation: 4s cubic-bezier(0.33, 0.27, 0.58, 1) forwards sistemgas-hq-in;
-  transform: translateX(0%) translateY(calc(1 / 5 * 100vh + 5px));
+  transform: translateY(calc(1 / 5 * 100%));
 }
 
 .sistemgas-hq-force-end {
-  transform: translateX(0%) translateY(calc(1 / 5 * 100vh + 5px));
+  transform: translateY(calc(1 / 5 * 100%));
+}
+
+.sistemgas-svg-force-end {
+  transform: translate(0);
+}
+
+.sistemgas-svg-animate-in {
+  position: relative;
+  animation: 4s cubic-bezier(0.33, 0.27, 0.58, 1) forwards sistemgas-svg-in;
+  overflow-x: visible !important;
+}
+
+@keyframes sistemgas-svg-in {
+  0% {
+    transform: translate(100%);
+  }
+
+  100% {
+    transform: translate(0);
+  }
 }
 
 @keyframes sistemgas-hq-in {
   0% {
-    transform: translateX(100%) translateY(10px);
+    transform: translateY(10px);
   }
 
   100% {
-    transform: translateX(0%) translateY(calc(1 / 5 * 100vh + 5px));
+    transform: translateY(calc(1 / 5 * 100%));
   }
 }
 
@@ -80,7 +99,7 @@
   left: 0;
   background: url("/forest-front.svg");
   width: var(--background-svg-width);
-  height: calc(4 / 5 * 100vh);
+  height: calc(4 / 5 * 100%);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
@@ -92,7 +111,7 @@
   left: 0;
   background: url("/forest-mid.svg");
   width: var(--background-svg-width);
-  height: calc(4 / 5 * 100vh);
+  height: calc(4 / 5 * 100%);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
@@ -104,7 +123,7 @@
   left: 0;
   background: url("/forest-back.svg");
   width: var(--background-svg-width);
-  height: calc(4 / 5 * 100vh);
+  height: calc(4 / 5 * 100%);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
@@ -116,7 +135,7 @@
   left: 0;
   background: url("/mountains-front.svg");
   width: var(--background-svg-width);
-  height: calc(4 / 5 * 100vh);
+  height: calc(4 / 5 * 100%);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
@@ -128,7 +147,7 @@
   left: 0;
   background: url("/mountains-back.svg");
   width: var(--background-svg-width);
-  height: calc(4 / 5 * 100vh);
+  height: calc(4 / 5 * 100%);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
@@ -140,7 +159,7 @@
   left: 0;
   background: url("/clouds-front.svg");
   width: var(--background-svg-width);
-  height: calc(4 / 5 * 100vh);
+  height: calc(4 / 5 * 100%);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
@@ -151,7 +170,7 @@
   left: 0;
   background: url("/clouds-back.svg");
   width: var(--background-svg-width);
-  height: calc(4 / 5 * 100vh);
+  height: calc(4 / 5 * 100%);
   background-position: left;
   background-repeat: repeat-x;
   background-size: contain;
@@ -159,10 +178,10 @@
 
 .street {
   position: absolute;
-  top: calc(4 / 5 * 100vh);
+  top: calc(4 / 5 * 100%);
   left: 0;
   background: url("/road.svg");
-  height: calc((1 / 5) * 100vh);
+  height: calc((1 / 5) * 100%);
   width: calc(var(--road-svg-width) * 4);
   background-position: left;
   background-repeat: repeat-x;
@@ -171,10 +190,10 @@
 
 .street-background {
   position: absolute;
-  top: calc(4 / 5 * 100vh);
+  top: calc(4 / 5 * 100%);
   left: 0;
   background: url("/road-background.svg");
-  height: calc((1 / 5) * 100vh);
+  height: calc((1 / 5) * 100%);
   width: calc(var(--road-svg-width) * 4);
   background-position: left;
   background-repeat: repeat-x;

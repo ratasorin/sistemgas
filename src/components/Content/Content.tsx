@@ -17,6 +17,8 @@ import { shouldExit, updateLastElementHovered } from "lib/debounce-hover";
 import "tippy.js/animations/scale.css";
 import { IoPlaySkipForward } from "react-icons/io5";
 import WebFont from "webfontloader";
+import { createPortal } from "react-dom";
+import { scrollElementBy } from "lib/scroll-smooth";
 
 const screens = {
   sm: 640,
@@ -234,49 +236,57 @@ const MainScene: FC = () => {
       )}
       <div
         ref={sceneRef}
-        className="relative overflow-x-hidden overflow-y-hidden w-screen flex-1 flex flex-col-reverse z-0"
+        className="relative overflow-x-hidden overflow-y-hidden flex-1 flex flex-col-reverse z-0 mb-8 mr-8 ml-8 mt-16 bg-cyan-100 rounded-lg"
       >
-        {!forceEnd && (
-          <button
-            className="absolute right-5 top-5 sm:right-7 sm:top-7 lg:top-10 lg:right-10 p-2 rounded-full bg-zinc-800/75 text hover:cursor-pointer z-30"
-            onClick={() =>
-              useAnimationState.setState(() => ({ forceEnd: true }))
-            }
-          >
-            <IoPlaySkipForward className="text-3xl sm:text-4xl lg:text-5xl text-white" />
-          </button>
-        )}
         <Scene
           width={dimensions.width}
           height={dimensions.height}
           imageHeight={imageHeight}
           start={!loading}
         ></Scene>
+        {createPortal(
+          <div
+            ref={(element) => {
+              console.log(element?.scrollWidth);
+              if (element && finished) {
+                scrollElementBy(
+                  element,
+                  element.children[0].scrollWidth / 2 - window.innerWidth / 2,
+                  3000
+                );
 
-        <div
-          ref={(element) => {
-            if (finished || forceEnd) {
-              if (element)
-                element.scroll({
-                  left: element.scrollWidth / 4,
-                });
-            }
-          }}
-          className={`${content["sistemgas-hq"]} ${
-            finished
-              ? content["sistemgas-hq-animate-in"]
-              : forceEnd
-              ? content["sistemgas-hq-force-end"]
-              : ""
-          }`}
-        >
-          <EmbedSvg
-            className="h-screen flex flex-col justify-end items-center overflow-x-visible min-w-min"
-            svgClassName="h-2/3 overflow-visible"
-            elementId={LANDING_PAGE_SISTEMGAS_HQ_SVG_ID}
-            svgName="sistemgas-hq.svg"
-          ></EmbedSvg>
-        </div>
+                setTimeout(() => {
+                  element.style.overflowX = "scroll";
+                }, 4000);
+              } else if (element && forceEnd) {
+                element.scrollLeft =
+                  element.children[0].scrollWidth / 2 - window.innerWidth / 2;
+                element.style.overflowX = "scroll";
+              }
+            }}
+            className={`${content["sistemgas-hq"]} ${
+              finished
+                ? content["sistemgas-hq-animate-in"]
+                : forceEnd
+                ? content["sistemgas-hq-force-end"]
+                : ""
+            }`}
+          >
+            <EmbedSvg
+              className={`translate-x-full h-screen flex flex-col justify-end items-center overflow-x-visible min-w-min ${
+                finished
+                  ? content["sistemgas-svg-animate-in"]
+                  : forceEnd
+                  ? content["sistemgas-svg-force-end"]
+                  : ""
+              }`}
+              svgClassName="h-3/5 overflow-visible"
+              elementId={LANDING_PAGE_SISTEMGAS_HQ_SVG_ID}
+              svgName="sistemgas-hq.svg"
+            ></EmbedSvg>
+          </div>,
+          document.getElementById("root")!
+        )}
 
         <div className={`${content.parallax} z-0`}>
           {backgroundAnimations.map((elem) => (

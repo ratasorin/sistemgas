@@ -11,6 +11,8 @@ import {
 } from "./helpers/math/coordinates";
 import { Text } from "./helpers/text";
 
+export let textBox: Dimensions | undefined;
+
 export default class TextRenderer implements Render {
   text: TextWithCoordinates[] | undefined;
   initialText: Text[];
@@ -25,10 +27,10 @@ export default class TextRenderer implements Render {
   coordinates: Coordinates | undefined;
   averageWordPadding: number = 0;
   padding: { top: number; left: number; right: number; bottom: number } = {
-    top: 24,
-    left: 24,
-    right: 24,
-    bottom: 24,
+    top: 16,
+    left: 16,
+    right: 16,
+    bottom: 16,
   };
   border: { top: number; left: number; right: number; bottom: number } = {
     top: 3,
@@ -54,6 +56,7 @@ export default class TextRenderer implements Render {
       carDisplayHeight
     );
     this.textBox = getTextDimensions(this.text, this.context);
+    textBox = getTextDimensions(this.text, this.context);
     this.textBoxCoordinates = getFirstWordPosition(
       this.text,
       this.context,
@@ -124,7 +127,7 @@ export default class TextRenderer implements Render {
 
     this.context.save();
     this.context.globalCompositeOperation = "source-over";
-    this.context.globalAlpha = 0.7;
+    this.context.globalAlpha = 1;
 
     this.context.clearRect(
       0,
@@ -199,7 +202,7 @@ export default class TextRenderer implements Render {
 
     this.context.save();
     this.context.globalCompositeOperation = "source-over";
-    this.context.globalAlpha = 0.7;
+    this.context.globalAlpha = 1;
 
     this.context.clearRect(
       Math.floor(

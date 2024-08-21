@@ -20,7 +20,7 @@ const Canvas: NextPage<Props> = ({ width, height, render, start }) => {
   const frameID = useRef(-1);
 
   useEffect(() => {
-    if (width && height) {
+    if (width && height && !finished && !forceEnd) {
       const canvas = canvasRef.current as Canvas;
       const dpr = window.devicePixelRatio;
       render.initializeCanvas(canvas, dpr);
@@ -34,7 +34,6 @@ const Canvas: NextPage<Props> = ({ width, height, render, start }) => {
        */
       const loop = (time: number) => {
         let delta = Math.floor(time - (prevTime ?? 0));
-        console.log({ delta });
         if (delta <= MIN_DELAY_MILLIS) {
           render.update();
           render.render();

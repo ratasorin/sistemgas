@@ -29,10 +29,9 @@ export class Text {
     this.fontColor = fontColor;
     this.fontFamily = fontFamily;
     this.fontPadding = {
-      x: Math.ceil(fontSize / 2.5) + (fontPadding ? fontPadding?.x : 0),
+      x: fontPadding?.x || 0,
       y: Math.ceil(fontSize / 3.5) + (fontPadding ? fontPadding?.y : 0),
     };
-    console.log({ padding: this.fontPadding });
     this.position = position;
     this.fontStyle = fontStyle;
   }

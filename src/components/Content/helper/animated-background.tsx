@@ -28,7 +28,6 @@ const AnimatedBackground: FC<{
       ref={(element) => {
         if (!element || running) return;
         if (!animationRef.current && !forceEnd) {
-          console.log({ forceEnd });
           animationRef.current = element.animate(
             [
               {

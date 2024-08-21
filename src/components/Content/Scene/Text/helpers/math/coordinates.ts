@@ -21,8 +21,6 @@ export const getTextDimensions = (
   text: Text[],
   context: CanvasRenderingContext2D
 ): Dimensions & { lines: Line[] } => {
-  console.log({ text });
-
   let biggestHeight = 0;
   let lineWidth = 0;
   let start = -1;
@@ -32,7 +30,12 @@ export const getTextDimensions = (
       context.font = `${text_.fontStyle ? text_.fontStyle : ""} ${
         text_.fontSize
       }px ${text_.fontFamily}`;
-      const metrics = context.measureText(text_.payload as string);
+      const metrics = context.measureText(
+        (text_.position === "right" || text_.position === "newline") &&
+          index < text.length
+          ? `${text_.payload} `
+          : (text_.payload as string)
+      );
       const fontWidth = metrics.width;
       const fontHeight =
         Math.abs(metrics.actualBoundingBoxDescent) +
@@ -59,10 +62,11 @@ export const getTextDimensions = (
         };
       }
       if (position === "right") {
-        lineWidth += fontWidth + text_.fontPadding.x;
+        const paddingX = index < text.length ? text_.fontPadding.x : 0;
+        lineWidth += fontWidth + paddingX;
         return {
           maxWidth: prev.maxWidth,
-          width: prev.width + fontWidth + text_.fontPadding.x,
+          width: prev.width + fontWidth + paddingX,
           height: prev.height,
         };
       }
@@ -74,13 +78,13 @@ export const getTextDimensions = (
         if (text.slice(index + 1).find((t) => t.position === "newline")) {
           return {
             maxWidth: prev.maxWidth > prev.width ? prev.maxWidth : prev.width,
-            width: fontWidth,
+            width: fontWidth + text_.fontPadding.x,
             height: prev.height + biggestHeight + text_.fontPadding.y,
           };
         } else
           return {
             maxWidth: prev.maxWidth > prev.width ? prev.maxWidth : prev.width,
-            width: fontWidth,
+            width: fontWidth + text_.fontPadding.x,
             height: prev.height + biggestHeight,
           };
       }
@@ -94,8 +98,6 @@ export const getTextDimensions = (
   );
 
   lines.push({ startIndex: start, width: lineWidth });
-
-  console.log({ lines });
 
   return {
     width: maxWidth > width ? maxWidth : width,
@@ -115,8 +117,8 @@ export const getFirstWordPosition = (
   const coordinates = {
     x: canvasDimensions.width / 2 - textDimensions.width / 2,
     y:
-      canvasDimensions.height / (0.95 + carHeightFactor) -
-      carDisplayHeight / (0.95 + carHeightFactor) +
+      canvasDimensions.height / (0.9 + carHeightFactor) -
+      carDisplayHeight / (0.9 + carHeightFactor) +
       (carDisplayHeight - textDimensions.height) / 2,
   } as Coordinates;
   return coordinates;
@@ -153,13 +155,16 @@ export const textWithAbsoluteCoordinates = (
       context.font = `${lastText.fontStyle ? lastText.fontStyle : ""} ${
         lastText.fontSize
       }px ${lastText.fontFamily}`;
-      const measurements = context.measureText(lastText.payload);
+      const measurements = context.measureText(
+        (lastText.position === "right" || lastText.position === "newline") &&
+          index < text.length
+          ? `${lastText.payload} `
+          : (lastText.payload as string)
+      );
       const width = measurements.width;
       const height =
         Math.abs(measurements.actualBoundingBoxDescent) +
         Math.abs(measurements.actualBoundingBoxAscent);
-
-      console.log(lastText.payload, height);
 
       if (currText.position === "right")
         return {

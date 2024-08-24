@@ -1,6 +1,7 @@
 import { getCanvasDimensions } from "../Canvas/helper/canvas-dimensions";
 import { Render } from "../Scene";
 import { create } from "zustand";
+import { Dimensions } from "../Text/helpers/math/coordinates";
 
 export const useAnimationState = create<{
   finished: boolean;
@@ -12,15 +13,24 @@ export const useAnimationState = create<{
   forceEndAnimation: () => set((s) => ({ ...s, forceEnd: true })),
 }));
 
-export const imageDisplayDimensions = (
-  image: HTMLImageElement,
-  canvasHeight: number,
-  heightFactor: number
-) => {
-  const carDisplayHeight = heightFactor * canvasHeight;
-  const carDisplayWidth = image.width * (carDisplayHeight / image.height);
+type FitterProps = {
+  carDimensions: Dimensions;
+  canvasDimensions: Dimensions;
+};
+export const fitCarInsideCanvas = ({
+  canvasDimensions,
+  carDimensions,
+}: FitterProps) => {
+  console.log({ canvasDimensions });
 
-  return { carDisplayHeight, carDisplayWidth };
+  const widthRatio = canvasDimensions.width / carDimensions.width;
+  const heightRatio = canvasDimensions.height / carDimensions.height;
+  const ratio = Math.min(widthRatio, heightRatio);
+
+  return {
+    carDestinationWidth: carDimensions.width * ratio,
+    carDestinationHeight: carDimensions.height * ratio,
+  };
 };
 
 class Car {
@@ -36,6 +46,23 @@ class Car {
   }
 }
 
+const TRUCK_AREA_PERCENTAGE_OF_SCREEN = 0.55;
+
+export const getScaleCoefficient = (
+  canvas: HTMLCanvasElement,
+  image: HTMLImageElement
+) => {
+  if (!canvas) return 1;
+
+  const { carDestinationHeight } = fitCarInsideCanvas({
+    canvasDimensions: getCanvasDimensions(canvas),
+    carDimensions: image,
+  });
+
+  const n = getCanvasDimensions(canvas).height / carDestinationHeight;
+  return n * TRUCK_AREA_PERCENTAGE_OF_SCREEN;
+};
+
 export default class CarRender implements Render {
   canvas: HTMLCanvasElement | undefined;
   context: CanvasRenderingContext2D | undefined;
@@ -44,21 +71,6 @@ export default class CarRender implements Render {
   heightFactor: number = 0;
   carVelocity: number = 0;
   ended: boolean = false;
-
-  get scaleCoefficient() {
-    if (!this.canvas) return 1;
-
-    const CSS_SCALE = 0.9;
-    const { carDisplayWidth } = imageDisplayDimensions(
-      this.image,
-      getCanvasDimensions(this.canvas).height,
-      this.heightFactor
-    );
-
-    return (
-      carDisplayWidth / (getCanvasDimensions(this.canvas).width * CSS_SCALE)
-    );
-  }
 
   initializeCanvas(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -128,6 +140,11 @@ export default class CarRender implements Render {
       getCanvasDimensions(this.canvas).height
     );
 
+    const { carDestinationHeight, carDestinationWidth } = fitCarInsideCanvas({
+      canvasDimensions: getCanvasDimensions(this.canvas),
+      carDimensions: this.image,
+    });
+
     this.context.drawImage(
       this.image,
       // source start X
@@ -146,26 +163,21 @@ export default class CarRender implements Render {
       0,
 
       // destination start Y
-      getCanvasDimensions(this.canvas).height -
-        (Math.floor(getCanvasDimensions(this.canvas).width) /
-          Math.floor(this.image.width)) *
-          Math.floor(this.image.height),
+      getCanvasDimensions(this.canvas).height - carDestinationHeight,
 
       // destination width - this is the computed width that will help fit the image on the canvas.
-      Math.floor(getCanvasDimensions(this.canvas).width),
+      carDestinationWidth,
 
       // destination height
-      (Math.floor(getCanvasDimensions(this.canvas).width) /
-        Math.floor(this.image.width)) *
-        Math.floor(this.image.height)
+      carDestinationHeight
     );
 
     // the transform origin is set on bottom right so that the scaling factor doesn't break the 1:1 relationship
     // between where the car is rendered and where the business logic perceives it to be
     this.canvas.style.transformOrigin = `100% 100%`;
-    this.canvas.style.transform = `translateY(-${Math.floor(
-      getCanvasDimensions(this.canvas).height / 20
-    )}px) scale(${this.scaleCoefficient})`;
+    this.canvas.style.transform = `translateY(-${
+      (getCanvasDimensions(this.canvas).height * 1) / 7
+    }px) scale(${getScaleCoefficient(this.canvas, this.image)})`;
   }
 
   update() {
@@ -177,7 +189,8 @@ export default class CarRender implements Render {
 
     if (
       this.car.position <=
-      (1 + this.scaleCoefficient) * getCanvasDimensions(this.canvas).width
+      (1 + getScaleCoefficient(this.canvas, this.image)) *
+        getCanvasDimensions(this.canvas).width
     ) {
       this.car.update();
     } else {
@@ -188,12 +201,10 @@ export default class CarRender implements Render {
 
   render() {
     if (!this.canvas || !this.car) return;
-
     const otherTransforms = this.canvas.style.transform.replace(
       /translateX\([^)]+\)\s*/g,
       ""
     );
-
     this.canvas.style.transform = `translateX(${
       -getCanvasDimensions(this.canvas).width + this.car.position
     }px) ${otherTransforms}`;

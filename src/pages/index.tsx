@@ -19,11 +19,11 @@ const Home = () => {
       <Head>
         <title>Sistemgas</title>
       </Head>
+      <Navbar />
       <div
         id="root"
         className="relative w-screen h-screen flex flex-col overflow-y-hidden justify-center"
       >
-        <Navbar />
         <Content />
         {landingPageTooltips.map((el) => (
           <Tooltip tooltipTitle={el.title} elementId={el.id} />

@@ -184,6 +184,8 @@ const MainScene: FC = () => {
     if (loading) return;
 
     const scene = sceneRef.current as HTMLDivElement;
+
+    console.log(scene.getBoundingClientRect());
     setDimensions({
       width: scene.getBoundingClientRect().width,
       height: scene.getBoundingClientRect().height,
@@ -236,7 +238,7 @@ const MainScene: FC = () => {
       )}
       <div
         ref={sceneRef}
-        className="relative overflow-x-hidden overflow-y-hidden flex-1 flex flex-col-reverse z-0 mb-4 mr-4 ml-4 mt-12 bg-cyan-100 rounded-md"
+        className="relative overflow-x-hidden overflow-y-hidden flex-1 flex flex-col-reverse z-0 mb-4 mr-4 ml-4 mt-4 bg-cyan-100 rounded-md"
       >
         <Scene
           width={dimensions.width}

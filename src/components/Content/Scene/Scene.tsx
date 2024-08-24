@@ -42,7 +42,7 @@ const fonts = {
 } as const;
 
 const getResponsiveFontSize = (screenWidth: number) => {
-  let fontSize: number = fonts["text-base"];
+  let fontSize: number = fonts["text-lg"];
   if (screenWidth > screens["sm"] && screenWidth < screens["md"])
     fontSize = fonts["text-xl"];
   if (screenWidth > screens["md"] && screenWidth < screens["lg"])
@@ -64,16 +64,6 @@ const getResponsiveCarVelocity = (screenWidth: number) => {
   if (screenWidth < screens["sm"]) speed = speed - 1.25;
 
   return speed;
-};
-
-const getResponsiveMarginBottom = (screenWidth: number) => {
-  let baseMarginBottom: number = 96;
-  if (screenWidth < screens["xl"]) baseMarginBottom = 80;
-  if (screenWidth < screens["lg"]) baseMarginBottom = 74;
-  if (screenWidth < screens["md"]) baseMarginBottom = 58;
-  if (screenWidth < screens["sm"]) baseMarginBottom = 42;
-
-  return baseMarginBottom;
 };
 
 const getResponsiveHeightFactor = (screenWidth: number) => {
@@ -179,10 +169,10 @@ const Scene: NextPage<{
   useEffect(() => {
     if (!textRenderer || !height || !imageHeight) return;
 
-    const marginTop = 32; // 2rems in px
+    const marginTop = 52; //px
     const destinationY =
       -(textRenderer.textBoxCoordinates?.y || 0) +
-      textRenderer.padding.top -
+      textRenderer.padding.top +
       marginTop;
 
     if (forceEnd) {
@@ -219,7 +209,10 @@ const Scene: NextPage<{
           start={start}
         ></Canvas>
       </div>
-      <div className="absolute bottom-0 w-full h-full z-20 overflow-hidden">
+      <div
+        id="car__renderer"
+        className="absolute bottom-0 w-full h-full z-20 overflow-hidden"
+      >
         <Canvas
           width={width}
           height={height}

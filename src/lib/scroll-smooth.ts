@@ -35,8 +35,6 @@ export function scrollElementBy(
 
     element.scrollLeft = right;
 
-    console.log(element.style.right, moveBy, scrollBy, right);
-
     if (elapsedTime <= animationTime) {
       prevTime = currentTime;
       window.requestAnimationFrame(step);

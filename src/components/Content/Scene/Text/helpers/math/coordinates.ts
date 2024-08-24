@@ -110,16 +110,18 @@ export const getFirstWordPosition = (
   text: Text[],
   context: CanvasRenderingContext2D,
   canvasDimensions: Dimensions,
-  carHeightFactor: number,
   carDisplayHeight: number
 ) => {
   const textDimensions = getTextDimensions(text, context);
   const coordinates = {
     x: canvasDimensions.width / 2 - textDimensions.width / 2,
     y:
-      canvasDimensions.height / (0.9 + carHeightFactor) -
-      carDisplayHeight / (0.9 + carHeightFactor) +
-      (carDisplayHeight - textDimensions.height) / 2,
+      (canvasDimensions.height -
+        carDisplayHeight +
+        (1 / 7) * canvasDimensions.height +
+        textDimensions.height) /
+        2 +
+      (1 / 10) * carDisplayHeight,
   } as Coordinates;
   return coordinates;
 };
@@ -128,14 +130,12 @@ export const textWithAbsoluteCoordinates = (
   text: Text[],
   context: CanvasRenderingContext2D,
   canvasDimensions: Dimensions,
-  carHeightFactor: number,
   carDisplayHeight: number
 ): TextWithCoordinates[] => {
   const firstWordCoordinates = getFirstWordPosition(
     text,
     context,
     canvasDimensions,
-    carHeightFactor,
     carDisplayHeight
   );
 

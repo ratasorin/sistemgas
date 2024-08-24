@@ -11,29 +11,36 @@ const Navigation: FC = () => {
 
   return (
     <>
-      <div className="w-full p-4">
-        <div
-          style={{ justifyContent: open ? "end" : "space-between" }}
-          className="relative z-40 flex justify-between items-center max-w-4xl bg-zinc-50 py-2 px-3 rounded-lg border left-1/2 -translate-x-1/2 border-zinc-200"
-        >
-          {!open && (
-            <button
-              className="p-2 rounded-full bg-slate-950 hover:cursor-pointer z-30"
-              onClick={() => setOpen(true)}
-            >
-              <IoMdMenu className="text-xl sm:text-2xl lg:text-3xl text-white" />
-            </button>
-          )}
+      {!open && (
+        <div className="absolute top-3 left-3 z-50 bg-white pr-2 pb-2 rounded-br-2xl overflow-visible">
           <button
-            disabled={forceEnd || finished}
-            className="p-2 rounded-full bg-slate-950 text hover:cursor-pointer z-30 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed disabled:bg-zinc-700/40"
-            onClick={() =>
-              useAnimationState.setState(() => ({ forceEnd: true }))
-            }
+            className="p-2 rounded-full bg-slate-950 hover:cursor-pointer z-30"
+            onClick={() => setOpen(true)}
           >
-            <IoPlaySkipForward className="text-xl sm:text-2xl lg:text-3xl text-white" />
+            <IoMdMenu className="text-xl sm:text-2xl lg:text-3xl text-white" />
           </button>
+          <div
+            className="absolute w-4 h-4 bg-white left-11 top-1"
+            style={{
+              clipPath: `path("M 0 0 H 0 H 16 A 16 16 0 0 0 0 16 H 16 H 0 Z")`,
+            }}
+          ></div>
+          <div
+            className="absolute w-4 h-4 bg-white top-11 left-1"
+            style={{
+              clipPath: `path("M 0 0 H 0 H 16 A 16 16 0 0 0 0 16 H 16 H 0 Z")`,
+            }}
+          ></div>
         </div>
+      )}
+      <div className="absolute top-3 right-3 z-50 bg-white pl-2 pb-2 rounded-bl-xl">
+        <button
+          disabled={forceEnd || finished}
+          className="p-2 rounded-full bg-slate-950 text hover:cursor-pointer z-30 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed disabled:bg-zinc-700/40"
+          onClick={() => useAnimationState.setState(() => ({ forceEnd: true }))}
+        >
+          <IoPlaySkipForward className="text-xl sm:text-2xl lg:text-3xl text-white" />
+        </button>
       </div>
       {open && (
         <div className="absolute top-0 left-0 w-screen h-screen z-[1000] flex flex-col font-bold lg:flex-row items-center justify-evenly p-10 bg-black/80">

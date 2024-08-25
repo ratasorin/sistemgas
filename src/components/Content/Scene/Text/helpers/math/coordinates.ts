@@ -118,7 +118,7 @@ export const getFirstWordPosition = (
     y:
       (canvasDimensions.height -
         carDisplayHeight +
-        (1 / 7) * canvasDimensions.height +
+        (2 / 7) * canvasDimensions.height +
         textDimensions.height) /
         2 +
       (1 / 10) * carDisplayHeight,

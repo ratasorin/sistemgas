@@ -241,11 +241,7 @@ export default class TextRenderer implements Render {
           carDestinationWidth * coefficient +
           (carDestinationWidth * coefficient) / 2,
         0,
-        Math.floor(
-          4 * getCanvasDimensions(this.canvas).width +
-            carDestinationWidth * coefficient +
-            (carDestinationWidth * coefficient) / 2
-        ),
+        Math.floor(4 * getCanvasDimensions(this.canvas).width),
         Math.floor(getCanvasDimensions(this.canvas).height)
       );
 

@@ -12,7 +12,7 @@ const Navigation: FC = () => {
   return (
     <>
       {!open && (
-        <div className="absolute top-3 left-3 z-50 bg-white pr-2 pb-2 rounded-br-2xl overflow-visible">
+        <div className="absolute top-3 left-3 z-50 bg-white pt-2 pr-2 pb-2 rounded-br-2xl overflow-visible">
           <button
             className="p-2 rounded-full bg-slate-950 hover:cursor-pointer z-30"
             onClick={() => setOpen(true)}
@@ -26,20 +26,34 @@ const Navigation: FC = () => {
             }}
           ></div>
           <div
-            className="absolute w-4 h-4 bg-white top-11 left-1"
+            className="absolute w-4 h-4 bg-white top-[52px] left-1"
             style={{
               clipPath: `path("M 0 0 H 0 H 16 A 16 16 0 0 0 0 16 H 16 H 0 Z")`,
             }}
           ></div>
         </div>
       )}
-      <div className="absolute top-3 right-3 z-50 bg-white pl-2 pb-2 rounded-bl-xl">
+      <div className="absolute top-3 right-3 z-50 bg-white pt-2 pl-2 pb-2 rounded-bl-2xl overflow-visible">
         <button
           disabled={forceEnd || finished}
           className="p-2 rounded-full bg-slate-950 text hover:cursor-pointer z-30 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed disabled:bg-zinc-700/40"
           onClick={() => useAnimationState.setState(() => ({ forceEnd: true }))}
         >
           <IoPlaySkipForward className="text-xl sm:text-2xl lg:text-3xl text-white" />
+          <div
+            className="absolute w-4 h-4 bg-white top-[52px] left-6"
+            style={{
+              clipPath: `path("M 0 0 H 0 H 16 A 16 16 0 0 0 0 16 H 16 H 0 Z")`,
+              transform: "rotate(90deg)",
+            }}
+          ></div>
+          <div
+            className="absolute w-4 h-4 bg-white top-1 right-11"
+            style={{
+              clipPath: `path("M 0 0 H 0 H 16 A 16 16 0 0 0 0 16 H 16 H 0 Z")`,
+              transform: "rotate(90deg)",
+            }}
+          ></div>
         </button>
       </div>
       {open && (

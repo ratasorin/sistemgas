@@ -46,7 +46,7 @@ class Car {
   }
 }
 
-const TRUCK_AREA_PERCENTAGE_OF_SCREEN = 0.55;
+const TRUCK_AREA_PERCENTAGE_OF_SCREEN = 0.4;
 
 export const getScaleCoefficient = (
   canvas: HTMLCanvasElement,

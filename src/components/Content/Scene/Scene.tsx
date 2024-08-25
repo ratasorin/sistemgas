@@ -169,7 +169,7 @@ const Scene: NextPage<{
   useEffect(() => {
     if (!textRenderer || !height || !imageHeight) return;
 
-    const marginTop = 52; //px
+    const marginTop = 60; //px
     const destinationY =
       -(textRenderer.textBoxCoordinates?.y || 0) +
       textRenderer.padding.top +

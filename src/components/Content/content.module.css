@@ -1,6 +1,8 @@
 .parallax {
   --background-svg-width: calc(4023 / 1080 * 4 / 5 * 100vw * 2);
-  --road-svg-width: calc((4029 / 721) * (1 / 5) * 100vh);
+  --road-svg-width: calc(
+    (4029 / 721) * (1 / 5) * 100vh - 32px
+  ); /* the 32 px are because there is a margin left and right of 16px that affect the width of the container*/
   overflow-y: hidden;
 }
 
@@ -161,7 +163,6 @@
   width: var(--background-svg-width);
   height: calc(4 / 5 * 100%);
   background-position: left bottom;
-
   background-repeat: repeat-x;
   background-size: contain;
 }
@@ -174,7 +175,6 @@
   height: calc((1 / 5) * 100%);
   width: calc(var(--road-svg-width) * 4);
   background-position: left bottom;
-
   background-repeat: repeat-x;
   background-size: contain;
 }
@@ -187,7 +187,6 @@
   height: calc((1 / 5) * 100%);
   width: calc(var(--road-svg-width) * 4);
   background-position: left bottom;
-
   background-repeat: repeat-x;
   background-size: contain;
 }

@@ -20,13 +20,13 @@ const Navigation: FC = () => {
             <IoMdMenu className="text-xl sm:text-2xl lg:text-3xl text-white" />
           </button>
           <div
-            className="absolute w-4 h-4 bg-white left-11 top-1"
+            className="absolute w-4 h-4 bg-white left-11 top-1 sm:left-12 lg:left-[54px]"
             style={{
               clipPath: `path("M 0 0 H 0 H 16 A 16 16 0 0 0 0 16 H 16 H 0 Z")`,
             }}
           ></div>
           <div
-            className="absolute w-4 h-4 bg-white top-[52px] left-1"
+            className="absolute w-4 h-4 bg-white top-[52px] left-1 sm:top-14 lg:top-[62px]"
             style={{
               clipPath: `path("M 0 0 H 0 H 16 A 16 16 0 0 0 0 16 H 16 H 0 Z")`,
             }}
@@ -41,14 +41,14 @@ const Navigation: FC = () => {
         >
           <IoPlaySkipForward className="text-xl sm:text-2xl lg:text-3xl text-white" />
           <div
-            className="absolute w-4 h-4 bg-white top-[52px] left-6"
+            className="absolute w-4 h-4 bg-white top-[52px] left-6 sm:top-14 sm:left-7 lg:left-[34px] lg:top-[62px]"
             style={{
               clipPath: `path("M 0 0 H 0 H 16 A 16 16 0 0 0 0 16 H 16 H 0 Z")`,
               transform: "rotate(90deg)",
             }}
           ></div>
           <div
-            className="absolute w-4 h-4 bg-white top-1 right-11"
+            className="absolute w-4 h-4 bg-white top-1 right-11 sm:right-12 lg:right-[54px]"
             style={{
               clipPath: `path("M 0 0 H 0 H 16 A 16 16 0 0 0 0 16 H 16 H 0 Z")`,
               transform: "rotate(90deg)",

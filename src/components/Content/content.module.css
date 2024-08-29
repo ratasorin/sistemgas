@@ -22,13 +22,17 @@
 }
 
 .grass {
-  position: absolute;
-  left: 0;
   background: url("/grass.svg");
+  position: absolute;
+  top: 0;
+  left: 0;
   width: var(--background-svg-width);
   height: calc(4 / 5 * 100%);
+  background-position: left bottom;
+
+  background-repeat: repeat-x;
   background-size: contain;
-  background-repeat: no-repeat;
+  background-position: left bottom;
 }
 
 .sistemgas-hq {
@@ -80,7 +84,7 @@
   background: url("/forest-front.svg");
   width: var(--background-svg-width);
   height: calc(4 / 5 * 100%);
-  background-position: left;
+  background-position: left bottom;
   background-repeat: repeat-x;
   background-size: contain;
 }
@@ -92,7 +96,8 @@
   background: url("/forest-mid.svg");
   width: var(--background-svg-width);
   height: calc(4 / 5 * 100%);
-  background-position: left;
+  background-position: left bottom;
+
   background-repeat: repeat-x;
   background-size: contain;
 }
@@ -104,7 +109,8 @@
   background: url("/forest-back.svg");
   width: var(--background-svg-width);
   height: calc(4 / 5 * 100%);
-  background-position: left;
+  background-position: left bottom;
+
   background-repeat: repeat-x;
   background-size: contain;
 }
@@ -116,7 +122,8 @@
   background: url("/mountains-front.svg");
   width: var(--background-svg-width);
   height: calc(4 / 5 * 100%);
-  background-position: left;
+  background-position: left bottom;
+
   background-repeat: repeat-x;
   background-size: contain;
 }
@@ -128,7 +135,8 @@
   background: url("/mountains-back.svg");
   width: var(--background-svg-width);
   height: calc(4 / 5 * 100%);
-  background-position: left;
+  background-position: left bottom;
+
   background-repeat: repeat-x;
   background-size: contain;
 }
@@ -140,7 +148,8 @@
   background: url("/clouds-front.svg");
   width: var(--background-svg-width);
   height: calc(4 / 5 * 100%);
-  background-position: left;
+  background-position: left bottom;
+
   background-repeat: repeat-x;
   background-size: contain;
 }
@@ -151,7 +160,8 @@
   background: url("/clouds-back.svg");
   width: var(--background-svg-width);
   height: calc(4 / 5 * 100%);
-  background-position: left;
+  background-position: left bottom;
+
   background-repeat: repeat-x;
   background-size: contain;
 }
@@ -163,7 +173,8 @@
   background: url("/road.svg");
   height: calc((1 / 5) * 100%);
   width: calc(var(--road-svg-width) * 4);
-  background-position: left;
+  background-position: left bottom;
+
   background-repeat: repeat-x;
   background-size: contain;
 }
@@ -175,7 +186,8 @@
   background: url("/road-background.svg");
   height: calc((1 / 5) * 100%);
   width: calc(var(--road-svg-width) * 4);
-  background-position: left;
+  background-position: left bottom;
+
   background-repeat: repeat-x;
   background-size: contain;
 }

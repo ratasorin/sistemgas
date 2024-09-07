@@ -58,10 +58,10 @@ const getResponsiveFontSize = (screenWidth: number) => {
 
 const getResponsiveCarVelocity = (screenWidth: number) => {
   let speed: number = 5;
-  if (screenWidth < screens["xl"]) speed = speed - 0.25;
-  if (screenWidth < screens["lg"]) speed = speed - 0.5;
-  if (screenWidth < screens["md"]) speed = speed - 1;
-  if (screenWidth < screens["sm"]) speed = speed - 1.25;
+  if (screenWidth < screens["xl"]) speed = speed - 0.1;
+  if (screenWidth < screens["lg"]) speed = speed - 0.2;
+  if (screenWidth < screens["md"]) speed = speed - 0.3;
+  if (screenWidth < screens["sm"]) speed = speed - 0.4;
 
   return speed;
 };

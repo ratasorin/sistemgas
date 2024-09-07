@@ -36,14 +36,13 @@ const Canvas: NextPage<Props> = ({ width, height, render, start }) => {
         let delta = Math.floor(time - (prevTime ?? 0));
         if (delta <= MIN_DELAY_MILLIS) {
           render.update();
-          render.render();
         } else {
           while (delta > 0 && delta <= 10 * MIN_DELAY_MILLIS) {
             render.update();
             delta -= MIN_DELAY_MILLIS;
           }
-          render.render();
         }
+        render.render();
 
         prevTime = time;
         frameID.current = window.requestAnimationFrame(loop);

@@ -1,13 +1,31 @@
 .parallax {
-  --background-svg-width: calc(4023 / 1080 * 4 / 5 * 100vw * 2);
+  --background-svg-width: calc((4023 / 1080) * (4 / 5) * 100vh - 32px);
   --road-svg-width: calc(
     (4029 / 721) * (1 / 5) * 100vh - 32px
   ); /* the 32 px are because there is a margin left and right of 16px that affect the width of the container*/
   overflow-y: hidden;
+  height: 100%;
+  transform-origin: center bottom;
+  transform: scale(1.06);
+  filter: blur(0);
+}
+
+.force-blur {
+  filter: blur(10px);
+}
+
+@keyframes blur {
+  0% {
+    filter: blur(0px);
+  }
+  100% {
+    filter: blur(10px);
+  }
 }
 
 .transition-down {
-  animation: 4s cubic-bezier(0.33, 0.27, 0.58, 1) forwards down;
+  animation: var(--end-transition-duration) cubic-bezier(0.33, 0.27, 0.58, 1)
+    forwards down;
 }
 
 @keyframes down {
@@ -28,7 +46,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: var(--background-svg-width);
+  width: calc(var(--background-svg-width) * 2);
   height: calc(4 / 5 * 100%);
   background-position: left bottom;
 
@@ -65,7 +83,8 @@
 
 .sistemgas-svg-animate-in {
   position: relative;
-  animation: 4s cubic-bezier(0.33, 0.27, 0.58, 1) forwards sistemgas-svg-in;
+  animation: var(--end-transition-duration) cubic-bezier(0.33, 0.27, 0.58, 1)
+    forwards sistemgas-svg-in;
   overflow-x: visible !important;
 }
 
@@ -84,7 +103,7 @@
   top: 0;
   left: 0;
   background: url("/forest-front.svg");
-  width: var(--background-svg-width);
+  width: calc(var(--background-svg-width) * 2);
   height: calc(4 / 5 * 100%);
   background-position: left bottom;
   background-repeat: repeat-x;
@@ -96,7 +115,7 @@
   top: 0;
   left: 0;
   background: url("/forest-mid.svg");
-  width: var(--background-svg-width);
+  width: calc(var(--background-svg-width) * 2);
   height: calc(4 / 5 * 100%);
   background-position: left bottom;
 
@@ -109,7 +128,7 @@
   top: 0;
   left: 0;
   background: url("/forest-back.svg");
-  width: var(--background-svg-width);
+  width: calc(var(--background-svg-width) * 2);
   height: calc(4 / 5 * 100%);
   background-position: left bottom;
 
@@ -122,7 +141,7 @@
   top: 0;
   left: 0;
   background: url("/mountains-front.svg");
-  width: var(--background-svg-width);
+  width: calc(var(--background-svg-width) * 2);
   height: calc(4 / 5 * 100%);
   background-position: left bottom;
 
@@ -135,7 +154,7 @@
   top: 0;
   left: 0;
   background: url("/mountains-back.svg");
-  width: var(--background-svg-width);
+  width: calc(var(--background-svg-width) * 2);
   height: calc(4 / 5 * 100%);
   background-position: left bottom;
 
@@ -148,7 +167,7 @@
   top: 0;
   left: 0;
   background: url("/clouds-front.svg");
-  width: var(--background-svg-width);
+  width: calc(var(--background-svg-width) * 2);
   height: calc(4 / 5 * 100%);
   background-position: left bottom;
 
@@ -160,7 +179,7 @@
   top: 0;
   left: 0;
   background: url("/clouds-back.svg");
-  width: var(--background-svg-width);
+  width: calc(var(--background-svg-width) * 2);
   height: calc(4 / 5 * 100%);
   background-position: left bottom;
   background-repeat: repeat-x;

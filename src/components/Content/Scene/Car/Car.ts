@@ -21,8 +21,6 @@ export const fitCarInsideCanvas = ({
   canvasDimensions,
   carDimensions,
 }: FitterProps) => {
-  console.log({ canvasDimensions });
-
   const widthRatio = canvasDimensions.width / carDimensions.width;
   const heightRatio = canvasDimensions.height / carDimensions.height;
   const ratio = Math.min(widthRatio, heightRatio);

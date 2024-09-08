@@ -6,7 +6,7 @@ import { Text } from "./Text/helpers/text";
 import { useEffect, useMemo } from "react";
 import CarRender, { useAnimationState } from "./Car/Car";
 import { gsap } from "gsap";
-import { createPortal } from "react-dom";
+import { END_TRANSITION_DURATION } from "../helper/animated-background";
 
 export interface Render {
   render: () => void;
@@ -189,7 +189,7 @@ const Scene: NextPage<{
       bringTextCanvasFront();
       gsap.to(document.getElementById("text__renderer"), {
         y: destinationY,
-        duration: 4,
+        duration: END_TRANSITION_DURATION / 1000,
         ease: "expo.out",
       });
     }
@@ -197,7 +197,7 @@ const Scene: NextPage<{
 
   if (!textRenderer || !carRenderer) return null;
   return (
-    <div className="relative bottom-0 w-full flex-1 overflow-hidden z-10">
+    <div className="absolute bottom-0 w-full h-full overflow-hidden z-10">
       <div
         id="text__renderer"
         className="absolute bottom-0 w-full h-full z-10 overflow-hidden"

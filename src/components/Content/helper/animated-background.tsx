@@ -1,7 +1,7 @@
 import { FC, useMemo, useRef, useState } from "react";
 import { useAnimationState } from "../Scene/Car/Car";
 
-const END_TRANSITION_DURATION = 4000;
+export const END_TRANSITION_DURATION = 3000;
 
 const AnimatedBackground: FC<{
   baseClassName: string;
@@ -16,17 +16,18 @@ const AnimatedBackground: FC<{
   const width = useMemo(
     () =>
       widthType === "--background-svg-width"
-        ? `calc(-1/2 * var(${widthType}))`
+        ? `calc(-1 * var(${widthType}) + 64px)`
         : `calc(-1 * var(${widthType}))`,
     [widthType]
   );
-  const [running, setRunning] = useState(false);
+
+  const isEndAnimationRunning = useRef(false);
 
   return (
     <div
       key={baseClassName}
       ref={(element) => {
-        if (!element || running) return;
+        if (!element || isEndAnimationRunning.current) return;
         if (!animationRef.current && !forceEnd) {
           animationRef.current = element.animate(
             [
@@ -59,44 +60,43 @@ const AnimatedBackground: FC<{
               END_TRANSITION_DURATION / (speed * 1000)
             } * ${width}), ${
               transitionDown ? "calc(1 / 5 * 100vh)" : "0"
-            }) scale(${zoomOut ?? 1})`
+            }) scale(${zoomOut || 1})`
           );
         } else if (finished && animationRef.current) {
-          animationRef.current?.commitStyles();
-          // Cancel the animation
-          animationRef.current?.cancel();
+          window.requestAnimationFrame(() => {
+            animationRef.current!.pause();
+            isEndAnimationRunning.current = true;
 
-          setRunning(true);
+            let translateX = new DOMMatrixReadOnly(
+              window.getComputedStyle(element).getPropertyValue("transform")
+            ).m41;
 
-          let translateX = new DOMMatrixReadOnly(
-            window.getComputedStyle(element).getPropertyValue("transform")
-          ).m41;
+            element.setAttribute(
+              "style",
+              `transform: translateX(0); left: ${translateX}px`
+            );
 
-          element.setAttribute(
-            "style",
-            `transform: translateX(0); left: ${translateX}px`
-          );
-
-          animationRef.current = element.animate(
-            [
+            animationRef.current = element.animate(
+              [
+                {
+                  transform: `translate(0, 0) scale(1)`,
+                },
+                {
+                  transform: `translate(calc(${
+                    END_TRANSITION_DURATION / (speed * 1000)
+                  } * ${width}), ${
+                    transitionDown ? "calc(1 / 5 * 100vh)" : "0"
+                  }) scale(${zoomOut ?? 1})`,
+                },
+              ],
               {
-                transform: `translate(0, 0) scale(1)`,
-              },
-              {
-                transform: `translate(calc(${
-                  END_TRANSITION_DURATION / (speed * 1000)
-                } * ${width}), ${
-                  transitionDown ? "calc(1 / 5 * 100vh)" : "0"
-                }) scale(${zoomOut ?? 1})`,
-              },
-            ],
-            {
-              duration: END_TRANSITION_DURATION,
-              easing: "cubic-bezier(0.33, 0.27, .58, 1)",
-              fill: "forwards",
-              iterations: 1,
-            }
-          );
+                duration: END_TRANSITION_DURATION,
+                easing: "cubic-bezier(0.33, 0.27, .58, 1)",
+                fill: "forwards",
+                iterations: 1,
+              }
+            );
+          });
         }
       }}
       className={

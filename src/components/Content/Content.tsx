@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect, FC, useMemo } from "react";
 import content from "./content.module.css";
 import Scene from "./Scene/Scene";
-import AnimatedBackground from "./helper/animated-background";
+import AnimatedBackground, {
+  END_TRANSITION_DURATION,
+} from "./helper/animated-background";
 import { useAnimationState } from "./Scene/Car/Car";
 import EmbedSvg, { useSvg } from "lib/embed-svg";
 import { rotateElementAroundAnchorPoint } from "lib/rotate-svg";
@@ -185,7 +187,6 @@ const MainScene: FC = () => {
 
     const scene = sceneRef.current as HTMLDivElement;
 
-    console.log(scene.getBoundingClientRect());
     setDimensions({
       width: scene.getBoundingClientRect().width,
       height: scene.getBoundingClientRect().height,
@@ -199,15 +200,33 @@ const MainScene: FC = () => {
     });
   }, [loading]);
 
-  const width = useMemo(() => {
-    // this will be displayed on the biggest screens
-    let w = "1550px";
-    if (dimensions.width < screens["lg"]) w = "1450px";
-    if (dimensions.width < screens["md"]) w = "1350px";
-    if (dimensions.width < screens["sm"]) w = "960px";
+  const elementRef = useRef<HTMLDivElement>(null);
 
-    return w;
-  }, [dimensions]);
+  useEffect(() => {
+    if (finished)
+      setTimeout(() => {
+        window.requestAnimationFrame(() => {
+          if (elementRef.current) {
+            elementRef.current.animate(
+              [
+                {
+                  filter: "blur(0px)",
+                },
+                {
+                  filter: "blur(10px)",
+                },
+              ],
+              {
+                duration: END_TRANSITION_DURATION * 0.6,
+                easing: "cubic-bezier(0.33, 0.27, .58, 1)",
+                fill: "forwards",
+                iterations: 1,
+              }
+            );
+          }
+        });
+      }, END_TRANSITION_DURATION * 0.4);
+  }, [finished]);
 
   return (
     <>
@@ -249,17 +268,16 @@ const MainScene: FC = () => {
         {createPortal(
           <div
             ref={(element) => {
-              console.log(element?.scrollWidth);
               if (element && finished) {
                 scrollElementBy(
                   element,
                   element.children[0].scrollWidth / 2 - window.innerWidth / 2,
-                  3000
+                  END_TRANSITION_DURATION / 4
                 );
 
                 setTimeout(() => {
                   element.style.overflowX = "scroll";
-                }, 4000);
+                }, END_TRANSITION_DURATION / 4);
               } else if (element && forceEnd) {
                 element.scrollLeft =
                   element.children[0].scrollWidth / 2 - window.innerWidth / 2;
@@ -290,7 +308,7 @@ const MainScene: FC = () => {
           document.getElementById("root")!
         )}
 
-        <div className={`${content.parallax} z-0`}>
+        <div ref={elementRef} className={`${content.parallax} z-0`}>
           {backgroundAnimations.map((elem) => (
             <AnimatedBackground {...elem} widthType="--background-svg-width" />
           ))}

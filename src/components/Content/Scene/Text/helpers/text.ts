@@ -1,10 +1,18 @@
 export type RelativePositions = "right" | "newline" | "start";
-export type Styles =
-  | "bold"
-  | "italic"
-  | "underline"
-  | "bold italic"
-  | "italic bold";
+export type FontDecoration = "italic" | "underline";
+export type FontSize =
+  | "100"
+  | "200"
+  | "300"
+  | "400"
+  | "500"
+  | "600"
+  | "700"
+  | "800"
+  | "900"
+  | "bold";
+
+export type Styles = `${FontSize} ${FontDecoration}` | FontSize;
 
 export class Text {
   payload: string;

@@ -12,6 +12,28 @@ import {
 import { Text } from "./helpers/text";
 
 export let textBox: Dimensions | undefined;
+export type BoxPosition = {
+  top: number;
+  left: number;
+  right: number;
+  bottom: number;
+};
+
+function parseHexColorValues(input: string): {
+  values: string[];
+  multiple: boolean;
+} {
+  // Regular expression to match hex color values starting with '#'
+  const values = input.match(/#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}/g) || [];
+
+  // Determine if there are multiple hex values
+  const multiple = values.length > 1;
+
+  return {
+    values,
+    multiple,
+  };
+}
 
 export default class TextRenderer implements Render {
   text: TextWithCoordinates[] | undefined;
@@ -25,13 +47,13 @@ export default class TextRenderer implements Render {
   carVelocity: number = 0;
   heightFactor: number = 0;
   coordinates: Coordinates | undefined;
-  padding: { top: number; left: number; right: number; bottom: number } = {
-    top: 16,
-    left: 16,
-    right: 16,
-    bottom: 16,
+  padding: BoxPosition = {
+    top: 24,
+    left: 24,
+    right: 24,
+    bottom: 24,
   };
-  border: { top: number; left: number; right: number; bottom: number } = {
+  border: BoxPosition = {
     top: 3,
     left: 3,
     right: 3,
@@ -131,6 +153,8 @@ export default class TextRenderer implements Render {
     this.context.fillStyle = "#ffffff";
     this.context.strokeStyle = "#e2e8f0";
     this.context.lineWidth = 2;
+    this.context.globalAlpha = 0.8;
+
     this.context.roundRect(
       Math.floor(this.textBoxCoordinates.x - this.padding.left),
       Math.floor(this.textBoxCoordinates.y - this.padding.top),
@@ -150,7 +174,19 @@ export default class TextRenderer implements Render {
     this.text.forEach((text_) => {
       if (!this.canvas || !this.context || !this.text) return;
 
-      this.context.fillStyle = `${text_.fontColor}`;
+      const { multiple, values } = parseHexColorValues(text_.fontColor);
+      if (multiple) {
+        const grad = this.context.createLinearGradient(
+          text_.coordinates.x,
+          text_.coordinates.y,
+          text_.coordinates.x + 100,
+          text_.coordinates.y + 100
+        );
+        grad.addColorStop(0, values[0]);
+        grad.addColorStop(1, values[1]);
+        this.context.fillStyle = grad;
+      } else this.context.fillStyle = `${text_.fontColor}`;
+
       this.context.font = `${text_.fontStyle ? text_.fontStyle : ""} ${
         text_.fontSize
       }px ${text_.fontFamily}`;
@@ -196,6 +232,7 @@ export default class TextRenderer implements Render {
     this.context.fillStyle = "#ffffff";
     this.context.strokeStyle = "#e2e8f0";
     this.context.lineWidth = 2;
+    this.context.globalAlpha = 0.8;
     this.context.roundRect(
       Math.floor(this.textBoxCoordinates.x - this.padding.left),
       Math.floor(this.textBoxCoordinates.y - this.padding.top),
@@ -216,7 +253,20 @@ export default class TextRenderer implements Render {
       if (!this.canvas || !this.context || !this.text) return;
 
       this.context.save();
-      this.context.fillStyle = `${text_.fontColor}`;
+
+      const { multiple, values } = parseHexColorValues(text_.fontColor);
+      if (multiple) {
+        const grad = this.context.createLinearGradient(
+          text_.coordinates.x,
+          text_.coordinates.y,
+          text_.coordinates.x + 100,
+          text_.coordinates.y + 100
+        );
+        grad.addColorStop(0, values[0]);
+        grad.addColorStop(1, values[1]);
+        this.context.fillStyle = grad;
+      } else this.context.fillStyle = `${text_.fontColor}`;
+
       this.context.font = `${text_.fontStyle ? text_.fontStyle : ""} ${
         text_.fontSize
       }px ${text_.fontFamily}`;

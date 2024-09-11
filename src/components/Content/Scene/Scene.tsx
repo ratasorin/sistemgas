@@ -42,7 +42,7 @@ const fonts = {
 } as const;
 
 const getResponsiveFontSize = (screenWidth: number) => {
-  let fontSize: number = fonts["text-lg"];
+  let fontSize: number = fonts["text-xl"];
   if (screenWidth > screens["sm"] && screenWidth < screens["md"])
     fontSize = fonts["text-xl"];
   if (screenWidth > screens["md"] && screenWidth < screens["lg"])
@@ -112,41 +112,34 @@ const Scene: NextPage<{
       new Text(
         "SISTEMGAS",
         Math.floor(2 * fontSize),
-        "#172554",
+        "#0a2375 #173dba",
         "Poppins",
         "start",
-        "bold",
+        "700",
         { x: 0, y: 12 }
       ),
       new Text(
         "Solutia",
         Math.floor(fontSize),
-        "#172554",
+        "#4b557c",
         "Poppins",
         "newline"
       ),
-      new Text(
-        "alternativa",
-        fontSize,
-        "#f97316",
-        "Poppins",
-        "right",
-        "bold italic",
-        {
-          y: 2,
-          x: 2,
-        }
-      ),
-      new Text("pentru", Math.floor(fontSize), "#172554", "Poppins", "right"),
+      new Text("alternativa", fontSize, "#fc944a", "Poppins", "right", "600", {
+        y: 2,
+        x: 2,
+      }),
+      new Text("pentru", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
       new Text(
         "furnizarea",
         Math.floor(fontSize),
-        "#172554",
+
+        "#4b557c",
         "Poppins",
         "newline"
       ),
-      new Text("gazelor", Math.floor(fontSize), "#172554", "Poppins", "right"),
-      new Text("naturale", Math.floor(fontSize), "#172554", "Poppins", "right"),
+      new Text("gazelor", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
+      new Text("naturale", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
     ];
   }, [width]);
 
@@ -169,11 +162,24 @@ const Scene: NextPage<{
   useEffect(() => {
     if (!textRenderer || !height || !imageHeight) return;
 
-    const marginTop = 60; //px
+    const sistemgasSvgHeight = document
+      .getElementById("Layer_2")
+      ?.getBoundingClientRect().height;
+
+    const spaceBetweenTopAndSvg =
+      (document.defaultView?.innerHeight || 0) - (sistemgasSvgHeight || 0);
+    console.log({ spaceBetweenTopAndSvg });
+
+    const mt4 = 16; // px
+
     const destinationY =
-      -(textRenderer.textBoxCoordinates?.y || 0) +
+      -(textRenderer.textBoxCoordinates?.y || 0) -
       textRenderer.padding.top +
-      marginTop;
+      spaceBetweenTopAndSvg / 2 -
+      (textRenderer.textBox?.height || 0) / 2 +
+      mt4;
+
+    console.log({ destinationY, height: textRenderer.textBox?.height });
 
     if (forceEnd) {
       bringTextCanvasFront();

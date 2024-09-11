@@ -25,7 +25,7 @@ export const getTextDimensions = (
   let lineWidth = 0;
   let start = -1;
   const lines: Line[] = [];
-  const { height, maxWidth, width } = text.reduce(
+  let { height, maxWidth, width } = text.reduce(
     (prev, text_, index) => {
       context.font = `${text_.fontStyle ? text_.fontStyle : ""} ${
         text_.fontSize

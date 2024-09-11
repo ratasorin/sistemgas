@@ -48,10 +48,10 @@ export default class TextRenderer implements Render {
   heightFactor: number = 0;
   coordinates: Coordinates | undefined;
   padding: BoxPosition = {
-    top: 24,
-    left: 24,
-    right: 24,
-    bottom: 24,
+    top: 20,
+    left: 20,
+    right: 20,
+    bottom: 20,
   };
   border: BoxPosition = {
     top: 3,

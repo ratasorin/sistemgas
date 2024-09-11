@@ -33,7 +33,7 @@ const screens = {
 const backgroundAnimations = [
   {
     baseClassName: content["clouds-back"],
-    speed: 16,
+    speed: 19,
     zoomOut: 0.9,
   },
   {
@@ -45,31 +45,31 @@ const backgroundAnimations = [
   },
   {
     baseClassName: content["mountains-front"],
-    speed: 17,
+    speed: 16,
     transitionDown: true,
     zoomOut: 0.9,
     origin: "bottom",
   },
   {
     baseClassName: content["clouds-front"],
-    speed: 14,
+    speed: 16,
     zoomOut: 0.85,
   },
   {
     baseClassName: content["forest-back"],
-    speed: 18,
+    speed: 19,
     transitionDown: true,
     zoomOut: 0.8,
   },
   {
     baseClassName: content["forest-mid"],
-    speed: 15,
+    speed: 17,
     transitionDown: true,
     zoomOut: 0.8,
   },
   {
     baseClassName: content["forest-front"],
-    speed: 12,
+    speed: 15,
     transitionDown: true,
     zoomOut: 0.8,
   },
@@ -228,6 +228,28 @@ const MainScene: FC = () => {
       }, END_TRANSITION_DURATION * 0.4);
   }, [finished]);
 
+  const sistemgasSvgRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (sistemgasSvgRef.current && finished) {
+      scrollElementBy(
+        sistemgasSvgRef.current,
+        sistemgasSvgRef.current.children[0].scrollWidth / 2 -
+          window.innerWidth / 2,
+        END_TRANSITION_DURATION / 4
+      );
+
+      setTimeout(() => {
+        sistemgasSvgRef.current!.style.overflowX = "scroll";
+      }, END_TRANSITION_DURATION / 4);
+    } else if (sistemgasSvgRef.current && forceEnd) {
+      sistemgasSvgRef.current.scrollLeft =
+        sistemgasSvgRef.current.children[0].scrollWidth / 2 -
+        window.innerWidth / 2;
+      sistemgasSvgRef.current.style.overflowX = "scroll";
+    }
+  }, [finished, forceEnd]);
+
   return (
     <>
       {loading && (
@@ -267,23 +289,7 @@ const MainScene: FC = () => {
         ></Scene>
         {createPortal(
           <div
-            ref={(element) => {
-              if (element && finished) {
-                scrollElementBy(
-                  element,
-                  element.children[0].scrollWidth / 2 - window.innerWidth / 2,
-                  END_TRANSITION_DURATION / 4
-                );
-
-                setTimeout(() => {
-                  element.style.overflowX = "scroll";
-                }, END_TRANSITION_DURATION / 4);
-              } else if (element && forceEnd) {
-                element.scrollLeft =
-                  element.children[0].scrollWidth / 2 - window.innerWidth / 2;
-                element.style.overflowX = "scroll";
-              }
-            }}
+            ref={sistemgasSvgRef}
             className={`${content["sistemgas-hq"]} ${
               finished
                 ? content["sistemgas-hq-animate-in"]
@@ -332,7 +338,7 @@ const MainScene: FC = () => {
           ></div>
           <AnimatedBackground
             baseClassName={content["street"]}
-            speed={2.5}
+            speed={5}
             key={content["street"]}
             transitionDown={true}
             widthType="--road-svg-width"

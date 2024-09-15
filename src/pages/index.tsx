@@ -18,7 +18,9 @@ const Home = () => {
     <>
       <Head>
         <title>Sistemgas</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
+
       <Navbar />
       <div
         id="root"

@@ -78,15 +78,18 @@ const getResponsiveHeightFactor = (screenWidth: number) => {
 
 const bringTextCanvasFront = () => {
   const textRendererDiv = document.getElementById("text__renderer")!;
+  const graphicsContainer = document.getElementById("root");
+
+  if (!graphicsContainer || !textRendererDiv) return;
 
   const rect = textRendererDiv.getBoundingClientRect();
+  const mt4 = 16; // px
+  const graphicsContainerTop = graphicsContainer.scrollTop + mt4; // adding a margin because the container of text__renderer had a margin of 16px that the graphicsContainer ("root") will not have
 
   textRendererDiv.style.left = `${rect.left}px`;
-  textRendererDiv.style.top = `${rect.top}px`;
-  textRendererDiv.style.width = `${rect.width}px`;
-  textRendererDiv.style.height = `${rect.height}px`;
+  textRendererDiv.style.top = `${graphicsContainerTop + 16}px`;
 
-  document.getElementById("root")!.appendChild(textRendererDiv);
+  graphicsContainer.appendChild(textRendererDiv);
 };
 
 const Scene: NextPage<{
@@ -162,22 +165,28 @@ const Scene: NextPage<{
   useEffect(() => {
     if (!textRenderer || !height || !imageHeight) return;
 
-    const sistemgasSvgHeight = document
+    const sistemgasSvgBox = document
       .getElementById("Layer_2")
-      ?.getBoundingClientRect().height;
+      ?.getBoundingClientRect();
 
-    const spaceBetweenTopAndSvg =
-      (document.defaultView?.innerHeight || 0) - (sistemgasSvgHeight || 0);
-    console.log({ spaceBetweenTopAndSvg });
+    const graphicsContainer = document.getElementById("root");
 
     const mt4 = 16; // px
+    const remainingSpace =
+      (graphicsContainer?.scrollHeight || 0) -
+      (sistemgasSvgBox?.height || 0) -
+      mt4;
+    console.log({ remainingSpace });
 
     const destinationY =
-      -(textRenderer.textBoxCoordinates?.y || 0) -
-      textRenderer.padding.top +
-      spaceBetweenTopAndSvg / 2 -
-      (textRenderer.textBox?.height || 0) / 2 +
-      mt4;
+      (remainingSpace - (textRenderer.textBox?.height || 0)) / 2 -
+      (textRenderer.textBoxCoordinates?.y || 0 + textRenderer.padding.top);
+
+    // -(textRenderer.textBoxCoordinates?.y || 0) -
+    // textRenderer.padding.top +
+    // remainingSpace / 2 -
+    // (textRenderer.textBox?.height || 0) / 2 +
+    // mt4;
 
     console.log({ destinationY, height: textRenderer.textBox?.height });
 

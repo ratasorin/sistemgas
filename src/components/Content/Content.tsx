@@ -4,7 +4,7 @@ import Scene from "./Scene/Scene";
 import AnimatedBackground, {
   END_TRANSITION_DURATION,
 } from "./helper/animated-background";
-import { useAnimationState } from "./Scene/Car/Car";
+import { useAnimationState, useImageLoaded } from "./Scene/Car/Car";
 import EmbedSvg, { useSvg } from "lib/embed-svg";
 import { rotateElementAroundAnchorPoint } from "lib/rotate-svg";
 import tippy, { DelegateInstance, Props } from "tippy.js";
@@ -130,6 +130,8 @@ const MainScene: FC = () => {
   const svg = useSvg(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
   const [loading, setLoading] = useState(true);
 
+  const { imageLoaded } = useImageLoaded();
+
   useEffect(() => {
     WebFont.load({
       google: {
@@ -139,12 +141,12 @@ const MainScene: FC = () => {
   }, []);
 
   useEffect(() => {
-    if (loading) {
+    if (imageLoaded) {
       setTimeout(() => {
         setLoading(false);
-      }, 1000);
+      }, 1500);
     }
-  }, [loading]);
+  }, [imageLoaded]);
 
   useEffect(() => {
     if (svg) {
@@ -226,7 +228,10 @@ const MainScene: FC = () => {
           }
         });
       }, END_TRANSITION_DURATION * 0.4);
-  }, [finished]);
+
+    if (forceEnd && elementRef.current)
+      elementRef.current.style.filter = "blur(10px)";
+  }, [finished, forceEnd]);
 
   const sistemgasSvgRef = useRef<HTMLDivElement>(null);
 

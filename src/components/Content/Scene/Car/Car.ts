@@ -6,11 +6,13 @@ import { Dimensions } from "../Text/helpers/math/coordinates";
 export const useAnimationState = create<{
   finished: boolean;
   forceEnd: boolean;
-}>((set) => ({
+}>(() => ({
   finished: false,
   forceEnd: false,
-  finishAnimation: () => set((s) => ({ ...s, finished: true })),
-  forceEndAnimation: () => set((s) => ({ ...s, forceEnd: true })),
+}));
+
+export const useImageLoaded = create<{ imageLoaded: boolean }>((set) => ({
+  imageLoaded: false,
 }));
 
 type FitterProps = {
@@ -96,6 +98,8 @@ export default class CarRender implements Render {
 
     this.image.onload = () => {
       this.car = new Car(this.image.width, this.carVelocity);
+
+      useImageLoaded.setState(() => ({ imageLoaded: true }));
 
       this.drawCar();
       this.render();

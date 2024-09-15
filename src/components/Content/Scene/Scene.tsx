@@ -128,10 +128,18 @@ const Scene: NextPage<{
         "Poppins",
         "newline"
       ),
-      new Text("alternativa", fontSize, "#fc944a", "Poppins", "right", "600", {
-        y: 2,
-        x: 2,
-      }),
+      new Text(
+        "alternativa",
+        fontSize,
+        "#fc944a #eb500b",
+        "Poppins",
+        "right",
+        "600",
+        {
+          y: 2,
+          x: 2,
+        }
+      ),
       new Text("pentru", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
       new Text(
         "furnizarea",
@@ -181,12 +189,6 @@ const Scene: NextPage<{
     const destinationY =
       (remainingSpace - (textRenderer.textBox?.height || 0)) / 2 -
       (textRenderer.textBoxCoordinates?.y || 0 + textRenderer.padding.top);
-
-    // -(textRenderer.textBoxCoordinates?.y || 0) -
-    // textRenderer.padding.top +
-    // remainingSpace / 2 -
-    // (textRenderer.textBox?.height || 0) / 2 +
-    // mt4;
 
     console.log({ destinationY, height: textRenderer.textBox?.height });
 

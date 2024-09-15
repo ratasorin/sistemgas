@@ -10,10 +10,6 @@
   filter: blur(0);
 }
 
-.force-blur {
-  filter: blur(10px);
-}
-
 @keyframes blur {
   0% {
     filter: blur(0px);

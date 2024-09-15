@@ -32,7 +32,7 @@ const AnimatedBackground: FC<{
           animationRef.current = element.animate(
             [
               {
-                transform: "translateX(0px)",
+                transform: "translateX(-250px)",
               },
               {
                 transform: `translateX(${width})`,

@@ -3,6 +3,9 @@ module.exports = {
   darkMode: false,
   theme: {
     extend: {
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"], // Add the Poppins font
+      },
       keyframes: {
         slide: {
           from: { right: "calc(-100vw / 4)" },

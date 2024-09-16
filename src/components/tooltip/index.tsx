@@ -32,7 +32,7 @@ const Tooltip: FC<{ tooltipTitle: string; elementId: string }> = ({
       }}
       id={`tooltip-${elementId}`}
     >
-      <button className="mb-5 p-2 text-xl bg-white rounded-lg border-2 font-mono font-semibold border-slate-200 text-slate-800">
+      <button className="mb-2 p-2 text-xl bg-white rounded-lg border-2 font-poppins font-semibold border-slate-200 text-slate-800">
         {tooltipTitle}
       </button>
     </div>,

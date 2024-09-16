@@ -77,10 +77,11 @@ const backgroundAnimations = [
 
 export let poppers: DelegateInstance<Props>[] = [];
 
-const animateComponentOnHover = (
+const animateComponentOnHover = <T,>(
   componentId: string,
-  shadowBlur1: number = 0,
-  shadowBlur2: number = 0
+  options: Partial<Props>,
+  actions: (el: HTMLElement, props: T) => void,
+  props: T
 ) => {
   const component = document.getElementById(componentId);
   if (!component) {
@@ -88,42 +89,12 @@ const animateComponentOnHover = (
     return;
   }
 
-  component.classList.add(content["svg-original"]);
-  component.style.setProperty("--shadow-blur-1", `${shadowBlur1}px`);
-  component.style.setProperty("--shadow-blur-2", `${shadowBlur2}px`);
+  const popper = tippy(`#${componentId}`, options);
+  poppers = [...poppers, ...popper];
 
-  component.addEventListener("mouseenter", () => {
-    updateLastElementHovered(
-      component,
-      (currentElementHovered) => {
-        currentElementHovered?.classList.add(content["svg-hover"]);
-        const popper = poppers.find(
-          (popper) => popper.reference === currentElementHovered
-        );
+  actions(component, props);
 
-        setTimeout(() => {
-          popper?.show();
-        }, 200);
-      },
-      (lastElementHovered) => {
-        if (lastElementHovered === component) return;
-
-        lastElementHovered?.classList.remove(content["svg-hover"]);
-        const popper = poppers.find(
-          (popper) => popper.reference === lastElementHovered
-        );
-        popper?.hide();
-      }
-    );
-  });
-
-  component.addEventListener("mouseleave", () => {
-    shouldExit(component, (element) => {
-      element.classList.remove(content["svg-hover"]);
-      const popper = poppers.find((popper) => popper.reference === element);
-      popper?.hide();
-    });
-  });
+  console.log({ poppers, popper });
 };
 
 const MainScene: FC = () => {
@@ -154,24 +125,137 @@ const MainScene: FC = () => {
       rotateElementAroundAnchorPoint("forearm", [0, 15, 0], false);
       rotateElementAroundAnchorPoint("right_arm", [0, 10, 0], true);
 
-      animateComponentOnHover(LANDING_PAGE_BUILDING_SVG_ID, 10, 20);
-      animateComponentOnHover(LANDING_PAGE_EMPLOYEE_SVG_ID, 5, 10);
-      animateComponentOnHover(LANDING_PAGE_TRUCKS_SVG_ID, 5, 10);
-      animateComponentOnHover(LANDING_PAGE_GAS_TANK_SVG_ID, 5, 10);
-
-      poppers = tippy(`.${content["svg-original"]}`, {
+      const options: Partial<Props> = {
         appendTo: document.body,
         trigger: "manual",
         placement: "top",
         animation: "scale",
+        maxWidth: "none",
         interactive: true,
         content: (reference) => {
           const template = document.getElementById(`tooltip-${reference.id}`);
+
           if (!template) return "";
 
           return template;
         },
-      });
+      };
+
+      const actions = (
+        component: HTMLElement,
+        props: { shadowBlur1: number; shadowBlur2: number }
+      ) => {
+        const { shadowBlur1, shadowBlur2 } = props;
+        component.classList.add(content["svg-original"]);
+        component.style.setProperty("--shadow-blur-1", `${shadowBlur1}px`);
+        component.style.setProperty("--shadow-blur-2", `${shadowBlur2}px`);
+
+        component.addEventListener("mouseenter", () => {
+          updateLastElementHovered(
+            component,
+            (currentElementHovered) => {
+              currentElementHovered?.classList.add(content["svg-hover"]);
+              const popper = poppers.find(
+                (popper) => popper.reference === currentElementHovered
+              );
+
+              setTimeout(() => {
+                const template = document.getElementById(
+                  `tooltip-${currentElementHovered.id}`
+                );
+                console.log({ template });
+                if (!template) return;
+
+                popper?.setContent(template);
+                popper?.show();
+              }, 200);
+            },
+            (lastElementHovered) => {
+              if (lastElementHovered === component) return;
+
+              lastElementHovered?.classList.remove(content["svg-hover"]);
+              const popper = poppers.find(
+                (popper) => popper.reference === lastElementHovered
+              );
+              popper?.hide();
+            }
+          );
+        });
+        component.addEventListener("mouseleave", () => {
+          shouldExit(component, (element) => {
+            element.classList.remove(content["svg-hover"]);
+            const popper = poppers.find(
+              (popper) => popper.reference === element
+            );
+            popper?.hide();
+          });
+        });
+      };
+
+      animateComponentOnHover<{ shadowBlur1: number; shadowBlur2: number }>(
+        LANDING_PAGE_BUILDING_SVG_ID,
+        options,
+        actions,
+        { shadowBlur1: 10, shadowBlur2: 20 }
+      );
+
+      animateComponentOnHover<{ shadowBlur1: number; shadowBlur2: number }>(
+        LANDING_PAGE_TRUCKS_SVG_ID,
+        options,
+        actions,
+        { shadowBlur1: 5, shadowBlur2: 10 }
+      );
+
+      animateComponentOnHover<{ shadowBlur1: number; shadowBlur2: number }>(
+        LANDING_PAGE_TRUCKS_SVG_ID,
+        options,
+        actions,
+        { shadowBlur1: 5, shadowBlur2: 10 }
+      );
+
+      const showPopoverAfterAnimationFinish = (
+        component: HTMLElement,
+        props: { shadowBlur1: number; shadowBlur2: number }
+      ) => {
+        actions(component, props);
+        useAnimationState.subscribe(({ finished }) => {
+          if (finished)
+            setTimeout(() => {
+              const { shadowBlur1, shadowBlur2 } = props;
+              component.classList.add(content["svg-original"]);
+              component.classList.add(content["svg-hover"]);
+              component.style.setProperty(
+                "--shadow-blur-1",
+                `${shadowBlur1}px`
+              );
+              component.style.setProperty(
+                "--shadow-blur-2",
+                `${shadowBlur2}px`
+              );
+
+              const popper = poppers.find(
+                (popper) => popper.reference === component
+              );
+
+              const template = document.getElementById(
+                `tooltip-${component.id}`
+              );
+              if (!template) return;
+
+              popper?.setContent(template);
+
+              popper?.show();
+            }, END_TRANSITION_DURATION);
+        });
+      };
+
+      animateComponentOnHover<{ shadowBlur1: number; shadowBlur2: number }>(
+        LANDING_PAGE_EMPLOYEE_SVG_ID,
+        options,
+        showPopoverAfterAnimationFinish,
+        { shadowBlur1: 5, shadowBlur2: 10 }
+      );
+
       setImageHeight(svg.clientHeight);
     }
   }, [svg]);

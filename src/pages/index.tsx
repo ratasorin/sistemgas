@@ -5,9 +5,6 @@ import Head from "next/head";
 const Content = dynamic(() => import("components/Content/Content"), {
   ssr: false,
 });
-const Tooltip = dynamic(() => import("components/tooltip/index"), {
-  ssr: false,
-});
 
 const Navbar = dynamic(() => import("components/Navbar/Navbar"), {
   ssr: false,
@@ -19,6 +16,10 @@ const Home = () => {
       <Head>
         <title>Sistemgas</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
+        />
       </Head>
 
       <Navbar />
@@ -28,7 +29,7 @@ const Home = () => {
       >
         <Content />
         {landingPageTooltips.map((el) => (
-          <Tooltip tooltipTitle={el.title} elementId={el.id} />
+          <el.tooltip elementId={el.id} tooltipTitle={el.title} />
         ))}
       </div>
     </>

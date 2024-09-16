@@ -35,7 +35,7 @@ const AnimatedBackground: FC<{
                 transform: "translateX(-250px)",
               },
               {
-                transform: `translateX(${width})`,
+                transform: `translateX(calc(${width} - 250px))`,
               },
             ],
             {

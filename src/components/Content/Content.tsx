@@ -45,7 +45,7 @@ const backgroundAnimations = [
   },
   {
     baseClassName: content["mountains-front"],
-    speed: 16,
+    speed: 19.5,
     transitionDown: true,
     zoomOut: 0.9,
     origin: "bottom",
@@ -258,7 +258,7 @@ const MainScene: FC = () => {
   return (
     <>
       {loading && (
-        <div className="absolute z-50 w-screen h-screen bg-black/50 flex flex-col items-center justify-center">
+        <div className="absolute z-50 w-screen h-screen bg-black/60 flex flex-col items-center justify-center">
           <div className={content["fire"]}>
             <div className={content["fire-left"]}>
               <div className={content["fire-left__main-fire"]}></div>

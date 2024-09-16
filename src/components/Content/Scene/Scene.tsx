@@ -18,7 +18,7 @@ export interface Render {
   end: () => void;
 }
 const screens = {
-  sm: 640,
+  sm: 350,
   md: 768,
   lg: 1024,
   xl: 1280,
@@ -42,16 +42,17 @@ const fonts = {
 } as const;
 
 const getResponsiveFontSize = (screenWidth: number) => {
+  console.log({ screenWidth });
   let fontSize: number = fonts["text-lg"];
-  if (screenWidth > screens["sm"] && screenWidth < screens["md"])
-    fontSize = fonts["text-lg"];
-  if (screenWidth > screens["md"] && screenWidth < screens["lg"])
+  if (screenWidth >= screens["sm"] && screenWidth < screens["md"])
+    fontSize = fonts["text-xl"];
+  if (screenWidth >= screens["md"] && screenWidth < screens["lg"])
     fontSize = fonts["text-2xl"];
-  if (screenWidth > screens["lg"] && screenWidth < screens["xl"])
+  if (screenWidth >= screens["lg"] && screenWidth < screens["xl"])
     fontSize = fonts["text-2xl"];
-  if (screenWidth > screens["xl"] && screenWidth < screens["2xl"])
+  if (screenWidth >= screens["xl"] && screenWidth < screens["2xl"])
     fontSize = fonts["text-2xl"];
-  if (screenWidth > screens["2xl"]) fontSize = fonts["text-2xl"];
+  if (screenWidth >= screens["2xl"]) fontSize = fonts["text-2xl"];
 
   return fontSize;
 };

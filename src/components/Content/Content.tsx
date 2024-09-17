@@ -175,6 +175,7 @@ const MainScene: FC = () => {
           );
         });
         component.addEventListener("mouseleave", () => {
+          console.log("TRIED TO REMOVE CLASSLIST");
           shouldExit(component, (element) => {
             element.classList.remove(content["svg-hover"]);
             const popper = poppers.find(
@@ -183,27 +184,28 @@ const MainScene: FC = () => {
             popper?.hide();
           });
         });
+        // TODO: Fix touch outside not working on mobile!
       };
 
       animateComponentOnHover<{ shadowBlur1: number; shadowBlur2: number }>(
         LANDING_PAGE_BUILDING_SVG_ID,
         options,
         actions,
-        { shadowBlur1: 10, shadowBlur2: 20 }
+        { shadowBlur1: 5, shadowBlur2: 30 }
       );
 
       animateComponentOnHover<{ shadowBlur1: number; shadowBlur2: number }>(
         LANDING_PAGE_TRUCKS_SVG_ID,
         options,
         actions,
-        { shadowBlur1: 5, shadowBlur2: 10 }
+        { shadowBlur1: 0, shadowBlur2: 20 }
       );
 
       animateComponentOnHover<{ shadowBlur1: number; shadowBlur2: number }>(
         LANDING_PAGE_GAS_TANK_SVG_ID,
         options,
         actions,
-        { shadowBlur1: 5, shadowBlur2: 10 }
+        { shadowBlur1: 0, shadowBlur2: 20 }
       );
 
       const showPopoverAfterAnimationFinish = (
@@ -211,7 +213,57 @@ const MainScene: FC = () => {
         props: { shadowBlur1: number; shadowBlur2: number }
       ) => {
         actions(component, props);
-        useAnimationState.subscribe(({ finished }) => {
+        useAnimationState.subscribe(({ finished, forceEnd }) => {
+          if (forceEnd) {
+            const { shadowBlur1, shadowBlur2 } = props;
+            component.classList.add(content["svg-original"]);
+
+            updateLastElementHovered(
+              component,
+              () => {
+                component.classList.add(content["svg-hover"]);
+                component.style.setProperty(
+                  "--shadow-blur-1",
+                  `${shadowBlur1}px`
+                );
+                component.style.setProperty(
+                  "--shadow-blur-2",
+                  `${shadowBlur2}px`
+                );
+
+                const popper = poppers.find(
+                  (popper) => popper.reference === component
+                );
+
+                let popperTemplate = popper?.props.content;
+                if (!popperTemplate) {
+                  popperTemplate =
+                    document.getElementById(`tooltip-${component.id}`) ||
+                    undefined;
+                  if (popperTemplate) popper?.setContent(popperTemplate);
+                  else {
+                    console.error("THERE WAS A PROBLEM LOADING THE POPPER!");
+                  }
+                }
+
+                popper?.show();
+              },
+              (lastElementHovered) => {
+                console.log("TRIED TO REMOVE CLASSLIST");
+                if (lastElementHovered === component) return;
+
+                lastElementHovered?.classList.remove(content["svg-hover"]);
+
+                const popper = poppers.find(
+                  (popper) => popper.reference === lastElementHovered
+                );
+                popper?.hide();
+              }
+            );
+
+            return;
+          }
+
           if (finished)
             setTimeout(() => {
               const { shadowBlur1, shadowBlur2 } = props;
@@ -248,9 +300,11 @@ const MainScene: FC = () => {
                   popper?.show();
                 },
                 (lastElementHovered) => {
+                  console.log("TRIED TO REMOVE CLASSLIST");
                   if (lastElementHovered === component) return;
 
                   lastElementHovered?.classList.remove(content["svg-hover"]);
+
                   const popper = poppers.find(
                     (popper) => popper.reference === lastElementHovered
                   );
@@ -265,7 +319,7 @@ const MainScene: FC = () => {
         LANDING_PAGE_EMPLOYEE_SVG_ID,
         options,
         showPopoverAfterAnimationFinish,
-        { shadowBlur1: 5, shadowBlur2: 10 }
+        { shadowBlur1: 0, shadowBlur2: 20 }
       );
 
       setImageHeight(svg.clientHeight);
@@ -346,7 +400,8 @@ const MainScene: FC = () => {
     } else if (sistemgasSvgRef.current && forceEnd) {
       sistemgasSvgRef.current.scrollLeft =
         sistemgasSvgRef.current.children[0].scrollWidth / 2 -
-        window.innerWidth / 2;
+        window.innerWidth / 2 +
+        35;
       sistemgasSvgRef.current.style.overflowX = "scroll";
     }
   }, [finished, forceEnd]);

@@ -10,6 +10,12 @@ const Navbar = dynamic(() => import("components/Navbar/Navbar"), {
   ssr: false,
 });
 
+const Tooltip = dynamic(() => import("components/tooltip"), { ssr: false });
+const AboutUsTooltip = dynamic(
+  () => import("components/tooltip/about-us-tooltip"),
+  { ssr: false }
+);
+
 const Home = () => {
   return (
     <>
@@ -28,10 +34,14 @@ const Home = () => {
         className="relative w-screen h-screen flex flex-col overflow-y-hidden justify-center"
       >
         <Content />
-        {landingPageTooltips.map((el) => (
-          <el.tooltip elementId={el.id} tooltipTitle={el.title} />
-        ))}
       </div>
+      {landingPageTooltips.map((el) =>
+        el.tooltip === "default" ? (
+          <Tooltip elementId={el.id} tooltipTitle={el.title} />
+        ) : (
+          <AboutUsTooltip elementId={el.id} />
+        )
+      )}
     </>
   );
 };

@@ -134,7 +134,7 @@ const MainScene: FC = () => {
         interactive: true,
         content: (reference) => {
           const template = document.getElementById(`tooltip-${reference.id}`);
-
+          console.log({ template });
           if (!template) return "";
 
           return template;
@@ -160,13 +160,6 @@ const MainScene: FC = () => {
               );
 
               setTimeout(() => {
-                const template = document.getElementById(
-                  `tooltip-${currentElementHovered.id}`
-                );
-                console.log({ template });
-                if (!template) return;
-
-                popper?.setContent(template);
                 popper?.show();
               }, 200);
             },
@@ -207,7 +200,7 @@ const MainScene: FC = () => {
       );
 
       animateComponentOnHover<{ shadowBlur1: number; shadowBlur2: number }>(
-        LANDING_PAGE_TRUCKS_SVG_ID,
+        LANDING_PAGE_GAS_TANK_SVG_ID,
         options,
         actions,
         { shadowBlur1: 5, shadowBlur2: 10 }
@@ -223,28 +216,50 @@ const MainScene: FC = () => {
             setTimeout(() => {
               const { shadowBlur1, shadowBlur2 } = props;
               component.classList.add(content["svg-original"]);
-              component.classList.add(content["svg-hover"]);
-              component.style.setProperty(
-                "--shadow-blur-1",
-                `${shadowBlur1}px`
-              );
-              component.style.setProperty(
-                "--shadow-blur-2",
-                `${shadowBlur2}px`
-              );
 
-              const popper = poppers.find(
-                (popper) => popper.reference === component
+              updateLastElementHovered(
+                component,
+                () => {
+                  component.classList.add(content["svg-hover"]);
+                  component.style.setProperty(
+                    "--shadow-blur-1",
+                    `${shadowBlur1}px`
+                  );
+                  component.style.setProperty(
+                    "--shadow-blur-2",
+                    `${shadowBlur2}px`
+                  );
+
+                  const popper = poppers.find(
+                    (popper) => popper.reference === component
+                  );
+
+                  const template = document.getElementById(
+                    `tooltip-${component.id}`
+                  );
+
+                  if (!template || !popper) {
+                    console.error(
+                      "THERE WAS A PROBLEM, COULD NOT LOAD TEMPLATE OR POPPER",
+                      { template, popper }
+                    );
+                    return;
+                  }
+
+                  popper?.setContent(template);
+
+                  popper?.show();
+                },
+                (lastElementHovered) => {
+                  if (lastElementHovered === component) return;
+
+                  lastElementHovered?.classList.remove(content["svg-hover"]);
+                  const popper = poppers.find(
+                    (popper) => popper.reference === lastElementHovered
+                  );
+                  popper?.hide();
+                }
               );
-
-              const template = document.getElementById(
-                `tooltip-${component.id}`
-              );
-              if (!template) return;
-
-              popper?.setContent(template);
-
-              popper?.show();
             }, END_TRANSITION_DURATION);
         });
       };

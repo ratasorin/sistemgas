@@ -4,14 +4,10 @@ import { createPortal } from "react-dom";
 import { MdCheck } from "react-icons/md";
 
 export type AboutUsTooltipProps = {
-  tooltipTitle: string;
   elementId: string;
 };
 
-const AboutUsTooltip: FC<AboutUsTooltipProps> = ({
-  elementId,
-  tooltipTitle,
-}) => {
+const AboutUsTooltip: FC<AboutUsTooltipProps> = ({ elementId }) => {
   return createPortal(
     <div
       id={`tooltip-${elementId}`}

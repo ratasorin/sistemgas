@@ -234,19 +234,16 @@ const MainScene: FC = () => {
                     (popper) => popper.reference === component
                   );
 
-                  const template = document.getElementById(
-                    `tooltip-${component.id}`
-                  );
-
-                  if (!template || !popper) {
-                    console.error(
-                      "THERE WAS A PROBLEM, COULD NOT LOAD TEMPLATE OR POPPER",
-                      { template, popper }
-                    );
-                    return;
+                  let popperTemplate = popper?.props.content;
+                  if (!popperTemplate) {
+                    popperTemplate =
+                      document.getElementById(`tooltip-${component.id}`) ||
+                      undefined;
+                    if (popperTemplate) popper?.setContent(popperTemplate);
+                    else {
+                      console.error("THERE WAS A PROBLEM LOADING THE POPPER!");
+                    }
                   }
-
-                  popper?.setContent(template);
 
                   popper?.show();
                 },

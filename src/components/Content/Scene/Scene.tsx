@@ -88,7 +88,7 @@ const bringTextCanvasFront = () => {
   const graphicsContainerTop = graphicsContainer.scrollTop + mt4; // adding a margin because the container of text__renderer had a margin of 16px that the graphicsContainer ("root") will not have
 
   textRendererDiv.style.left = `${rect.left}px`;
-  textRendererDiv.style.top = `${graphicsContainerTop + 16}px`;
+  textRendererDiv.style.top = `${graphicsContainerTop}px`;
 
   graphicsContainer.appendChild(textRendererDiv);
 };
@@ -204,11 +204,13 @@ const Scene: NextPage<{
         duration: 0,
       });
     } else if (finished && imageHeight && height) {
-      bringTextCanvasFront();
-      gsap.to(document.getElementById("text__renderer"), {
-        y: destinationY,
-        duration: END_TRANSITION_DURATION / 1000,
-        ease: "expo.out",
+      requestAnimationFrame(() => {
+        bringTextCanvasFront();
+        gsap.to(document.getElementById("text__renderer"), {
+          y: destinationY,
+          duration: END_TRANSITION_DURATION / 1000,
+          ease: "expo.out",
+        });
       });
     }
   }, [finished, imageHeight, height, forceEnd]);

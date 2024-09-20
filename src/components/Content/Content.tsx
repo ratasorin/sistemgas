@@ -354,35 +354,6 @@ const MainScene: FC = () => {
 
   const elementRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (finished)
-      setTimeout(() => {
-        window.requestAnimationFrame(() => {
-          if (elementRef.current) {
-            elementRef.current.animate(
-              [
-                {
-                  filter: "blur(0px)",
-                },
-                {
-                  filter: "blur(10px)",
-                },
-              ],
-              {
-                duration: END_TRANSITION_DURATION * 0.6,
-                easing: "cubic-bezier(0.33, 0.27, .58, 1)",
-                fill: "forwards",
-                iterations: 1,
-              }
-            );
-          }
-        });
-      }, END_TRANSITION_DURATION * 0.4);
-
-    if (forceEnd && elementRef.current)
-      elementRef.current.style.filter = "blur(10px)";
-  }, [finished, forceEnd]);
-
   const sistemgasSvgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

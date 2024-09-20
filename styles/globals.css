@@ -19,5 +19,5 @@ a {
 * {
   box-sizing: border-box;
   overflow-x: hidden;
-  --end-transition-duration: 3s;
+  --end-transition-duration: 2s;
 }

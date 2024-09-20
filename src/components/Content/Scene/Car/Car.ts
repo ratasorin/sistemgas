@@ -34,7 +34,7 @@ export const fitCarInsideCanvas = ({
 };
 
 class Car {
-  position: number = 0;
+  position: number = -300;
   velocity: number = 0;
   width: number;
   constructor(width: number, velocity: number) {

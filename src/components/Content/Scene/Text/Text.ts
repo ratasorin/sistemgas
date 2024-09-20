@@ -109,7 +109,7 @@ export default class TextRenderer implements Render {
     heightFactor: number
   ) {
     this.initialText = providedText;
-    this.x = 0;
+    this.x = -300;
     this.carImage = carImage;
     this.carVelocity = carVelocity;
     this.heightFactor = heightFactor;

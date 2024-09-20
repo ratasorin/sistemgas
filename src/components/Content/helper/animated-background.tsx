@@ -83,7 +83,7 @@ const AnimatedBackground: FC<{
                 },
                 {
                   transform: `translate(calc(${
-                    END_TRANSITION_DURATION / (speed * 1000)
+                    (END_TRANSITION_DURATION / (speed * 1000)) * 1.5
                   } * ${width}), ${
                     transitionDown ? "calc(1 / 5 * 100vh)" : "0"
                   }) scale(${zoomOut ?? 1})`,

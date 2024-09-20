@@ -114,8 +114,10 @@ const MainScene: FC = () => {
   useEffect(() => {
     if (imageLoaded) {
       setTimeout(() => {
-        setLoading(false);
-      }, 1500);
+        requestAnimationFrame(() => {
+          setLoading(false);
+        });
+      }, 500);
     }
   }, [imageLoaded]);
 

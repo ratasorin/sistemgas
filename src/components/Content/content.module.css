@@ -1,12 +1,12 @@
 .parallax {
-  --background-svg-width: calc((4023 / 1080) * (4 / 5) * 100vh - 32px);
+  --background-svg-width: calc((2139 / 1080) * (5 / 6) * 100vh);
   --road-svg-width: calc(
-    (4029 / 721) * (1 / 5) * 100vh - 32px
+    (2141 / 151) * (1 / 6) * 100vh
   ); /* the 32 px are because there is a margin left and right of 16px that affect the width of the container*/
   overflow-y: hidden;
-  height: 100%;
+  height: 100vh;
   transform-origin: center bottom;
-  transform: scale(1.06);
+  transform: scale(1.2);
 }
 
 .transition-down {
@@ -19,26 +19,26 @@
     transform: translateY(0);
   }
   100% {
-    transform: translateY(calc(1 / 5 * 100vh));
+    transform: translateY(calc(1 / 6 * 100vh));
   }
 }
 
 .force-end {
-  transform: translateY(calc(1 / 5 * 100vh));
+  transform: translateY(calc(1 / 6 * 100vh));
 }
 
-.grass {
-  background: url("/grass.svg");
+.buildings-back {
+  background: url("/v2/buildings-back.svg");
   position: absolute;
   top: 0;
   left: 0;
   width: calc(var(--background-svg-width) * 2);
-  height: calc(4 / 5 * 100%);
+  height: calc(5 / 6 * 100vh);
   background-position: left bottom;
-
   background-repeat: repeat-x;
   background-size: contain;
   background-position: left bottom;
+  z-index: 1;
 }
 
 .sistemgas-hq {
@@ -86,100 +86,81 @@
   }
 }
 
-.forest-front {
+.buildings-front {
   position: absolute;
   top: 0;
   left: 0;
-  background: url("/forest-front.svg");
+  background: url("/v2/buildings-front.svg");
   width: calc(var(--background-svg-width) * 2);
-  height: calc(4 / 5 * 100%);
+  height: calc(5 / 6 * 100vh);
   background-position: left bottom;
   background-repeat: repeat-x;
   background-size: contain;
-}
-
-.forest-mid {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: url("/forest-mid.svg");
-  width: calc(var(--background-svg-width) * 2);
-  height: calc(4 / 5 * 100%);
-  background-position: left bottom;
-
-  background-repeat: repeat-x;
-  background-size: contain;
-}
-
-.forest-back {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: url("/forest-back.svg");
-  width: calc(var(--background-svg-width) * 2);
-  height: calc(4 / 5 * 100%);
-  background-position: left bottom;
-
-  background-repeat: repeat-x;
-  background-size: contain;
-}
-
-.mountains-front {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: url("/mountains-front.svg");
-  width: calc(var(--background-svg-width) * 2);
-  height: calc(4 / 5 * 100%);
-  background-position: left bottom;
-
-  background-repeat: repeat-x;
-  background-size: contain;
-}
-
-.mountains-back {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: url("/mountains-back.svg");
-  width: calc(var(--background-svg-width) * 2);
-  height: calc(4 / 5 * 100%);
-  background-position: left bottom;
-
-  background-repeat: repeat-x;
-  background-size: contain;
+  z-index: 3;
 }
 
 .clouds-front {
   position: absolute;
   top: 0;
   left: 0;
-  background: url("/clouds-front.svg");
+  background: url("/v2/clouds-front.svg");
   width: calc(var(--background-svg-width) * 2);
-  height: calc(4 / 5 * 100%);
+  height: calc(5 / 6 * 100vh);
   background-position: left bottom;
 
   background-repeat: repeat-x;
   background-size: contain;
+  z-index: 2;
 }
+
 .clouds-back {
   position: absolute;
   top: 0;
   left: 0;
-  background: url("/clouds-back.svg");
+  background: url("/v2/clouds-back.svg");
   width: calc(var(--background-svg-width) * 2);
-  height: calc(4 / 5 * 100%);
+  height: calc(5 / 6 * 100vh);
   background-position: left bottom;
+
   background-repeat: repeat-x;
   background-size: contain;
+  z-index: 0;
+}
+
+.park-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: url("/v2/park-back.svg");
+  width: calc(var(--background-svg-width) * 2);
+  height: calc(5 / 6 * 100vh);
+  background-position: left bottom;
+
+  background-repeat: repeat-x;
+  background-size: contain;
+  z-index: 5;
+}
+
+.park-front {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: url("/v2/park-front.svg");
+  width: calc(var(--background-svg-width) * 2);
+  height: calc(5 / 6 * 100vh);
+  background-position: left bottom;
+
+  background-repeat: repeat-x;
+  background-size: contain;
+  z-index: 6;
 }
 
 .street {
   position: absolute;
-  top: calc(4 / 5 * 100%);
+  top: calc(5 / 6 * 100vh);
   left: 0;
-  background: url("/road.svg");
-  height: calc((1 / 5) * 100%);
+  background: url("/v2/road.svg");
+  height: calc(1 / 6 * 100vh);
   width: calc(var(--road-svg-width) * 4);
   background-position: left bottom;
   background-repeat: repeat-x;
@@ -188,10 +169,10 @@
 
 .street-background {
   position: absolute;
-  top: calc(4 / 5 * 100%);
+  top: calc(5 / 6 * 100vh);
   left: 0;
-  background: url("/road-background.svg");
-  height: calc((1 / 5) * 100%);
+  background: url("/v2/road.svg");
+  height: calc(1 / 6 * 100vh);
   width: calc(var(--road-svg-width) * 4);
   background-position: left bottom;
   background-repeat: repeat-x;

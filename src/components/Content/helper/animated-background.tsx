@@ -16,7 +16,7 @@ const AnimatedBackground: FC<{
   const width = useMemo(
     () =>
       widthType === "--background-svg-width"
-        ? `calc(-1 * var(${widthType}) + 64px)`
+        ? `calc(-1 * var(${widthType}))`
         : `calc(-1 * var(${widthType}))`,
     [widthType]
   );
@@ -32,10 +32,10 @@ const AnimatedBackground: FC<{
           animationRef.current = element.animate(
             [
               {
-                transform: "translateX(-250px)",
+                transform: "translateX(-50px)",
               },
               {
-                transform: `translateX(calc(${width} - 250px))`,
+                transform: `translateX(calc(${width} - 50px))`,
               },
             ],
             {
@@ -59,7 +59,7 @@ const AnimatedBackground: FC<{
             `transform: translate(calc(${
               END_TRANSITION_DURATION / (speed * 1000)
             } * ${width}), ${
-              transitionDown ? "calc(1 / 5 * 100vh)" : "0"
+              transitionDown ? "calc(1 / 8 * 100vh)" : "0"
             }) scale(${zoomOut || 1})`
           );
         } else if (finished && animationRef.current) {
@@ -85,7 +85,7 @@ const AnimatedBackground: FC<{
                   transform: `translate(calc(${
                     (END_TRANSITION_DURATION / (speed * 1000)) * 1.5
                   } * ${width}), ${
-                    transitionDown ? "calc(1 / 5 * 100vh)" : "0"
+                    transitionDown ? "calc(1 / 8 * 100vh)" : "0"
                   }) scale(${zoomOut ?? 1})`,
                 },
               ],

@@ -37,39 +37,33 @@ const backgroundAnimations = [
     zoomOut: 0.9,
   },
   {
-    baseClassName: content["mountains-back"],
-    speed: 20,
-    transitionDown: true,
-    zoomOut: 0.95,
-    origin: "bottom",
+    baseClassName: content["clouds-front"],
+    speed: 19,
+    zoomOut: 0.9,
   },
+
   {
-    baseClassName: content["mountains-front"],
-    speed: 19.5,
+    baseClassName: content["park-front"],
+    speed: 10,
     transitionDown: true,
     zoomOut: 0.9,
-    origin: "bottom",
   },
   {
-    baseClassName: content["clouds-front"],
+    baseClassName: content["park-back"],
     speed: 16,
-    zoomOut: 0.85,
+    transitionDown: true,
+
+    zoomOut: 0.9,
   },
   {
-    baseClassName: content["forest-back"],
-    speed: 19,
+    baseClassName: content["buildings-front"],
+    speed: 23,
     transitionDown: true,
     zoomOut: 0.8,
   },
   {
-    baseClassName: content["forest-mid"],
-    speed: 17,
-    transitionDown: true,
-    zoomOut: 0.8,
-  },
-  {
-    baseClassName: content["forest-front"],
-    speed: 15,
+    baseClassName: content["buildings-back"],
+    speed: 30,
     transitionDown: true,
     zoomOut: 0.8,
   },
@@ -381,7 +375,7 @@ const MainScene: FC = () => {
 
   return (
     <>
-      {loading && (
+      {/* {loading && (
         <div className="absolute z-50 w-screen h-screen bg-black/60 flex flex-col items-center justify-center">
           <div className={content["fire"]}>
             <div className={content["fire-left"]}>
@@ -405,7 +399,7 @@ const MainScene: FC = () => {
             LOADING...
           </h2>
         </div>
-      )}
+      )} */}
       <div
         ref={sceneRef}
         className="relative overflow-x-hidden overflow-y-hidden flex-1 flex flex-col-reverse z-0 mb-4 mr-4 ml-4 mt-4 bg-cyan-100 rounded-md"

@@ -21,25 +21,65 @@ import { IoPlaySkipForward } from "react-icons/io5";
 import WebFont from "webfontloader";
 import { createPortal } from "react-dom";
 import { scrollElementBy } from "lib/scroll-smooth";
+import { Button, styled } from "@mui/material";
 
-const screens = {
-  sm: 640,
-  md: 768,
-  lg: 1024,
-  xl: 1280,
-  "2xl": 1536,
-} as const;
+// const GlowingButton = styled(Button)(({ theme }) => ({
+//   padding: "8px 16px",
+//   borderRadius: "8px",
+//   textTransform: "none",
+//   background: `transparent`,
+//   fontSize: "16px",
+//   fontWeight: "bold",
+//   position: "relative",
+//   overflow: "hidden",
+//   zIndex: 1,
+//   boxShadow: "none",
+//   "&::before": {
+//     content: '""',
+//     position: "absolute",
+//     top: "50%",
+//     left: "50%",
+//     width: "100%",
+//     aspectRatio: "1/1",
+//     background: `conic-gradient(transparent, ${theme.palette.primary.dark}, transparent 10%)`, // Gradient for glowing effect,
+//     zIndex: -2,
+//     transform: "translate(-50%, -50%) rotate(0deg)",
+//     animation: "rotate 4s linear infinite",
+//   },
+//   "&::after": {
+//     content: '""',
+//     position: "absolute",
+//     zIndex: -1,
+//     /* border width */
+//     left: "1px",
+//     top: "1px",
+//     /* double the px from the border width left */
+//     width: "calc(100% - 2px)",
+//     height: "calc(100% - 2px)",
+//     /*bg color*/
+//     background: `${theme.palette.primary.light}`,
+//     /*box border radius*/
+//     borderRadius: "8px",
+//   },
+//   "@keyframes rotate": {
+//     "100%": {
+//       transform: "translate(-50%, -50%) rotate(1turn)",
+//     },
+//   },
+// }));
 
 const backgroundAnimations = [
   {
     baseClassName: content["clouds-back"],
-    speed: 19,
-    zoomOut: 0.9,
+    speed: 25,
+    zoomOut: 0.95,
+    transitionDown: true,
   },
   {
     baseClassName: content["clouds-front"],
-    speed: 19,
-    zoomOut: 0.9,
+    speed: 22,
+    zoomOut: 0.95,
+    transitionDown: true,
   },
 
   {
@@ -52,7 +92,6 @@ const backgroundAnimations = [
     baseClassName: content["park-back"],
     speed: 16,
     transitionDown: true,
-
     zoomOut: 0.9,
   },
   {
@@ -375,6 +414,24 @@ const MainScene: FC = () => {
 
   return (
     <>
+      <div className="absolute z-[100000] top-20 left-1/2 -translate-x-1/2 w-full flex flex-col items-center">
+        <h1 className="font-poppins font-extrabold text-5xl md:text-6xl overflow-visible bg-clip-text text-transparent bg-gradient-to-r from-[#1334a0] to-[#3862ee]">
+          SISTEMGAS
+        </h1>
+        <h3 className="font-poppins mt-3 px-4 font-normal text-center text-lg leading-6 md:text-lg overflow-visible text-slate-800">
+          Solutia{" "}
+          <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-400 to-orange-500">
+            alternativa
+          </span>{" "}
+          pentru furnizarea gazelor naturale
+        </h3>
+        <Button
+          variant="contained"
+          className="font-poppins !font-semibold !mt-5 !rounded-lg !bg-gradient-to-r from-[#3862ee] to-[#1334a0]"
+        >
+          INCEARCA ACUM
+        </Button>
+      </div>
       {/* {loading && (
         <div className="absolute z-50 w-screen h-screen bg-black/60 flex flex-col items-center justify-center">
           <div className={content["fire"]}>
@@ -402,7 +459,7 @@ const MainScene: FC = () => {
       )} */}
       <div
         ref={sceneRef}
-        className="relative overflow-x-hidden overflow-y-hidden flex-1 flex flex-col-reverse z-0 mb-4 mr-4 ml-4 mt-4 bg-cyan-100 rounded-md"
+        className="relative overflow-x-hidden overflow-y-hidden flex-1 flex flex-col-reverse z-0 mb-4 mr-4 ml-4 mt-4 bg-gradient-to-t from-cyan-200 to-cyan-50 rounded-md"
       >
         <Scene
           width={dimensions.width}

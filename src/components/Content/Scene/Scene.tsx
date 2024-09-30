@@ -218,7 +218,7 @@ const Scene: NextPage<{
   if (!textRenderer || !carRenderer) return null;
   return (
     <div className="absolute bottom-0 w-full h-full overflow-hidden z-10">
-      <div
+      {/* <div
         id="text__renderer"
         className="absolute bottom-0 w-full h-full z-0 overflow-hidden"
       >
@@ -228,7 +228,7 @@ const Scene: NextPage<{
           render={textRenderer}
           start={start}
         ></Canvas>
-      </div>
+      </div> */}
       <div
         id="car__renderer"
         className="absolute bottom-0 w-full h-full z-20 overflow-hidden"

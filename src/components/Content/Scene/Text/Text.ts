@@ -138,8 +138,6 @@ export default class TextRenderer implements Render {
       return;
 
     this.context.save();
-    this.context.globalCompositeOperation = "source-over";
-    this.context.globalAlpha = 1;
 
     this.context.clearRect(
       0,
@@ -147,24 +145,6 @@ export default class TextRenderer implements Render {
       Math.ceil(getCanvasDimensions(this.canvas).width),
       Math.ceil(getCanvasDimensions(this.canvas).height)
     );
-
-    // text box background
-    this.context.beginPath();
-    this.context.fillStyle = "#ffffff";
-    this.context.strokeStyle = "#e2e8f0";
-    this.context.lineWidth = 2;
-    this.context.globalAlpha = 0.8;
-
-    this.context.roundRect(
-      Math.floor(this.textBoxCoordinates.x - this.padding.left),
-      Math.floor(this.textBoxCoordinates.y - this.padding.top),
-      Math.floor(this.textBox.width + 2 * this.padding.right),
-      Math.floor(this.textBox.height + 2 * this.padding.bottom),
-      10
-    );
-    this.context.stroke();
-    this.context.fill();
-    this.context.restore();
 
     const offsetX =
       (this.coordinates?.x || 0) - (this.textBoxCoordinates.x || 0);
@@ -208,42 +188,12 @@ export default class TextRenderer implements Render {
       !this.textBox
     )
       return;
-
-    this.context.save();
-    this.context.globalCompositeOperation = "source-over";
-    this.context.globalAlpha = 1;
-
     this.context.clearRect(
-      Math.floor(
-        this.textBoxCoordinates.x - this.padding.top - this.border.left
-      ),
-      Math.floor(
-        this.textBoxCoordinates.y - this.padding.bottom - this.border.top
-      ),
-      Math.floor(
-        this.textBox.width + 2 * (this.padding.left + this.border.right)
-      ) + 200,
-      Math.floor(
-        this.textBox.height + 2 * (this.padding.bottom + this.border.bottom)
-      ) + 200
+      0,
+      0,
+      Math.ceil(getCanvasDimensions(this.canvas).width),
+      Math.ceil(getCanvasDimensions(this.canvas).height)
     );
-
-    this.context.beginPath();
-    this.context.fillStyle = "#ffffff";
-    this.context.strokeStyle = "#e2e8f0";
-    this.context.lineWidth = 2;
-    this.context.globalAlpha = 0.8;
-    this.context.roundRect(
-      Math.floor(this.textBoxCoordinates.x - this.padding.left),
-      Math.floor(this.textBoxCoordinates.y - this.padding.top),
-      Math.floor(this.textBox.width + 2 * this.padding.right),
-      Math.floor(this.textBox.height + 2 * this.padding.bottom),
-      10
-    );
-    this.context.stroke();
-    this.context.fill();
-    this.context.restore();
-
     const offsetX =
       (this.coordinates?.x || 0) - (this.textBoxCoordinates.x || 0);
     const offsetY =

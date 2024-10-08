@@ -415,15 +415,16 @@ const MainScene: FC = () => {
   return (
     <>
       <div className="absolute z-[100000] top-20 left-1/2 -translate-x-1/2 w-full flex flex-col items-center">
-        <h1 className="font-poppins font-extrabold text-5xl md:text-6xl overflow-visible bg-clip-text text-transparent bg-gradient-to-r from-[#1334a0] to-[#3862ee]">
+        {/* <h1 className="font-poppins font-extrabold text-5xl md:text-6xl overflow-visible bg-clip-text text-transparent bg-gradient-to-r from-[#1334a0] to-[#3862ee]">
           SISTEMGAS
-        </h1>
-        <h3 className="font-poppins mt-3 px-4 font-normal text-center text-lg leading-6 md:text-lg overflow-visible text-slate-800">
-          Solutia{" "}
-          <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-400 to-orange-500">
-            alternativa
+        </h1> */}
+        <h3 className="font-poppins mt-3 px-8 font-extrabold text-center text-4xl md:text-6xl overflow-visible">
+          <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-400">
+            Alternativa
           </span>{" "}
-          pentru furnizarea gazelor naturale
+          <span className="overflow-visible bg-clip-text text-transparent bg-gradient-to-r from-[#1334a0] to-[#3862ee]">
+            in furnizarea gazului natural
+          </span>
         </h3>
         <Button
           variant="contained"

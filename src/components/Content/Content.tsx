@@ -418,7 +418,7 @@ const MainScene: FC = () => {
         {/* <h1 className="font-poppins font-extrabold text-5xl md:text-6xl overflow-visible bg-clip-text text-transparent bg-gradient-to-r from-[#1334a0] to-[#3862ee]">
           SISTEMGAS
         </h1> */}
-        <h3 className="font-poppins mt-3 px-8 font-extrabold text-center text-4xl md:text-6xl overflow-visible">
+        <h3 className="font-poppins mt-1 px-8 font-extrabold text-center text-4xl md:text-6xl overflow-visible">
           <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-400">
             Alternativa
           </span>{" "}
@@ -487,7 +487,7 @@ const MainScene: FC = () => {
                   ? content["sistemgas-svg-force-end"]
                   : ""
               }`}
-              svgClassName="h-3/5 overflow-visible"
+              svgClassName="h-[55%] overflow-visible"
               elementId={LANDING_PAGE_SISTEMGAS_HQ_SVG_ID}
               svgName="sistemgas-hq.svg"
             ></EmbedSvg>

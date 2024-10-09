@@ -414,8 +414,8 @@ const MainScene: FC = () => {
 
   return (
     <>
-      <div className="absolute z-[100000] top-20 left-1/2 -translate-x-1/2 w-full flex flex-col items-center">
-        <h3 className="font-poppins mt-1 px-8 font-extrabold text-center text-4xl md:text-6xl overflow-visible">
+      <div className="absolute z-[100000] top-[52px] left-1/2 -translate-x-1/2 w-full flex flex-col items-center h-[calc(45%-52px)] justify-center" style ={{gap: "16px"}}>
+        <h3 className="font-poppins px-8 font-extrabold text-center text-4xl md:text-6xl overflow-visible">
           <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-400">
             Alternativa
           </span>{" "}
@@ -425,7 +425,7 @@ const MainScene: FC = () => {
         </h3>
         <Button
           variant="contained"
-          className="font-poppins !font-semibold !mt-5 !rounded-lg !bg-gradient-to-r from-[#3862ee] to-[#1334a0]"
+          className="font-poppins !font-semibold !rounded-lg !bg-gradient-to-r from-[#3862ee] to-[#1334a0]"
         >
           INCEARCA ACUM
         </Button>

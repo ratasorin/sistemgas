@@ -1,13 +1,11 @@
 import { getCanvasDimensions } from "../Canvas/helper/canvas-dimensions";
-import { fitCarInsideCanvas, getScaleCoefficient } from "../Car/Car";
+import { fitCarInsideCanvas } from "../Car/Car";
 import { Render } from "../Scene";
 import {
   Coordinates,
   Dimensions,
   TextWithCoordinates,
-  getFirstWordPosition,
   getTextDimensions,
-  textWithAbsoluteCoordinates,
 } from "./helpers/math/coordinates";
 import { Text } from "./helpers/text";
 
@@ -43,54 +41,16 @@ export default class TextRenderer implements Render {
   x: number;
   carImage: HTMLImageElement;
   textBox: Dimensions | undefined;
-  textBoxCoordinates: Coordinates | undefined;
   carVelocity: number = 0;
-  heightFactor: number = 0;
-  coordinates: Coordinates | undefined;
-  padding: BoxPosition = {
-    top: 20,
-    left: 20,
-    right: 20,
-    bottom: 20,
-  };
-  border: BoxPosition = {
-    top: 3,
-    left: 3,
-    right: 3,
-    bottom: 3,
-  };
 
   initializeCanvas(canvas: HTMLCanvasElement, dpr: number) {
     this.canvas = canvas;
 
-    const { carDestinationHeight } = fitCarInsideCanvas({
-      canvasDimensions: getCanvasDimensions(this.canvas),
-      carDimensions: this.carImage,
-    });
-    const carDisplayHeight =
-      carDestinationHeight * getScaleCoefficient(this.canvas, this.carImage);
-
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
-    this.text = textWithAbsoluteCoordinates(
-      this.initialText,
-      this.context,
-      getCanvasDimensions(this.canvas),
-      carDisplayHeight
-    );
-    this.textBox = getTextDimensions(this.text, this.context);
-    textBox = getTextDimensions(this.text, this.context);
-    this.textBoxCoordinates = getFirstWordPosition(
-      this.text,
-      this.context,
-      getCanvasDimensions(this.canvas),
-      carDisplayHeight
-    );
-    this.coordinates = getFirstWordPosition(
-      this.text,
-      this.context,
-      getCanvasDimensions(this.canvas),
-      carDisplayHeight
-    );
+
+    this.textBox = getTextDimensions(this.initialText, this.context);
+    console.log({ textBox: this.textBox });
+
     this.canvas.width = Math.floor(
       Number(canvas.style.width.replace("px", "")) * dpr
     );
@@ -105,14 +65,12 @@ export default class TextRenderer implements Render {
   constructor(
     providedText: Text[],
     carImage: HTMLImageElement,
-    carVelocity: number,
-    heightFactor: number
+    carVelocity: number
   ) {
     this.initialText = providedText;
     this.x = -300;
     this.carImage = carImage;
     this.carVelocity = carVelocity;
-    this.heightFactor = heightFactor;
   }
 
   update() {
@@ -128,14 +86,7 @@ export default class TextRenderer implements Render {
   }
 
   end() {
-    if (
-      !this.canvas ||
-      !this.context ||
-      !this.text ||
-      !this.textBoxCoordinates ||
-      !this.textBox
-    )
-      return;
+    if (!this.canvas || !this.context || !this.text || !this.textBox) return;
 
     this.context.save();
 
@@ -145,11 +96,6 @@ export default class TextRenderer implements Render {
       Math.ceil(getCanvasDimensions(this.canvas).width),
       Math.ceil(getCanvasDimensions(this.canvas).height)
     );
-
-    const offsetX =
-      (this.coordinates?.x || 0) - (this.textBoxCoordinates.x || 0);
-    const offsetY =
-      (this.coordinates?.y || 0) - (this.textBoxCoordinates.y || 0);
 
     this.text.forEach((text_) => {
       if (!this.canvas || !this.context || !this.text) return;
@@ -173,31 +119,20 @@ export default class TextRenderer implements Render {
       this.context.textBaseline = "top";
       this.context.fillText(
         `${text_.payload}`,
-        Math.floor(-offsetX + text_.coordinates.x),
-        Math.floor(-offsetY + text_.coordinates.y)
+        Math.floor(text_.coordinates.x),
+        Math.floor(text_.coordinates.y)
       );
     });
   }
 
   render() {
-    if (
-      !this.canvas ||
-      !this.context ||
-      !this.text ||
-      !this.textBoxCoordinates ||
-      !this.textBox
-    )
-      return;
+    if (!this.canvas || !this.context || !this.text || !this.textBox) return;
     this.context.clearRect(
       0,
       0,
       Math.ceil(getCanvasDimensions(this.canvas).width),
       Math.ceil(getCanvasDimensions(this.canvas).height)
     );
-    const offsetX =
-      (this.coordinates?.x || 0) - (this.textBoxCoordinates.x || 0);
-    const offsetY =
-      (this.coordinates?.y || 0) - (this.textBoxCoordinates.y || 0);
 
     this.text.forEach((text_) => {
       if (!this.canvas || !this.context || !this.text) return;
@@ -223,23 +158,18 @@ export default class TextRenderer implements Render {
       this.context.textBaseline = "top";
       this.context.fillText(
         `${text_.payload}`,
-        Math.floor(-offsetX + text_.coordinates.x),
-        Math.floor(-offsetY + text_.coordinates.y)
+        Math.floor(text_.coordinates.x),
+        Math.floor(text_.coordinates.y)
       );
 
-      const coefficient = getScaleCoefficient(this.canvas, this.carImage);
-      const { carDestinationHeight, carDestinationWidth } = fitCarInsideCanvas({
-        canvasDimensions: getCanvasDimensions(this.canvas),
-        carDimensions: this.carImage,
-      });
+      const ratio = (window.innerHeight * 0.4) / this.carImage.height;
+      const carWidth = window.innerWidth * ratio;
 
       // because we cannot render the car and the text on the same canvas, we emulate
       // how the car would mask the text using this empty rectangle
       this.context.globalCompositeOperation = "destination-out";
       this.context.fillRect(
-        this.x -
-          carDestinationWidth * coefficient +
-          (carDestinationWidth * coefficient) / 2,
+        this.x - carWidth + carWidth / 2,
         0,
         Math.floor(4 * getCanvasDimensions(this.canvas).width),
         Math.floor(getCanvasDimensions(this.canvas).height)

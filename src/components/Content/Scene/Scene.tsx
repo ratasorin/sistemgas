@@ -4,7 +4,11 @@ import { Positions } from "./Text/helpers/math/coordinates";
 import TextRenderer from "./Text/Text";
 import { Text } from "./Text/helpers/text";
 import { useEffect, useMemo } from "react";
-import CarRender, { useAnimationState } from "./Car/Car";
+import CarRender, {
+  fitCarInsideCanvas,
+  getScaleCoefficient,
+  useAnimationState,
+} from "./Car/Car";
 import { gsap } from "gsap";
 import { END_TRANSITION_DURATION } from "../helper/animated-background";
 
@@ -113,45 +117,63 @@ const Scene: NextPage<{
     const fontSize = getResponsiveFontSize(width);
 
     return [
-      new Text(
-        "SISTEMGAS",
-        Math.floor(2 * fontSize),
-        "#0a2375 #173dba",
-        "Poppins",
-        "start",
-        "700",
-        { x: 0, y: 12 }
-      ),
-      new Text(
-        "Solutia",
-        Math.floor(fontSize),
-        "#4b557c",
-        "Poppins",
-        "newline"
-      ),
-      new Text(
-        "alternativa",
-        fontSize,
-        "#fc944a #eb500b",
-        "Poppins",
-        "right",
-        "600",
-        {
-          y: 2,
-          x: 2,
-        }
-      ),
-      new Text("pentru", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
-      new Text(
-        "furnizarea",
-        Math.floor(fontSize),
+      //   {payload: "SISTEMGAS", fontSize: }
+      //   "SISTEMGAS",
+      //   Math.floor(2 * fontSize),
+      //   "#0a2375 #173dba",
+      //   "Poppins",
+      //   "start",
+      //   "700",
+      //   { x: 0, y: 12 }
+      // ),
+      // new Text(
+      //   "Solutia",
+      //   Math.floor(fontSize),
+      //   "#4b557c",
+      //   "Poppins",
+      //   "newline"
+      // ),
+      // new Text(
+      //   "alternativa",
+      //   fontSize,
+      //   "#fc944a #eb500b",
+      //   "Poppins",
+      //   "right",
+      //   "600",
+      //   {
+      //     y: 2,
+      //     x: 2,
+      //   }
+      // ),
+      // new Text("pentru", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
+      // new Text(
+      //   "furnizarea",
+      //   Math.floor(fontSize),
 
-        "#4b557c",
-        "Poppins",
-        "newline"
-      ),
-      new Text("gazelor", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
-      new Text("naturale", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
+      //   "#4b557c",
+      //   "Poppins",
+      //   "newline"
+      // ),
+      // new Text("gazelor", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
+      // new Text("naturale", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
+
+      new Text({
+        payload: "SISTEMGAS este furnizorul: ",
+        fontColor: "#0a2375",
+        fontFamily: "Poppins",
+        fontSize: 14,
+        fontStyle: "700",
+        position: "start",
+      }),
+
+      new Text({
+        payload: "rapid si eficient ",
+        fontColor: "#fc944a #eb500b",
+        fontFamily: "Poppins",
+        fontSize: 14,
+        fontStyle: "700",
+        position: "start",
+      }),
     ];
   }, [width]);
 
@@ -163,13 +185,20 @@ const Scene: NextPage<{
 
   const textRenderer = useMemo(() => {
     if (images.gasTruck)
-      return new TextRenderer(text, images.gasTruck, carVelocity, heightFactor);
-  }, [text, images, carVelocity, heightFactor]);
+      return new TextRenderer(text, images.gasTruck, carVelocity);
+  }, [text, images, carVelocity]);
 
   const carRenderer = useMemo(() => {
     if (images.gasTruck)
       return new CarRender(images.gasTruck, carVelocity, heightFactor);
   }, [images.gasTruck, carVelocity, heightFactor]);
+
+  const carCanvasDimensions = useMemo(() => {
+    const ratio = (0.4 * height) / images.gasTruck.height;
+    const width = ratio * images.gasTruck.width;
+
+    return { width, height: 0.4 * height };
+  }, [images, width, height]);
 
   useEffect(() => {
     if (!textRenderer || !height || !imageHeight) return;
@@ -188,8 +217,7 @@ const Scene: NextPage<{
     console.log({ remainingSpace });
 
     const destinationY =
-      (remainingSpace - (textRenderer.textBox?.height || 0)) / 2 -
-      (textRenderer.textBoxCoordinates?.y || 0 + textRenderer.padding.top);
+      (remainingSpace - (textRenderer.textBox?.height || 0)) / 2;
 
     console.log({ destinationY, height: textRenderer.textBox?.height });
 
@@ -218,26 +246,31 @@ const Scene: NextPage<{
   if (!textRenderer || !carRenderer) return null;
   return (
     <div className="absolute bottom-0 w-full h-full overflow-hidden z-10">
-      {/* <div
+      <div
         id="text__renderer"
         className="absolute bottom-0 w-full h-full z-0 overflow-hidden"
       >
         <Canvas
-          width={width}
-          height={height}
+          width={textRenderer.textBox?.width || 0}
+          height={textRenderer.textBox?.height || 0}
           render={textRenderer}
           start={start}
         ></Canvas>
-      </div> */}
+      </div>
       <div
         id="car__renderer"
         className="absolute bottom-0 w-full h-full z-20 overflow-hidden"
       >
         <Canvas
-          width={width}
-          height={height}
+          width={carCanvasDimensions.width}
+          height={carCanvasDimensions.height}
           render={carRenderer}
           start={start}
+          style={{
+            position: "absolute",
+            bottom: 0,
+            transform: "translateY(calc(-1/9*100vh))",
+          }}
         ></Canvas>
       </div>
     </div>

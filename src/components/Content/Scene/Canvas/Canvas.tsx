@@ -1,5 +1,4 @@
-import { NextPage } from "next";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, FC } from "react";
 import { Render } from "../Scene";
 import { useAnimationState } from "../Car/Car";
 
@@ -8,13 +7,14 @@ interface Props {
   height: number;
   render: Render;
   start: boolean;
+  style?: React.CSSProperties;
 }
 
 interface Canvas extends HTMLCanvasElement {
   context: CanvasRenderingContext2D;
 }
 
-const Canvas: NextPage<Props> = ({ width, height, render, start }) => {
+const Canvas: FC<Props> = ({ width, height, render, start, style }) => {
   const canvasRef = useRef<Canvas>(null);
   const { finished, forceEnd } = useAnimationState();
   const frameID = useRef(-1);
@@ -66,7 +66,7 @@ const Canvas: NextPage<Props> = ({ width, height, render, start }) => {
 
   return (
     <canvas
-      style={{ width, height }}
+      style={{ ...style, width, height }}
       ref={canvasRef}
       className="relative bg-transparent"
     ></canvas>

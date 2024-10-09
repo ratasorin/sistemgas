@@ -23,24 +23,26 @@ export class Text {
   fontStyle: Styles | undefined;
   position: RelativePositions | undefined;
 
-  constructor(
-    payload: string,
-    fontSize: number,
-    fontColor: string,
-    fontFamily: string,
-    position?: RelativePositions,
-    fontStyle?: Styles,
-    fontPadding?: { x: number; y: number }
-  ) {
-    this.payload = payload;
-    this.fontSize = fontSize;
-    this.fontColor = fontColor;
-    this.fontFamily = fontFamily;
+  constructor(settings: {
+    payload: string;
+    fontSize: number;
+    fontColor: string;
+    fontFamily: string;
+    position?: RelativePositions;
+    fontStyle?: Styles;
+    fontPadding?: { x: number; y: number };
+  }) {
+    this.payload = settings.payload;
+    this.fontSize = settings.fontSize;
+    this.fontColor = settings.fontColor;
+    this.fontFamily = settings.fontFamily;
     this.fontPadding = {
-      x: fontPadding?.x || 0,
-      y: Math.ceil(fontSize / 3.5) + (fontPadding ? fontPadding?.y : 0),
+      x: settings.fontPadding?.x || 0,
+      y:
+        Math.ceil(settings.fontSize / 3.5) +
+        (settings.fontPadding ? settings.fontPadding?.y : 0),
     };
-    this.position = position;
-    this.fontStyle = fontStyle;
+    this.position = settings.position;
+    this.fontStyle = settings.fontStyle;
   }
 }

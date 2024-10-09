@@ -46,23 +46,6 @@ class Car {
   }
 }
 
-const TRUCK_AREA_PERCENTAGE_OF_SCREEN = 0.4;
-
-export const getScaleCoefficient = (
-  canvas: HTMLCanvasElement,
-  image: HTMLImageElement
-) => {
-  if (!canvas) return 1;
-
-  const { carDestinationHeight } = fitCarInsideCanvas({
-    canvasDimensions: getCanvasDimensions(canvas),
-    carDimensions: image,
-  });
-
-  const n = getCanvasDimensions(canvas).height / carDestinationHeight;
-  return n * TRUCK_AREA_PERCENTAGE_OF_SCREEN;
-};
-
 export default class CarRender implements Render {
   canvas: HTMLCanvasElement | undefined;
   context: CanvasRenderingContext2D | undefined;
@@ -173,13 +156,6 @@ export default class CarRender implements Render {
       // destination height
       carDestinationHeight
     );
-
-    // the transform origin is set on bottom right so that the scaling factor doesn't break the 1:1 relationship
-    // between where the car is rendered and where the business logic perceives it to be
-    this.canvas.style.transformOrigin = `100% 100%`;
-    this.canvas.style.transform = `translateY(-${
-      (getCanvasDimensions(this.canvas).height * 1) / 7
-    }px) scale(${getScaleCoefficient(this.canvas, this.image)})`;
   }
 
   update() {
@@ -189,11 +165,7 @@ export default class CarRender implements Render {
     }
     if (!this.canvas || !this.context || !this.car) return;
 
-    if (
-      this.car.position <=
-      (1 + getScaleCoefficient(this.canvas, this.image)) *
-        getCanvasDimensions(this.canvas).width
-    ) {
+    if (this.car.position <= 2 * getCanvasDimensions(this.canvas).width) {
       this.car.update();
     } else {
       useAnimationState.setState(() => ({ finished: true }));

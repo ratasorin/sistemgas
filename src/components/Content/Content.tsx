@@ -415,9 +415,6 @@ const MainScene: FC = () => {
   return (
     <>
       <div className="absolute z-[100000] top-20 left-1/2 -translate-x-1/2 w-full flex flex-col items-center">
-        {/* <h1 className="font-poppins font-extrabold text-5xl md:text-6xl overflow-visible bg-clip-text text-transparent bg-gradient-to-r from-[#1334a0] to-[#3862ee]">
-          SISTEMGAS
-        </h1> */}
         <h3 className="font-poppins mt-1 px-8 font-extrabold text-center text-4xl md:text-6xl overflow-visible">
           <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-400">
             Alternativa
@@ -495,18 +492,17 @@ const MainScene: FC = () => {
           document.getElementById("root")!
         )}
 
-        <div ref={elementRef} className={`${content.parallax} z-0`}>
+        <div ref={elementRef} className={`${content.parallax} z-0 relative`}>
           {backgroundAnimations.map((elem) => (
             <AnimatedBackground {...elem} widthType="--background-svg-width" />
           ))}
           <div
-            className={`${content["grass"]} z-0 ${
-              finished
-                ? `${content["transition-down"]}`
-                : forceEnd
-                ? content["force-end"]
-                : ""
-            }`}
+            style={{
+              position: "relative",
+              backgroundColor: "#1daa60",
+              height: "20%",
+              top: "80%",
+            }}
           ></div>
           <div
             className={`${content["street-background"]} ${

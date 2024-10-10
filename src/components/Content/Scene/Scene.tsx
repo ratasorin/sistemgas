@@ -4,11 +4,7 @@ import { Positions } from "./Text/helpers/math/coordinates";
 import TextRenderer from "./Text/Text";
 import { Text } from "./Text/helpers/text";
 import { useEffect, useMemo } from "react";
-import CarRender, {
-  fitCarInsideCanvas,
-  getScaleCoefficient,
-  useAnimationState,
-} from "./Car/Car";
+import CarRender, { useAnimationState } from "./Car/Car";
 import { gsap } from "gsap";
 import { END_TRANSITION_DURATION } from "../helper/animated-background";
 
@@ -269,7 +265,7 @@ const Scene: NextPage<{
           style={{
             position: "absolute",
             bottom: 0,
-            transform: "translateY(calc(-1/9*100vh))",
+            transform: "translateY(calc(-1/11*100vh))",
           }}
         ></Canvas>
       </div>

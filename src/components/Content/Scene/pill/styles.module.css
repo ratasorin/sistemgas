@@ -52,7 +52,17 @@
   height: 999999px;
   width: 999999px;
   transform: translate(-50%, -50%) rotate(0deg);
-  animation: rotation 12s linear infinite;
+  animation: basic-rotation 3s linear infinite;
+}
+
+@keyframes basic-rotation {
+  100% {
+    transform: translate(-50%, -50%) rotate(1turn);
+  }
+}
+
+.example-2.start-slideshow::before {
+  animation: rotation 12s linear infinite !important;
 }
 
 @keyframes rotation {

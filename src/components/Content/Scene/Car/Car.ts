@@ -165,7 +165,7 @@ export default class CarRender implements Render {
     }
     if (!this.canvas || !this.context || !this.car) return;
 
-    if (this.car.position <= 2 * getCanvasDimensions(this.canvas).width) {
+    if (this.car.position <= getCanvasDimensions(this.canvas).width + window.innerWidth) {
       this.car.update();
     } else {
       useAnimationState.setState(() => ({ finished: true }));

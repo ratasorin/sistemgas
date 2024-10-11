@@ -414,13 +414,28 @@ const MainScene: FC = () => {
 
   return (
     <>
-      <div className="absolute z-[100000] top-[52px] overflow-visible h-[calc(45%-52px)] flex justify-end flex-col pb-9">
+      <div
+        className="absolute z-10 top-[52px] overflow-visible h-[calc(45%-52px)] flex flex-col w-full"
+        style={{
+          justifyContent: window.innerHeight < 816 ? "flex-end" : "center",
+          paddingBottom:
+            window.innerHeight < 680
+              ? "16px"
+              : window.innerHeight < 816
+              ? "32px"
+              : "0",
+        }}
+      >
         <div
           id="main-text"
-          style={{ position: "relative", gap: "16px" }}
-          className="overflow-visible left-1/2 -translate-x-1/2 w-full flex flex-col items-center justify-center"
+          style={{
+            position: "relative",
+            gap: "16px",
+          }}
+          className="overflow-visible left-1/2 -translate-x-1/2 w-full flex flex-col justify-center items-center"
         >
-          <h3 className="font-poppins px-8 font-extrabold text-center text-4xl md:text-6xl overflow-visible">
+          <div className="absolute mb-4" width={{}}></div>
+          <h3 className="font-poppins px-8 font-extrabold text-center text-4xl md:text-5xl overflow-visible">
             <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-400">
               Alternativa
             </span>{" "}
@@ -436,7 +451,7 @@ const MainScene: FC = () => {
           </Button>
         </div>
       </div>
-      {/* {loading && (
+      {loading && (
         <div className="absolute z-50 w-screen h-screen bg-black/60 flex flex-col items-center justify-center">
           <div className={content["fire"]}>
             <div className={content["fire-left"]}>
@@ -460,7 +475,7 @@ const MainScene: FC = () => {
             LOADING...
           </h2>
         </div>
-      )} */}
+      )}
       <div
         ref={sceneRef}
         className="relative overflow-x-hidden overflow-y-hidden flex-1 flex flex-col-reverse z-0 mb-4 mr-4 ml-4 mt-4 bg-gradient-to-t from-cyan-200 to-cyan-50 rounded-md"

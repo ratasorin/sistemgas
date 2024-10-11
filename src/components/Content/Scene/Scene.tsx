@@ -7,8 +7,9 @@ import { useEffect, useMemo, useState } from "react";
 import CarRender, { useAnimationState } from "./Car/Car";
 import { gsap } from "gsap";
 import { END_TRANSITION_DURATION } from "../helper/animated-background";
-import Pill from "./pill";
+import Pill, { startSlideshowAtom } from "./pill";
 import scene_styles from "./styles.module.css";
+import { useSetAtom } from "jotai";
 
 export interface Render {
   render: () => void;
@@ -110,80 +111,11 @@ const Scene: NextPage<{
     return getResponsiveHeightFactor(width);
   }, [width]);
 
-  const text = useMemo(() => {
-    const fontSize = getResponsiveFontSize(width);
-
-    return [
-      //   {payload: "SISTEMGAS", fontSize: }
-      //   "SISTEMGAS",
-      //   Math.floor(2 * fontSize),
-      //   "#0a2375 #173dba",
-      //   "Poppins",
-      //   "start",
-      //   "700",
-      //   { x: 0, y: 12 }
-      // ),
-      // new Text(
-      //   "Solutia",
-      //   Math.floor(fontSize),
-      //   "#4b557c",
-      //   "Poppins",
-      //   "newline"
-      // ),
-      // new Text(
-      //   "alternativa",
-      //   fontSize,
-      //   "#fc944a #eb500b",
-      //   "Poppins",
-      //   "right",
-      //   "600",
-      //   {
-      //     y: 2,
-      //     x: 2,
-      //   }
-      // ),
-      // new Text("pentru", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
-      // new Text(
-      //   "furnizarea",
-      //   Math.floor(fontSize),
-
-      //   "#4b557c",
-      //   "Poppins",
-      //   "newline"
-      // ),
-      // new Text("gazelor", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
-      // new Text("naturale", Math.floor(fontSize), "#4b557c", "Poppins", "right"),
-
-      new Text({
-        payload: "SISTEMGAS este furnizorul: ",
-        fontColor: "#0a2375",
-        fontFamily: "Poppins",
-        fontSize: 14,
-        fontStyle: "700",
-        position: "start",
-      }),
-
-      new Text({
-        payload: "rapid si eficient ",
-        fontColor: "#fc944a #eb500b",
-        fontFamily: "Poppins",
-        fontSize: 14,
-        fontStyle: "700",
-        position: "start",
-      }),
-    ];
-  }, [width]);
-
   const images = useMemo(() => {
     const gasTruck = new Image() as HTMLImageElement;
     gasTruck.src = "/gas_truck.svg";
     return { gasTruck };
   }, []);
-
-  const textRenderer = useMemo(() => {
-    if (images.gasTruck)
-      return new TextRenderer(text, images.gasTruck, carVelocity);
-  }, [text, images, carVelocity]);
 
   const carRenderer = useMemo(() => {
     if (images.gasTruck)
@@ -197,8 +129,10 @@ const Scene: NextPage<{
     return { width, height: 0.4 * height };
   }, [images, width, height]);
 
+  const setStartSlideshow = useSetAtom(startSlideshowAtom);
+
   useEffect(() => {
-    if (!textRenderer || !height || !imageHeight) return;
+    if (!height || !imageHeight) return;
 
     if (forceEnd) {
       bringTextCanvasFront();
@@ -214,9 +148,6 @@ const Scene: NextPage<{
         graphicsContainer.getBoundingClientRect().top +
         rect.height +
         16;
-
-      // if the user forced the end, the text may not have been painted at all, so make sure one paint is done
-      textRenderer.end();
 
       gsap.to(document.getElementById("text__renderer")!, {
         y: -y,
@@ -238,11 +169,13 @@ const Scene: NextPage<{
           rect.height +
           16;
 
-        gsap.to(document.getElementById("text__renderer"), {
-          y: -y,
-          duration: END_TRANSITION_DURATION / 1000,
-          ease: "expo.out",
-        });
+        gsap
+          .to(document.getElementById("text__renderer"), {
+            y: -y,
+            duration: END_TRANSITION_DURATION / 1000,
+            ease: "expo.out",
+          })
+          .then(() => setStartSlideshow(true));
       });
     }
   }, [finished, imageHeight, height, forceEnd]);
@@ -268,12 +201,11 @@ const Scene: NextPage<{
     };
   }, [setX, carRenderer]);
 
-  if (!textRenderer || !carRenderer) return null;
+  if (!carRenderer) return null;
   return (
     <div className="absolute bottom-0 w-full h-full overflow-hidden z-10">
       <div
         id="text__renderer"
-        style={{}}
         className={`absolute top-[60vh] z-0 h-max ${scene_styles["centered"]}`}
       >
         <Pill x={x} />

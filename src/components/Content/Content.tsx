@@ -434,7 +434,7 @@ const MainScene: FC = () => {
           }}
           className="overflow-visible left-1/2 -translate-x-1/2 w-full flex flex-col justify-center items-center"
         >
-          <div className="absolute mb-4" width={{}}></div>
+          <div className="absolute mb-4"></div>
           <h3 className="font-poppins px-8 font-extrabold text-center text-4xl md:text-5xl overflow-visible">
             <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-400">
               Alternativa

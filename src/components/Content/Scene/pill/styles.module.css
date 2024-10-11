@@ -1,0 +1,100 @@
+.card h3 {
+  margin: 0;
+}
+
+.example-2 {
+  position: relative;
+  border-radius: 50px;
+  overflow: hidden;
+  padding: 1px;
+}
+
+.example-2 .inner {
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.911);
+  color: rgb(63, 63, 63);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  font-weight: 500;
+  border-radius: 50px;
+  position: relative;
+  z-index: -1;
+  font-size: 12px;
+  padding: 4px 12px;
+}
+
+.animate-width {
+  transition: width 0.4s ease-in-out;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.example-2::before {
+  content: "";
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  display: block;
+  position: absolute;
+  background-image: conic-gradient(
+    rgba(0, 0, 0, 0),
+    rgb(255, 28, 28),
+    rgba(0, 0, 0, 0) 20%
+  );
+  height: 999999px;
+  width: 999999px;
+  transform: translate(-50%, -50%) rotate(0deg);
+  animation: rotation 12s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    background-image: conic-gradient(
+      rgba(0, 0, 0, 0),
+      rgb(255, 28, 28),
+      rgba(0, 0, 0, 0) 20%
+    );
+    transform: translate(-50%, -50%) rotate(0);
+  }
+
+  25% {
+    background-image: conic-gradient(
+      rgba(0, 0, 0, 0),
+      rgb(0, 177, 0),
+      rgba(0, 0, 0, 0) 20%
+    );
+  }
+
+  50% {
+    background-image: conic-gradient(
+      rgba(0, 0, 0, 0),
+      rgb(31, 102, 255),
+      rgba(0, 0, 0, 0) 20%
+    );
+  }
+
+  75% {
+    background-image: conic-gradient(
+      rgba(0, 0, 0, 0),
+      rgb(245, 135, 32),
+      rgba(0, 0, 0, 0) 20%
+    );
+  }
+
+  100% {
+    background-image: conic-gradient(
+      rgba(0, 0, 0, 0),
+      rgb(255, 28, 28),
+      rgba(0, 0, 0, 0) 20%
+    );
+    transform: translate(-50%, -50%) rotate(4turn);
+  }
+}

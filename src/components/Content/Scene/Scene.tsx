@@ -3,10 +3,12 @@ import Canvas from "./Canvas/Canvas";
 import { Positions } from "./Text/helpers/math/coordinates";
 import TextRenderer from "./Text/Text";
 import { Text } from "./Text/helpers/text";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CarRender, { useAnimationState } from "./Car/Car";
 import { gsap } from "gsap";
 import { END_TRANSITION_DURATION } from "../helper/animated-background";
+import Pill from "./pill";
+import scene_styles from "./styles.module.css";
 
 export interface Render {
   render: () => void;
@@ -79,16 +81,15 @@ const getResponsiveHeightFactor = (screenWidth: number) => {
 
 const bringTextCanvasFront = () => {
   const textRendererDiv = document.getElementById("text__renderer")!;
-  const graphicsContainer = document.getElementById("root");
+  const graphicsContainer = document.getElementById("main-text");
 
   if (!graphicsContainer || !textRendererDiv) return;
 
   const rect = textRendererDiv.getBoundingClientRect();
-  const mt4 = 16; // px
-  const graphicsContainerTop = graphicsContainer.scrollTop + mt4; // adding a margin because the container of text__renderer had a margin of 16px that the graphicsContainer ("root") will not have
 
-  textRendererDiv.style.left = `${rect.left}px`;
-  textRendererDiv.style.top = `${graphicsContainerTop}px`;
+  const y = rect.top - graphicsContainer.getBoundingClientRect().top;
+
+  textRendererDiv.style.top = `${y}px`;
 
   graphicsContainer.appendChild(textRendererDiv);
 };
@@ -199,39 +200,46 @@ const Scene: NextPage<{
   useEffect(() => {
     if (!textRenderer || !height || !imageHeight) return;
 
-    const sistemgasSvgBox = document
-      .getElementById("Layer_2")
-      ?.getBoundingClientRect();
-
-    const graphicsContainer = document.getElementById("root");
-
-    const mt4 = 16; // px
-    const remainingSpace =
-      (graphicsContainer?.scrollHeight || 0) -
-      (sistemgasSvgBox?.height || 0) -
-      mt4;
-    console.log({ remainingSpace });
-
-    const destinationY =
-      (remainingSpace - (textRenderer.textBox?.height || 0)) / 2;
-
-    console.log({ destinationY, height: textRenderer.textBox?.height });
-
     if (forceEnd) {
       bringTextCanvasFront();
+      const textRendererDiv = document.getElementById("text__renderer")!;
+      const graphicsContainer = document.getElementById("main-text");
+
+      if (!graphicsContainer || !textRendererDiv) return;
+
+      const rect = textRendererDiv.getBoundingClientRect();
+
+      const y =
+        rect.top -
+        graphicsContainer.getBoundingClientRect().top +
+        rect.height +
+        16;
 
       // if the user forced the end, the text may not have been painted at all, so make sure one paint is done
       textRenderer.end();
 
       gsap.to(document.getElementById("text__renderer")!, {
-        y: destinationY,
+        y: -y,
         duration: 0,
       });
     } else if (finished && imageHeight && height) {
       requestAnimationFrame(() => {
         bringTextCanvasFront();
+        const textRendererDiv = document.getElementById("text__renderer")!;
+        const graphicsContainer = document.getElementById("main-text");
+
+        if (!graphicsContainer || !textRendererDiv) return;
+
+        const rect = textRendererDiv.getBoundingClientRect();
+
+        const y =
+          rect.top -
+          graphicsContainer.getBoundingClientRect().top +
+          rect.height +
+          16;
+
         gsap.to(document.getElementById("text__renderer"), {
-          y: destinationY,
+          y: -y,
           duration: END_TRANSITION_DURATION / 1000,
           ease: "expo.out",
         });
@@ -239,19 +247,36 @@ const Scene: NextPage<{
     }
   }, [finished, imageHeight, height, forceEnd]);
 
+  const [x, setX] = useState(0);
+
+  useEffect(() => {
+    let id: number | undefined = undefined;
+    const callback = () => {
+      if (carRenderer?.ended) {
+        if (id) window.cancelAnimationFrame(id);
+        return;
+      }
+      setX((carRenderer?.car?.position || 0) - 300);
+      console.log({ x: carRenderer?.car?.position || 0 });
+      id = window.requestAnimationFrame(callback);
+    };
+
+    id = window.requestAnimationFrame(callback);
+
+    return () => {
+      if (id) window.cancelAnimationFrame(id);
+    };
+  }, [setX, carRenderer]);
+
   if (!textRenderer || !carRenderer) return null;
   return (
     <div className="absolute bottom-0 w-full h-full overflow-hidden z-10">
       <div
         id="text__renderer"
-        className="absolute bottom-0 w-full h-full z-0 overflow-hidden"
+        style={{}}
+        className={`absolute top-[60vh] z-0 h-max ${scene_styles["centered"]}`}
       >
-        <Canvas
-          width={textRenderer.textBox?.width || 0}
-          height={textRenderer.textBox?.height || 0}
-          render={textRenderer}
-          start={start}
-        ></Canvas>
+        <Pill x={x} />
       </div>
       <div
         id="car__renderer"

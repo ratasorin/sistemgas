@@ -414,21 +414,27 @@ const MainScene: FC = () => {
 
   return (
     <>
-      <div className="absolute z-[100000] top-[52px] left-1/2 -translate-x-1/2 w-full flex flex-col items-center h-[calc(45%-52px)] justify-center" style ={{gap: "16px"}}>
-        <h3 className="font-poppins px-8 font-extrabold text-center text-4xl md:text-6xl overflow-visible">
-          <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-400">
-            Alternativa
-          </span>{" "}
-          <span className="overflow-visible bg-clip-text text-transparent bg-gradient-to-r from-[#1334a0] to-[#3862ee]">
-            in furnizarea gazului natural
-          </span>
-        </h3>
-        <Button
-          variant="contained"
-          className="font-poppins !font-semibold !rounded-lg !bg-gradient-to-r from-[#3862ee] to-[#1334a0]"
+      <div className="absolute z-[100000] top-[52px] overflow-visible h-[calc(45%-52px)] flex justify-end flex-col pb-9">
+        <div
+          id="main-text"
+          style={{ position: "relative", gap: "16px" }}
+          className="overflow-visible left-1/2 -translate-x-1/2 w-full flex flex-col items-center justify-center"
         >
-          INCEARCA ACUM
-        </Button>
+          <h3 className="font-poppins px-8 font-extrabold text-center text-4xl md:text-6xl overflow-visible">
+            <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-400">
+              Alternativa
+            </span>{" "}
+            <span className="overflow-visible bg-clip-text text-transparent bg-gradient-to-r from-[#1334a0] to-[#3862ee]">
+              in furnizarea gazului natural
+            </span>
+          </h3>
+          <Button
+            variant="contained"
+            className="font-poppins !font-semibold !rounded-lg !bg-gradient-to-r from-[#3862ee] to-[#1334a0]"
+          >
+            INCEARCA ACUM
+          </Button>
+        </div>
       </div>
       {/* {loading && (
         <div className="absolute z-50 w-screen h-screen bg-black/60 flex flex-col items-center justify-center">

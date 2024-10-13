@@ -421,7 +421,7 @@ const MainScene: FC = () => {
       <div
         className="absolute z-10 top-[52px] overflow-visible h-[calc(45%-52px)] flex flex-col w-full"
         style={{
-          justifyContent: window.innerHeight < 816 ? "flex-end" : "center",
+          justifyContent: window.innerHeight < 760 ? "flex-end" : "center",
           paddingBottom:
             window.innerHeight < 680
               ? "16px"
@@ -431,7 +431,7 @@ const MainScene: FC = () => {
         }}
       >
         <div
-          className={`text-center overflow-hidden text-sm rounded-2xl relative mb-4 left-1/2 -translate-x-1/2 -translate-y-[2px] top-0 border border-sky-300 border-dashed`}
+          className={`text-center overflow-hidden opacity-50 text-sm rounded-2xl bg-cyan-50 relative mb-4 left-1/2 -translate-x-1/2 -translate-y-[2px] top-0 border border-cyan-400 border-dashed`}
           style={{
             width: pillDimensions.width - 4 || 0,
             height: pillDimensions.height - 2 || 0,
@@ -442,67 +442,67 @@ const MainScene: FC = () => {
             className={`h-full overflow-hidden ${content["pill-placeholder-scroll"]} whitespace-nowrap w-fit`}
           >
             <div className={content["pill-placeholder-scroll__batch-1"]}>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+              <span className="mr-2 bg-blend-multiply">🚀</span>
+              <span className="mr-2 bg-blend-multiply">🌱</span>
+              <span className="mr-2 bg-blend-multiply">⌛</span>
+              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
 
-              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+              <span className="mr-2 bg-blend-multiply">🚀</span>
+              <span className="mr-2 bg-blend-multiply">🌱</span>
+              <span className="mr-2 bg-blend-multiply">⌛</span>
+              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
 
-              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+              <span className="mr-2 bg-blend-multiply">🚀</span>
+              <span className="mr-2 bg-blend-multiply">🌱</span>
+              <span className="mr-2 bg-blend-multiply">⌛</span>
+              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
 
-              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+              <span className="mr-2 bg-blend-multiply">🚀</span>
+              <span className="mr-2 bg-blend-multiply">🌱</span>
+              <span className="mr-2 bg-blend-multiply">⌛</span>
+              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
 
-              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+              <span className="mr-2 bg-blend-multiply">🚀</span>
+              <span className="mr-2 bg-blend-multiply">🌱</span>
+              <span className="mr-2 bg-blend-multiply">⌛</span>
+              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
 
-              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+              <span className="mr-2 bg-blend-multiply">🚀</span>
+              <span className="mr-2 bg-blend-multiply">🌱</span>
+              <span className="mr-2 bg-blend-multiply">⌛</span>
+              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
             </div>
 
             <div className={content["pill-placeholder-scroll__batch-2"]}>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+              <span className="mr-2 bg-blend-multiply">🚀</span>
+              <span className="mr-2 bg-blend-multiply">🌱</span>
+              <span className="mr-2 bg-blend-multiply">⌛</span>
+              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
 
-              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+              <span className="mr-2 bg-blend-multiply">🚀</span>
+              <span className="mr-2 bg-blend-multiply">🌱</span>
+              <span className="mr-2 bg-blend-multiply">⌛</span>
+              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
 
-              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+              <span className="mr-2 bg-blend-multiply">🚀</span>
+              <span className="mr-2 bg-blend-multiply">🌱</span>
+              <span className="mr-2 bg-blend-multiply">⌛</span>
+              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
 
-              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+              <span className="mr-2 bg-blend-multiply">🚀</span>
+              <span className="mr-2 bg-blend-multiply">🌱</span>
+              <span className="mr-2 bg-blend-multiply">⌛</span>
+              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
 
-              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+              <span className="mr-2 bg-blend-multiply">🚀</span>
+              <span className="mr-2 bg-blend-multiply">🌱</span>
+              <span className="mr-2 bg-blend-multiply">⌛</span>
+              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
 
-              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
-              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+              <span className="mr-2 bg-blend-multiply">🚀</span>
+              <span className="mr-2 bg-blend-multiply">🌱</span>
+              <span className="mr-2 bg-blend-multiply">⌛</span>
+              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
             </div>
           </div>
         </div>
@@ -514,7 +514,6 @@ const MainScene: FC = () => {
           }}
           className="overflow-visible left-1/2 -translate-x-1/2 w-full flex flex-col justify-center items-center"
         >
-          <div className="absolute mb-4"></div>
           <h3 className="font-poppins px-8 font-extrabold text-center text-4xl md:text-5xl overflow-visible">
             <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-400">
               Alternativa

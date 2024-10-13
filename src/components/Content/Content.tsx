@@ -22,6 +22,8 @@ import WebFont from "webfontloader";
 import { createPortal } from "react-dom";
 import { scrollElementBy } from "lib/scroll-smooth";
 import { Button, styled } from "@mui/material";
+import { useAtomValue } from "jotai";
+import { pillDimensionsAtom } from "./Scene/pill";
 
 // const GlowingButton = styled(Button)(({ theme }) => ({
 //   padding: "8px 16px",
@@ -412,6 +414,8 @@ const MainScene: FC = () => {
     }
   }, [finished, forceEnd]);
 
+  const pillDimensions = useAtomValue(pillDimensionsAtom);
+
   return (
     <>
       <div
@@ -426,6 +430,82 @@ const MainScene: FC = () => {
               : "0",
         }}
       >
+        <div
+          className={`text-center overflow-hidden text-sm rounded-2xl relative mb-4 left-1/2 -translate-x-1/2 -translate-y-[2px] top-0 border border-sky-300 border-dashed`}
+          style={{
+            width: pillDimensions.width - 4 || 0,
+            height: pillDimensions.height - 2 || 0,
+            visibility: pillDimensions.width ? "visible" : "hidden",
+          }}
+        >
+          <div
+            className={`h-full overflow-hidden ${content["pill-placeholder-scroll"]} whitespace-nowrap w-fit`}
+          >
+            <div className={content["pill-placeholder-scroll__batch-1"]}>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+
+              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+
+              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+
+              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+
+              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+
+              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+            </div>
+
+            <div className={content["pill-placeholder-scroll__batch-2"]}>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+
+              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+
+              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+
+              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+
+              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+
+              <span className="mr-2 opacity-40 bg-blend-multiply">🚀</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🌱</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">⌛</span>
+              <span className="mr-2 opacity-40 bg-blend-multiply">🤝🏼</span>
+            </div>
+          </div>
+        </div>
         <div
           id="main-text"
           style={{

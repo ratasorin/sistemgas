@@ -2,7 +2,7 @@ import pill_styles from "./styles.module.css";
 import { FC, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
-import { atom, useAtomValue } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 
 const ATTRIBUTES = [
   { name: "RAPID 🚀", color: "rgb(255, 28, 28)" },
@@ -17,6 +17,7 @@ export const startSlideshowAtom = atom(false);
 const Pill: FC<{ x: number }> = ({ x }) => {
   const [width, setWidth] = useState<number | "finished-animation">(0);
   const [maxWidth, setMaxWidth] = useState(0);
+  const [pillDimensions, setPillDimensions] = useAtom(pillDimensionsAtom);
 
   const pill = useRef<HTMLDivElement | null>(null);
   const interval = useRef<NodeJS.Timer | undefined>(undefined);
@@ -62,6 +63,15 @@ const Pill: FC<{ x: number }> = ({ x }) => {
   const resizeObserver = useRef(
     new ResizeObserver((mutation) => {
       const width = mutation[0].contentRect.width;
+      setPillDimensions((dimensions) =>
+        !dimensions.width || !dimensions.height
+          ? {
+              height: mutation[0].contentRect.height,
+              width: mutation[0].contentRect.width,
+            }
+          : dimensions
+      );
+
       setMaxWidth(width);
     })
   );

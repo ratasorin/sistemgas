@@ -45,7 +45,6 @@ const fonts = {
 } as const;
 
 const getResponsiveFontSize = (screenWidth: number) => {
-  console.log({ screenWidth });
   let fontSize: number = fonts["text-lg"];
   if (screenWidth >= screens["sm"] && screenWidth < screens["md"])
     fontSize = fonts["text-xl"];
@@ -190,7 +189,6 @@ const Scene: NextPage<{
         return;
       }
       setX((carRenderer?.car?.position || 0) - 300);
-      console.log({ x: carRenderer?.car?.position || 0 });
       id = window.requestAnimationFrame(callback);
     };
 

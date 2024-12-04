@@ -1,6 +1,6 @@
 import pill_styles from "./styles.module.css";
 import { FC, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { m, motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 
@@ -17,7 +17,7 @@ export const startSlideshowAtom = atom(false);
 const Pill: FC<{ x: number }> = ({ x }) => {
   const [width, setWidth] = useState<number | "finished-animation">(0);
   const [maxWidth, setMaxWidth] = useState(0);
-  const [pillDimensions, setPillDimensions] = useAtom(pillDimensionsAtom);
+  const [, setPillDimensions] = useAtom(pillDimensionsAtom);
 
   const pill = useRef<HTMLDivElement | null>(null);
   const interval = useRef<NodeJS.Timer | undefined>(undefined);
@@ -44,6 +44,7 @@ const Pill: FC<{ x: number }> = ({ x }) => {
   }, [setWidth, x]);
 
   const [attribute, setAttribute] = useState(ATTRIBUTES[0]);
+  const isFirstCycle = useRef(true);
 
   useEffect(() => {
     let interval: NodeJS.Timer | undefined;
@@ -53,18 +54,32 @@ const Pill: FC<{ x: number }> = ({ x }) => {
           const index = ATTRIBUTES.findIndex((attr) => attr === a);
           if (index !== undefined && index < ATTRIBUTES.length - 1)
             return ATTRIBUTES[index + 1];
-          else return ATTRIBUTES[0];
+          else {
+            isFirstCycle.current = false;
+            return ATTRIBUTES[0];
+          }
         });
       }, 3000);
 
     return () => clearInterval(interval);
   }, [setAttribute, startSlideshow]);
 
+  const attributeForDimensionComputation = useRef(attribute);
+
+  useEffect(() => {
+    attributeForDimensionComputation.current = attribute;
+  }, [attribute]);
   const resizeObserver = useRef(
     new ResizeObserver((mutation) => {
       const width = mutation[0].contentRect.width;
+      console.log({
+        attribute: attributeForDimensionComputation.current,
+        isFirstCycle: isFirstCycle.current,
+      });
       setPillDimensions((dimensions) =>
-        !dimensions.width || !dimensions.height
+        // maybe the fonts didn't load and width & height may change
+        isFirstCycle.current &&
+        attributeForDimensionComputation.current.name.includes("RAPID")
           ? {
               height: mutation[0].contentRect.height,
               width: mutation[0].contentRect.width,

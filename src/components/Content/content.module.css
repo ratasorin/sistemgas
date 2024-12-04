@@ -32,7 +32,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: calc(var(--background-svg-width) * 2);
+  width: calc(var(--background-svg-width) * 8);
   height: calc(5 / 6 * 100vh);
   background-position: left bottom;
   background-repeat: repeat-x;
@@ -91,7 +91,7 @@
   top: 0;
   left: 0;
   background: url("/v2/buildings-front.svg");
-  width: calc(var(--background-svg-width) * 2);
+  width: calc(var(--background-svg-width) * 8);
   height: calc(5 / 6 * 100vh);
   background-position: left bottom;
   background-repeat: repeat-x;
@@ -104,7 +104,7 @@
   top: 0;
   left: 0;
   background: url("/v2/clouds-front.svg");
-  width: calc(var(--background-svg-width) * 2);
+  width: calc(var(--background-svg-width) * 8);
   height: calc(5 / 6 * 100vh);
   background-position: left bottom;
 
@@ -118,7 +118,7 @@
   top: 0;
   left: 0;
   background: url("/v2/clouds-back.svg");
-  width: calc(var(--background-svg-width) * 2);
+  width: calc(var(--background-svg-width) * 8);
   height: calc(5 / 6 * 100vh);
   background-position: left bottom;
 
@@ -132,7 +132,7 @@
   top: 0;
   left: 0;
   background: url("/v2/park-back.svg");
-  width: calc(var(--background-svg-width) * 2);
+  width: calc(var(--background-svg-width) * 8);
   height: calc(5 / 6 * 100vh);
   background-position: left bottom;
 
@@ -146,7 +146,7 @@
   top: 0;
   left: 0;
   background: url("/v2/park-front.svg");
-  width: calc(var(--background-svg-width) * 2);
+  width: calc(var(--background-svg-width) * 8);
   height: calc(5 / 6 * 100vh);
   background-position: left bottom;
 
@@ -192,7 +192,7 @@
   position: absolute;
   top: calc(5 / 6 * 100vh);
   left: 0;
-  background: url("/v2/road.svg");
+  background: url("/v2/road-background.svg");
   height: calc(1 / 6 * 100vh);
   width: calc(var(--road-svg-width) * 4);
   background-position: left bottom;

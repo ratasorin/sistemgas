@@ -25,86 +25,41 @@ import { Button, styled } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { pillDimensionsAtom } from "./Scene/pill";
 
-// const GlowingButton = styled(Button)(({ theme }) => ({
-//   padding: "8px 16px",
-//   borderRadius: "8px",
-//   textTransform: "none",
-//   background: `transparent`,
-//   fontSize: "16px",
-//   fontWeight: "bold",
-//   position: "relative",
-//   overflow: "hidden",
-//   zIndex: 1,
-//   boxShadow: "none",
-//   "&::before": {
-//     content: '""',
-//     position: "absolute",
-//     top: "50%",
-//     left: "50%",
-//     width: "100%",
-//     aspectRatio: "1/1",
-//     background: `conic-gradient(transparent, ${theme.palette.primary.dark}, transparent 10%)`, // Gradient for glowing effect,
-//     zIndex: -2,
-//     transform: "translate(-50%, -50%) rotate(0deg)",
-//     animation: "rotate 4s linear infinite",
-//   },
-//   "&::after": {
-//     content: '""',
-//     position: "absolute",
-//     zIndex: -1,
-//     /* border width */
-//     left: "1px",
-//     top: "1px",
-//     /* double the px from the border width left */
-//     width: "calc(100% - 2px)",
-//     height: "calc(100% - 2px)",
-//     /*bg color*/
-//     background: `${theme.palette.primary.light}`,
-//     /*box border radius*/
-//     borderRadius: "8px",
-//   },
-//   "@keyframes rotate": {
-//     "100%": {
-//       transform: "translate(-50%, -50%) rotate(1turn)",
-//     },
-//   },
-// }));
-
 const backgroundAnimations = [
   {
     baseClassName: content["clouds-back"],
-    speed: 25,
+    speed: 0.8,
     zoomOut: 0.95,
     transitionDown: true,
   },
   {
     baseClassName: content["clouds-front"],
-    speed: 22,
+    speed: 0.85,
     zoomOut: 0.95,
     transitionDown: true,
   },
 
   {
     baseClassName: content["park-front"],
-    speed: 10,
+    speed: 1.2,
     transitionDown: true,
     zoomOut: 0.9,
   },
   {
     baseClassName: content["park-back"],
-    speed: 16,
+    speed: 1,
     transitionDown: true,
     zoomOut: 0.9,
   },
   {
     baseClassName: content["buildings-front"],
-    speed: 23,
+    speed: 0.75,
     transitionDown: true,
     zoomOut: 0.8,
   },
   {
     baseClassName: content["buildings-back"],
-    speed: 30,
+    speed: 0.7,
     transitionDown: true,
     zoomOut: 0.8,
   },
@@ -128,8 +83,6 @@ const animateComponentOnHover = <T,>(
   poppers = [...poppers, ...popper];
 
   actions(component, props);
-
-  console.log({ poppers, popper });
 };
 
 const MainScene: FC = () => {
@@ -171,7 +124,6 @@ const MainScene: FC = () => {
         interactive: true,
         content: (reference) => {
           const template = document.getElementById(`tooltip-${reference.id}`);
-          console.log({ template });
           if (!template) return "";
 
           return template;
@@ -212,7 +164,6 @@ const MainScene: FC = () => {
           );
         });
         component.addEventListener("mouseleave", () => {
-          console.log("TRIED TO REMOVE CLASSLIST");
           shouldExit(component, (element) => {
             element.classList.remove(content["svg-hover"]);
             const popper = poppers.find(
@@ -286,7 +237,6 @@ const MainScene: FC = () => {
                 popper?.show();
               },
               (lastElementHovered) => {
-                console.log("TRIED TO REMOVE CLASSLIST");
                 if (lastElementHovered === component) return;
 
                 lastElementHovered?.classList.remove(content["svg-hover"]);
@@ -337,7 +287,6 @@ const MainScene: FC = () => {
                   popper?.show();
                 },
                 (lastElementHovered) => {
-                  console.log("TRIED TO REMOVE CLASSLIST");
                   if (lastElementHovered === component) return;
 
                   lastElementHovered?.classList.remove(content["svg-hover"]);
@@ -415,6 +364,10 @@ const MainScene: FC = () => {
   }, [finished, forceEnd]);
 
   const pillDimensions = useAtomValue(pillDimensionsAtom);
+
+  useEffect(() => {
+    console.log({ pillDimensions });
+  }, [pillDimensions]);
 
   return (
     <>
@@ -615,7 +568,7 @@ const MainScene: FC = () => {
           ></div>
           <AnimatedBackground
             baseClassName={content["street"]}
-            speed={5}
+            speed={2}
             key={content["street"]}
             transitionDown={true}
             widthType="--road-svg-width"

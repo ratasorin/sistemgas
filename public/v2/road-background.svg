@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2141 151">
+  <defs>
+    <style>
+     
+      .cls-2 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="1070.5" y1="0" x2="1070.5" y2="151" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#515151"/>
+      <stop offset="1" stop-color="#303030"/>
+    </linearGradient>
+  </defs>
+  <g id="road">
+    <g>
+      <rect class="cls-2" width="2141" height="151"/>
+    </g>
+  </g>
+</svg>

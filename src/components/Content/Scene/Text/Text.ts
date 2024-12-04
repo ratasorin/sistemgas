@@ -49,7 +49,6 @@ export default class TextRenderer implements Render {
     this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 
     this.textBox = getTextDimensions(this.initialText, this.context);
-    console.log({ textBox: this.textBox });
 
     this.canvas.width = Math.floor(
       Number(canvas.style.width.replace("px", "")) * dpr

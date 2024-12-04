@@ -71,16 +71,16 @@ const AnimatedBackground: FC<{
 
             element.setAttribute(
               "style",
-              `left: calc(${translateX}px); transform: translate(calc(${width}))`
+              `left: calc(${translateX}px); transform: translate(0)`
             );
 
             animationRef.current = element.animate(
               [
                 {
-                  transform: `translate(calc(${width}), 0) scale(1)`,
+                  transform: `translate(0, 0) scale(1)`,
                 },
                 {
-                  transform: `translate(calc(${width} - 500px), ${
+                  transform: `translate(calc(-500px), ${
                     transitionDown ? "calc(1 / 8 * 100vh)" : "0"
                   }) scale(${zoomOut ?? 1})`,
                 },

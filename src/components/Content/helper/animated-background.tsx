@@ -32,10 +32,10 @@ const AnimatedBackground: FC<{
           animationRef.current = element.animate(
             [
               {
-                transform: "translateX(0)",
+                transform: `translateX(calc(2*${width}))`,
               },
               {
-                transform: `translateX(${width})`,
+                transform: `translateX(calc(3*${width}))`,
               },
             ],
             {
@@ -52,7 +52,7 @@ const AnimatedBackground: FC<{
           ).m41;
           element.setAttribute(
             "style",
-            `transform: translateX(0); left: ${translateX}px`
+            `transform: translateX(0); left: calc(2*${width} + ${translateX}px);`
           );
           element.setAttribute(
             "style",
@@ -71,7 +71,7 @@ const AnimatedBackground: FC<{
 
             element.setAttribute(
               "style",
-              `left: calc(${translateX}px); transform: translate(0)`
+              `transform: translateX(0); left: calc(${translateX}px);`
             );
 
             animationRef.current = element.animate(
@@ -80,7 +80,7 @@ const AnimatedBackground: FC<{
                   transform: `translate(0, 0) scale(1)`,
                 },
                 {
-                  transform: `translate(calc(-500px), ${
+                  transform: `translate(calc(${-speed / 1.5}*500px), ${
                     transitionDown ? "calc(1 / 8 * 100vh)" : "0"
                   }) scale(${zoomOut ?? 1})`,
                 },

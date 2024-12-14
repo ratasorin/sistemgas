@@ -12,6 +12,7 @@ import {
   LANDING_PAGE_BUILDING_SVG_ID,
   LANDING_PAGE_EMPLOYEE_SVG_ID,
   LANDING_PAGE_GAS_TANK_SVG_ID,
+  LANDING_PAGE_SISTEMGAS_HQ_GLOW_SVG_ID,
   LANDING_PAGE_SISTEMGAS_HQ_SVG_ID,
   LANDING_PAGE_TRUCKS_SVG_ID,
 } from "constant";
@@ -366,8 +367,24 @@ const MainScene: FC = () => {
   const pillDimensions = useAtomValue(pillDimensionsAtom);
 
   useEffect(() => {
-    console.log({ pillDimensions });
-  }, [pillDimensions]);
+    const svg = document.getElementById(LANDING_PAGE_SISTEMGAS_HQ_GLOW_SVG_ID);
+
+    // Access the animate tags by their unique ids and trigger animation
+    if (svg) {
+      const animateTags = svg.querySelectorAll("animate");
+
+      // Iterate over all the animate tags and control their "begin" attribute based on state
+      animateTags.forEach((animateTag) => {
+        if (finished) {
+          setTimeout(() => {
+            animateTag.beginElement();
+          }, 2000);
+        } else {
+          animateTag.setAttribute("begin", "indefinite");
+        }
+      });
+    }
+  }, [finished]);
 
   return (
     <>
@@ -530,16 +547,29 @@ const MainScene: FC = () => {
             }`}
           >
             <EmbedSvg
-              className={`translate-x-full h-screen flex flex-col justify-end items-center overflow-x-visible min-w-min ${
+              className={`absolute z-10 bottom-0 left-0 translate-x-full h-screen flex flex-col justify-end items-center overflow-x-visible min-w-min ${
                 finished
                   ? content["sistemgas-svg-animate-in"]
                   : forceEnd
                   ? content["sistemgas-svg-force-end"]
                   : ""
               }`}
-              svgClassName="h-[55%] overflow-visible"
+              svgClassName={`h-[55%] overflow-visible`}
               elementId={LANDING_PAGE_SISTEMGAS_HQ_SVG_ID}
               svgName="sistemgas-hq.svg"
+            ></EmbedSvg>
+
+            <EmbedSvg
+              className={`absolute bottom-0 left-0 translate-x-full h-screen flex flex-col justify-end items-center overflow-x-visible min-w-min ${
+                finished
+                  ? content["sistemgas-svg-animate-in"]
+                  : forceEnd
+                  ? content["sistemgas-svg-force-end"]
+                  : ""
+              }`}
+              svgClassName={`h-[55%] overflow-visible`}
+              elementId={LANDING_PAGE_SISTEMGAS_HQ_GLOW_SVG_ID}
+              svgName="sistemgas-hq-glow.svg"
             ></EmbedSvg>
           </div>,
           document.getElementById("root")!

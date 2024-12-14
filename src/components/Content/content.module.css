@@ -45,6 +45,7 @@
   position: absolute;
   z-index: 10;
   width: 100%;
+  height: 100%;
   overflow-x: hidden;
 }
 
@@ -70,7 +71,7 @@
 }
 
 .sistemgas-svg-animate-in {
-  position: relative;
+  position: absolute;
   animation: var(--end-transition-duration) cubic-bezier(0.33, 0.27, 0.58, 1)
     forwards sistemgas-svg-in;
   overflow-x: visible !important;

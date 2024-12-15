@@ -1,0 +1,21 @@
+.pill-placeholder-scroll__batch-2 {
+  position: absolute;
+  left: -100%;
+  top: 0;
+}
+
+@keyframes scroll-placeholder {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.pill-placeholder-scroll__batch-1,
+.pill-placeholder-scroll__batch-2 {
+  animation: scroll-placeholder 40s linear infinite;
+}
+
+.pill-placeholder-scroll {
+  position: relative;
+  font-size: 12px;
+}

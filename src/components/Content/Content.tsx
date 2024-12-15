@@ -25,6 +25,8 @@ import { scrollElementBy } from "lib/scroll-smooth";
 import { Button, styled } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { pillDimensionsAtom } from "./Scene/pill";
+import Loading from "./elements/loading";
+import Header from "./elements/header";
 
 const backgroundAnimations = [
   {
@@ -364,8 +366,6 @@ const MainScene: FC = () => {
     }
   }, [finished, forceEnd]);
 
-  const pillDimensions = useAtomValue(pillDimensionsAtom);
-
   useEffect(() => {
     const svg = document.getElementById(LANDING_PAGE_SISTEMGAS_HQ_GLOW_SVG_ID);
 
@@ -388,143 +388,8 @@ const MainScene: FC = () => {
 
   return (
     <>
-      <div
-        className="absolute z-10 top-[52px] overflow-visible h-[calc(45%-52px)] flex flex-col w-full"
-        style={{
-          justifyContent: window.innerHeight < 760 ? "flex-end" : "center",
-          paddingBottom:
-            window.innerHeight < 680
-              ? "16px"
-              : window.innerHeight < 816
-              ? "32px"
-              : "0",
-        }}
-      >
-        <div
-          className={`text-center overflow-hidden opacity-50 text-sm rounded-2xl bg-cyan-50 relative mb-4 left-1/2 -translate-x-1/2 -translate-y-[2px] top-0 border border-cyan-400 border-dashed`}
-          style={{
-            width: pillDimensions.width - 4 || 0,
-            height: pillDimensions.height - 2 || 0,
-            visibility: pillDimensions.width ? "visible" : "hidden",
-          }}
-        >
-          <div
-            className={`h-full overflow-hidden ${content["pill-placeholder-scroll"]} whitespace-nowrap w-fit`}
-          >
-            <div className={content["pill-placeholder-scroll__batch-1"]}>
-              <span className="mr-2 bg-blend-multiply">🚀</span>
-              <span className="mr-2 bg-blend-multiply">🌱</span>
-              <span className="mr-2 bg-blend-multiply">⌛</span>
-              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
-
-              <span className="mr-2 bg-blend-multiply">🚀</span>
-              <span className="mr-2 bg-blend-multiply">🌱</span>
-              <span className="mr-2 bg-blend-multiply">⌛</span>
-              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
-
-              <span className="mr-2 bg-blend-multiply">🚀</span>
-              <span className="mr-2 bg-blend-multiply">🌱</span>
-              <span className="mr-2 bg-blend-multiply">⌛</span>
-              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
-
-              <span className="mr-2 bg-blend-multiply">🚀</span>
-              <span className="mr-2 bg-blend-multiply">🌱</span>
-              <span className="mr-2 bg-blend-multiply">⌛</span>
-              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
-
-              <span className="mr-2 bg-blend-multiply">🚀</span>
-              <span className="mr-2 bg-blend-multiply">🌱</span>
-              <span className="mr-2 bg-blend-multiply">⌛</span>
-              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
-
-              <span className="mr-2 bg-blend-multiply">🚀</span>
-              <span className="mr-2 bg-blend-multiply">🌱</span>
-              <span className="mr-2 bg-blend-multiply">⌛</span>
-              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
-            </div>
-
-            <div className={content["pill-placeholder-scroll__batch-2"]}>
-              <span className="mr-2 bg-blend-multiply">🚀</span>
-              <span className="mr-2 bg-blend-multiply">🌱</span>
-              <span className="mr-2 bg-blend-multiply">⌛</span>
-              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
-
-              <span className="mr-2 bg-blend-multiply">🚀</span>
-              <span className="mr-2 bg-blend-multiply">🌱</span>
-              <span className="mr-2 bg-blend-multiply">⌛</span>
-              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
-
-              <span className="mr-2 bg-blend-multiply">🚀</span>
-              <span className="mr-2 bg-blend-multiply">🌱</span>
-              <span className="mr-2 bg-blend-multiply">⌛</span>
-              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
-
-              <span className="mr-2 bg-blend-multiply">🚀</span>
-              <span className="mr-2 bg-blend-multiply">🌱</span>
-              <span className="mr-2 bg-blend-multiply">⌛</span>
-              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
-
-              <span className="mr-2 bg-blend-multiply">🚀</span>
-              <span className="mr-2 bg-blend-multiply">🌱</span>
-              <span className="mr-2 bg-blend-multiply">⌛</span>
-              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
-
-              <span className="mr-2 bg-blend-multiply">🚀</span>
-              <span className="mr-2 bg-blend-multiply">🌱</span>
-              <span className="mr-2 bg-blend-multiply">⌛</span>
-              <span className="mr-2 bg-blend-multiply">🤝🏼</span>
-            </div>
-          </div>
-        </div>
-        <div
-          id="main-text"
-          style={{
-            position: "relative",
-            gap: "16px",
-          }}
-          className="overflow-visible left-1/2 -translate-x-1/2 w-full flex flex-col justify-center items-center"
-        >
-          <h3 className="font-poppins px-8 font-extrabold text-center text-4xl md:text-5xl overflow-visible">
-            <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-400">
-              Alternativa
-            </span>{" "}
-            <span className="overflow-visible bg-clip-text text-transparent bg-gradient-to-r from-[#1334a0] to-[#3862ee]">
-              in furnizarea gazului natural
-            </span>
-          </h3>
-          <Button
-            variant="contained"
-            className="font-poppins !font-semibold !rounded-lg !bg-gradient-to-r from-[#3862ee] to-[#1334a0]"
-          >
-            INCEARCA ACUM
-          </Button>
-        </div>
-      </div>
-      {loading && (
-        <div className="absolute z-50 w-screen h-screen bg-black/60 flex flex-col items-center justify-center">
-          <div className={content["fire"]}>
-            <div className={content["fire-left"]}>
-              <div className={content["fire-left__main-fire"]}></div>
-              <div className={content["fire-left__particle-fire"]}></div>
-            </div>
-            <div className={content["fire-center"]}>
-              <div className={content["fire-center__main-fire"]}></div>
-              <div className={content["fire-center__particle-fire"]}></div>
-            </div>
-            <div className={content["fire-right"]}>
-              <div className={content["fire-right__main-fire"]}></div>
-              <div className={content["fire-right__particle-fire"]}></div>
-            </div>
-
-            <div className={content["fire-bottom"]}>
-              <div className={content["main-fire"]}></div>
-            </div>
-          </div>
-          <h2 className="text-white text-3xl overflow-hidden font-bold mt-4">
-            LOADING...
-          </h2>
-        </div>
-      )}
+      <Header></Header>
+      {loading && <Loading />}
       <div
         ref={sceneRef}
         className="relative overflow-x-hidden overflow-y-hidden flex-1 flex flex-col-reverse z-0 mb-4 mr-4 ml-4 mt-4 bg-gradient-to-t from-cyan-200 to-cyan-50 rounded-md"
@@ -547,7 +412,7 @@ const MainScene: FC = () => {
             }`}
           >
             <EmbedSvg
-              className={`absolute z-10 bottom-0 left-0 translate-x-full h-screen flex flex-col justify-end items-center overflow-x-visible min-w-min ${
+              className={`absolute w-full z-10 bottom-0 left-0 translate-x-full h-screen flex flex-col justify-end items-center overflow-x-visible min-w-min ${
                 finished
                   ? content["sistemgas-svg-animate-in"]
                   : forceEnd
@@ -560,7 +425,7 @@ const MainScene: FC = () => {
             ></EmbedSvg>
 
             <EmbedSvg
-              className={`absolute bottom-0 left-0 translate-x-full h-screen flex flex-col justify-end items-center overflow-x-visible min-w-min ${
+              className={`absolute w-full bottom-0 left-0 translate-x-full h-screen flex flex-col justify-end items-center overflow-x-visible min-w-min ${
                 finished
                   ? content["sistemgas-svg-animate-in"]
                   : forceEnd

@@ -1,4 +1,5 @@
 import { useAnimationState } from "components/Content/Scene/Car/Car";
+import { atom, useAtom } from "jotai";
 import { FC, useState } from "react";
 import { IoMdMenu, IoMdClose } from "react-icons/io";
 import { IoPlaySkipForward } from "react-icons/io5";
@@ -12,7 +13,10 @@ const Navigation: FC = () => {
   return (
     <>
       {!open && (
-        <div className="absolute top-3 left-3 z-50 bg-white pt-2 pr-2 pb-2 rounded-br-2xl overflow-visible">
+        <div
+          id="left-navigation-button"
+          className="absolute top-3 left-3 z-50 bg-white pt-2 pr-2 pb-2 rounded-br-2xl overflow-visible"
+        >
           <button
             className="p-2 rounded-full bg-slate-950 hover:cursor-pointer z-30"
             onClick={() => setOpen(true)}
@@ -33,7 +37,10 @@ const Navigation: FC = () => {
           ></div>
         </div>
       )}
-      <div className="absolute top-3 right-3 z-50 bg-white pt-2 pl-2 pb-2 rounded-bl-2xl overflow-visible">
+      <div
+        id="right-navigation-button"
+        className="absolute top-3 right-3 z-50 bg-white pt-2 pl-2 pb-2 rounded-bl-2xl overflow-visible"
+      >
         <button
           disabled={forceEnd || finished}
           className="p-2 rounded-full bg-slate-950 text hover:cursor-pointer z-30 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed disabled:bg-zinc-700/40"

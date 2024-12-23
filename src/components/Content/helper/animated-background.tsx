@@ -50,15 +50,17 @@ const AnimatedBackground: FC<{
           let translateX = new DOMMatrixReadOnly(
             window.getComputedStyle(element).getPropertyValue("transform")
           ).m41;
+
           element.setAttribute(
             "style",
-            `transform: translateX(0); left: calc(2*${width} + ${translateX}px);`
+            `transform: translate(0, 0); left: calc(${translateX}px);`
           );
+
           element.setAttribute(
             "style",
-            `transform: translate(calc(${speed / 20}*${width}), ${
-              transitionDown ? "calc(1 / 8 * 100vh)" : "0"
-            }) scale(${zoomOut || 1})`
+            `transform: translate(calc(${-speed / 1.5}*3000px), ${
+              transitionDown ? "calc((1/8)*100vh)" : "0"
+            }) scale(${zoomOut ?? 1})`
           );
         } else if (finished && animationRef.current) {
           window.requestAnimationFrame(() => {

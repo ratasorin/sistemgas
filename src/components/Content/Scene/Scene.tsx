@@ -134,24 +134,32 @@ const Scene: NextPage<{
     if (!height || !imageHeight) return;
 
     if (forceEnd) {
-      bringTextCanvasFront();
-      const textRendererDiv = document.getElementById("text__renderer")!;
-      const graphicsContainer = document.getElementById("main-text");
+      // the settimeout is needed to ensure the pill gets dimensions after setting it's width to: animation-finished
+      setTimeout(() => {
+        bringTextCanvasFront();
+        const textRendererDiv = document.getElementById("text__renderer")!;
+        const graphicsContainer = document.getElementById("main-text");
 
-      if (!graphicsContainer || !textRendererDiv) return;
+        if (!graphicsContainer || !textRendererDiv) return;
 
-      const rect = textRendererDiv.getBoundingClientRect();
+        const rect = textRendererDiv.getBoundingClientRect();
+        const marginBottom =
+          window.innerHeight < 680 ? 8 : window.innerHeight < 816 ? 12 : 12;
 
-      const y =
-        rect.top -
-        graphicsContainer.getBoundingClientRect().top +
-        rect.height +
-        16;
+        console.log({ rect });
 
-      gsap.to(document.getElementById("text__renderer")!, {
-        y: -y,
-        duration: 0,
-      });
+        const y =
+          rect.top -
+          graphicsContainer.getBoundingClientRect().top +
+          rect.height +
+          marginBottom;
+        setStartSlideshow(true);
+
+        gsap.to(document.getElementById("text__renderer")!, {
+          y: -y,
+          duration: 0,
+        });
+      }, 50);
     } else if (finished && imageHeight && height) {
       requestAnimationFrame(() => {
         bringTextCanvasFront();
@@ -161,12 +169,14 @@ const Scene: NextPage<{
         if (!graphicsContainer || !textRendererDiv) return;
 
         const rect = textRendererDiv.getBoundingClientRect();
+        const marginBottom =
+          window.innerHeight < 680 ? 8 : window.innerHeight < 816 ? 12 : 12;
 
         const y =
           rect.top -
           graphicsContainer.getBoundingClientRect().top +
           rect.height +
-          16;
+          marginBottom;
 
         gsap
           .to(document.getElementById("text__renderer"), {
@@ -188,7 +198,7 @@ const Scene: NextPage<{
         if (id) window.cancelAnimationFrame(id);
         return;
       }
-      setX((carRenderer?.car?.position || 0) - 300);
+      setX((carRenderer?.car?.position || 0) - 200);
       id = window.requestAnimationFrame(callback);
     };
 
@@ -204,7 +214,7 @@ const Scene: NextPage<{
     <div className="absolute bottom-0 w-full h-full overflow-hidden z-10">
       <div
         id="text__renderer"
-        className={`absolute top-[60vh] z-0 h-max ${scene_styles["centered"]}`}
+        className={`absolute top-[60vh] z-10 h-max ${scene_styles["centered"]}`}
       >
         <Pill x={x} />
       </div>

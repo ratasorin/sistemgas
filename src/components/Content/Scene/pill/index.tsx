@@ -3,48 +3,77 @@ import { FC, useEffect, useRef, useState } from "react";
 import { m, motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAnimationState } from "../Car/Car";
 
 const ATTRIBUTES = [
-  { name: "RAPID 🚀", color: "rgb(255, 28, 28)" },
-  { name: "SUSTENABIL 🌱", color: "rgb(0, 177, 0)" },
-  { name: "EFICIENT ⌛", color: "rgb(31, 102, 255)" },
-  { name: "DE INCREDERE 🤝🏼", color: "rgb(245, 135, 32)" },
+  { id: 0, name: "RAPID 🚀", color: "rgb(255, 28, 28)" },
+  { id: 1, name: "SUSTENABIL 🌱", color: "rgb(0, 177, 0)" },
+  { id: 2, name: "EFICIENT ⌛", color: "rgb(31, 102, 255)" },
+  { id: 3, name: "DE INCREDERE 🤝🏼", color: "rgb(245, 135, 32)" },
 ];
 
-export const pillDimensionsAtom = atom({ width: 0, height: 0 });
+export const pillDimensionsAtom = atom<
+  Record<string, { width: number; height: number }>
+>({});
+
 export const startSlideshowAtom = atom(false);
 
 const Pill: FC<{ x: number }> = ({ x }) => {
+  const { forceEnd } = useAnimationState();
   const [width, setWidth] = useState<number | "finished-animation">(0);
   const [maxWidth, setMaxWidth] = useState(0);
-  const [, setPillDimensions] = useAtom(pillDimensionsAtom);
-
-  const pill = useRef<HTMLDivElement | null>(null);
+  const [pillDimensions, setPillDimensions] = useAtom(pillDimensionsAtom);
   const interval = useRef<NodeJS.Timer | undefined>(undefined);
   const startSlideshow = useAtomValue(startSlideshowAtom);
 
-  useEffect(() => {
-    if (!pill.current) return;
+  const referencePill = useRef<HTMLElement | null>(null);
+  const pills = useRef<
+    { element: HTMLElement; attribute: (typeof ATTRIBUTES)[number] }[]
+  >([]);
 
-    if (x < pill.current.getBoundingClientRect().left) {
-      setWidth(0);
-      return;
-    }
-    if (
-      x >
-      pill.current.getBoundingClientRect().left +
-        pill.current.getBoundingClientRect().width
-    ) {
+  useEffect(() => {
+    const measuredPills = pills.current.reduce((obj, pill) => {
+      return {
+        ...obj,
+        [pill.attribute.id]: {
+          width: pill.element.getBoundingClientRect().width,
+          height: pill.element.getBoundingClientRect().height,
+        },
+      };
+    }, {} as Record<number, { width: number; height: number }>);
+    setPillDimensions((p) => ({
+      ...p,
+      ...measuredPills,
+    }));
+  }, [setPillDimensions]);
+
+  useEffect(() => {
+    const referencePillBoundingBox =
+      referencePill.current?.getBoundingClientRect();
+
+    if (forceEnd) {
+      console.log("HERE!");
       setWidth("finished-animation");
       clearInterval(interval.current);
       return;
     }
 
-    setWidth(x - pill.current.getBoundingClientRect().left);
-  }, [setWidth, x]);
+    if (!referencePillBoundingBox) return;
+
+    if (x < referencePillBoundingBox.left) {
+      setWidth(0);
+      return;
+    }
+    if (x > referencePillBoundingBox.left + referencePillBoundingBox.width) {
+      setWidth("finished-animation");
+      clearInterval(interval.current);
+      return;
+    }
+
+    setWidth(x - referencePillBoundingBox.left);
+  }, [setWidth, x, forceEnd]);
 
   const [attribute, setAttribute] = useState(ATTRIBUTES[0]);
-  const isFirstCycle = useRef(true);
 
   useEffect(() => {
     let interval: NodeJS.Timer | undefined;
@@ -55,7 +84,6 @@ const Pill: FC<{ x: number }> = ({ x }) => {
           if (index !== undefined && index < ATTRIBUTES.length - 1)
             return ATTRIBUTES[index + 1];
           else {
-            isFirstCycle.current = false;
             return ATTRIBUTES[0];
           }
         });
@@ -64,37 +92,10 @@ const Pill: FC<{ x: number }> = ({ x }) => {
     return () => clearInterval(interval);
   }, [setAttribute, startSlideshow]);
 
-  const attributeForDimensionComputation = useRef(attribute);
-
   useEffect(() => {
-    attributeForDimensionComputation.current = attribute;
-  }, [attribute]);
-  const resizeObserver = useRef(
-    new ResizeObserver((mutation) => {
-      const width = mutation[0].contentRect.width;
-      console.log({
-        attribute: attributeForDimensionComputation.current,
-        isFirstCycle: isFirstCycle.current,
-      });
-      setPillDimensions((dimensions) =>
-        // maybe the fonts didn't load and width & height may change
-        isFirstCycle.current &&
-        attributeForDimensionComputation.current.name.includes("RAPID")
-          ? {
-              height: mutation[0].contentRect.height,
-              width: mutation[0].contentRect.width,
-            }
-          : dimensions
-      );
-
-      setMaxWidth(width);
-    })
-  );
-
-  useEffect(() => {
-    if (pill.current) resizeObserver.current.observe(pill.current);
-    return () => resizeObserver.current.disconnect();
-  }, []);
+    if (pillDimensions[attribute.id])
+      setMaxWidth(pillDimensions[attribute.id].width);
+  }, [attribute, pillDimensions]);
 
   const [slideshowClassName, setSlideShowClassName] = useState("");
   useEffect(() => {
@@ -107,6 +108,7 @@ const Pill: FC<{ x: number }> = ({ x }) => {
   return (
     <>
       <div
+        id="presentation-pill"
         className={`${pill_styles["card"]} ${pill_styles["example-2"]} ${
           width === "finished-animation" ? pill_styles["animate-width"] : ""
         } ${slideshowClassName}`}
@@ -147,21 +149,30 @@ const Pill: FC<{ x: number }> = ({ x }) => {
         </div>
       </div>
 
-      <div
-        className={`${pill_styles["card"]} ${pill_styles["example-2"]}`}
-        ref={pill}
-        style={{
-          wordBreak: "keep-all",
-          whiteSpace: "nowrap",
-          visibility: "hidden",
-          position: "absolute",
-          top: 0,
-        }}
-      >
-        <div className={pill_styles["inner"]}>
-          <span>🔥 SISTEMGAS este furnizorul: {attribute.name}</span>
-        </div>
-      </div>
+      {ATTRIBUTES.map((attr) => {
+        return (
+          <div
+            className={`${pill_styles["card"]} ${pill_styles["example-2"]}`}
+            ref={(e) => {
+              if (e) {
+                pills.current.push({ element: e, attribute: attr });
+                if (attr.id === 0) referencePill.current = e;
+              }
+            }}
+            style={{
+              wordBreak: "keep-all",
+              whiteSpace: "nowrap",
+              visibility: "hidden",
+              position: "absolute",
+              top: 0,
+            }}
+          >
+            <div className={pill_styles["inner"]}>
+              <span>🔥 SISTEMGAS este furnizorul: {attr.name}</span>
+            </div>
+          </div>
+        );
+      })}
     </>
   );
 };

@@ -27,6 +27,11 @@ import { useAtomValue } from "jotai";
 import { pillDimensionsAtom } from "./Scene/pill";
 import Loading from "./elements/loading";
 import Header from "./elements/header";
+import {
+  actions,
+  animateComponentOnHover,
+  poppers,
+} from "./helper/animte-component-on-hover";
 
 const backgroundAnimations = [
   {
@@ -67,26 +72,6 @@ const backgroundAnimations = [
     zoomOut: 0.8,
   },
 ];
-
-export let poppers: DelegateInstance<Props>[] = [];
-
-const animateComponentOnHover = <T,>(
-  componentId: string,
-  options: Partial<Props>,
-  actions: (el: HTMLElement, props: T) => void,
-  props: T
-) => {
-  const component = document.getElementById(componentId);
-  if (!component) {
-    console.error(`There is no component with id: ${componentId}!`);
-    return;
-  }
-
-  const popper = tippy(`#${componentId}`, options);
-  poppers = [...poppers, ...popper];
-
-  actions(component, props);
-};
 
 const MainScene: FC = () => {
   const svg = useSvg(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
@@ -133,51 +118,6 @@ const MainScene: FC = () => {
         },
       };
 
-      const actions = (
-        component: HTMLElement,
-        props: { shadowBlur1: number; shadowBlur2: number }
-      ) => {
-        const { shadowBlur1, shadowBlur2 } = props;
-        component.classList.add(content["svg-original"]);
-        component.style.setProperty("--shadow-blur-1", `${shadowBlur1}px`);
-        component.style.setProperty("--shadow-blur-2", `${shadowBlur2}px`);
-
-        component.addEventListener("mouseenter", () => {
-          updateLastElementHovered(
-            component,
-            (currentElementHovered) => {
-              currentElementHovered?.classList.add(content["svg-hover"]);
-              const popper = poppers.find(
-                (popper) => popper.reference === currentElementHovered
-              );
-
-              setTimeout(() => {
-                popper?.show();
-              }, 200);
-            },
-            (lastElementHovered) => {
-              if (lastElementHovered === component) return;
-
-              lastElementHovered?.classList.remove(content["svg-hover"]);
-              const popper = poppers.find(
-                (popper) => popper.reference === lastElementHovered
-              );
-              popper?.hide();
-            }
-          );
-        });
-        component.addEventListener("mouseleave", () => {
-          shouldExit(component, (element) => {
-            element.classList.remove(content["svg-hover"]);
-            const popper = poppers.find(
-              (popper) => popper.reference === element
-            );
-            popper?.hide();
-          });
-        });
-        // TODO: Fix touch outside not working on mobile!
-      };
-
       animateComponentOnHover<{ shadowBlur1: number; shadowBlur2: number }>(
         LANDING_PAGE_BUILDING_SVG_ID,
         options,
@@ -209,9 +149,8 @@ const MainScene: FC = () => {
             const { shadowBlur1, shadowBlur2 } = props;
             component.classList.add(content["svg-original"]);
 
-            updateLastElementHovered(
-              component,
-              () => {
+            updateLastElementHovered(component, {
+              effect: () => {
                 component.classList.add(content["svg-hover"]);
                 component.style.setProperty(
                   "--shadow-blur-1",
@@ -239,7 +178,7 @@ const MainScene: FC = () => {
 
                 popper?.show();
               },
-              (lastElementHovered) => {
+              cleanup: (lastElementHovered) => {
                 if (lastElementHovered === component) return;
 
                 lastElementHovered?.classList.remove(content["svg-hover"]);
@@ -248,8 +187,8 @@ const MainScene: FC = () => {
                   (popper) => popper.reference === lastElementHovered
                 );
                 popper?.hide();
-              }
-            );
+              },
+            });
 
             return;
           }
@@ -259,9 +198,8 @@ const MainScene: FC = () => {
               const { shadowBlur1, shadowBlur2 } = props;
               component.classList.add(content["svg-original"]);
 
-              updateLastElementHovered(
-                component,
-                () => {
+              updateLastElementHovered(component, {
+                effect: () => {
                   component.classList.add(content["svg-hover"]);
                   component.style.setProperty(
                     "--shadow-blur-1",
@@ -289,7 +227,7 @@ const MainScene: FC = () => {
 
                   popper?.show();
                 },
-                (lastElementHovered) => {
+                cleanup: (lastElementHovered) => {
                   if (lastElementHovered === component) return;
 
                   lastElementHovered?.classList.remove(content["svg-hover"]);
@@ -298,8 +236,8 @@ const MainScene: FC = () => {
                     (popper) => popper.reference === lastElementHovered
                   );
                   popper?.hide();
-                }
-              );
+                },
+              });
             }, END_TRANSITION_DURATION);
         });
       };
@@ -375,7 +313,7 @@ const MainScene: FC = () => {
 
       // Iterate over all the animate tags and control their "begin" attribute based on state
       animateTags.forEach((animateTag) => {
-        if (finished) {
+        if (finished || forceEnd) {
           setTimeout(() => {
             animateTag.beginElement();
           }, 2000);
@@ -384,7 +322,7 @@ const MainScene: FC = () => {
         }
       });
     }
-  }, [finished]);
+  }, [finished, forceEnd]);
 
   return (
     <>

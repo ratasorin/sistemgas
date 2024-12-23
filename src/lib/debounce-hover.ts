@@ -1,29 +1,42 @@
-const elementsHovered: HTMLElement[] = [];
+let currentElementHovered: HTMLElement | undefined = undefined;
 let lastElementHovered: HTMLElement | undefined = undefined;
 
 let hoverOverElementCountdown: NodeJS.Timer | null = null;
 let hoverOutCountdown: NodeJS.Timer | null = null;
 
+export type Effect = ((currentElementHovered: Element) => void) | null;
+export type Cleanup = ((lastElementHovered: Element) => void) | null;
 export const updateLastElementHovered = (
   element: HTMLElement,
-  effect: ((currentElementHovered: Element) => void) | null,
-  cleanup: ((lastElementHovered: Element) => void) | null
+  callbacks: {
+    effect: Effect;
+    cleanup: Cleanup;
+  }
 ) => {
+  const { cleanup, effect } = callbacks;
+
+  console.log({
+    hoverOutCountdown,
+    hoverOverElementCountdown,
+    element,
+    currentElementHovered,
+    lastElementHovered,
+  });
+
   if (hoverOverElementCountdown) clearTimeout(hoverOverElementCountdown);
   if (hoverOutCountdown) clearTimeout(hoverOutCountdown);
 
-  const elementIndexInStack = elementsHovered.findIndex((el) => el === element);
-  if (elementIndexInStack !== -1) {
-    elementsHovered.splice(elementIndexInStack, 1);
-  }
-  elementsHovered.push(element);
+  currentElementHovered = element;
 
   hoverOverElementCountdown = setTimeout(() => {
-    const currentElementHovered = elementsHovered[elementsHovered.length - 1];
-
     if (!currentElementHovered) return;
 
-    if (cleanup && lastElementHovered) cleanup(lastElementHovered);
+    if (
+      lastElementHovered !== currentElementHovered &&
+      cleanup &&
+      lastElementHovered
+    )
+      cleanup(lastElementHovered);
 
     if (effect) effect(currentElementHovered);
 
@@ -35,13 +48,7 @@ export const shouldExit = (
   element: HTMLElement,
   effect: ((element: Element) => void) | null
 ) => {
-  const elementIndexInStack = elementsHovered.findIndex((el) => el === element);
-  if (elementIndexInStack !== -1) {
-    elementsHovered.splice(elementIndexInStack, 1);
-  }
-  if (elementsHovered.length === 0) {
-    hoverOutCountdown = setTimeout(() => {
-      if (effect && lastElementHovered) effect(lastElementHovered);
-    }, 200);
-  }
+  hoverOutCountdown = setTimeout(() => {
+    if (effect && lastElementHovered) effect(lastElementHovered);
+  }, 600);
 };

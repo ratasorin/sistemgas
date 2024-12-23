@@ -1,32 +1,63 @@
 import { pillDimensionsAtom } from "components/Content/Scene/pill";
 import { useAtomValue } from "jotai";
-import React from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import header_styles from "./header.module.css";
 import { Button } from "@mui/material";
 import EmojiScroll from "./emoji-scroll";
 
+const m4 = 16; //px
+
 const Header = () => {
   const pillDimensions = useAtomValue(pillDimensionsAtom);
+
+  const [largestPillFitsScreenWidth, setLargestPillsFitsScreenWidth] =
+    useState(false);
+  const computeIfPillFitsScreen = useCallback(() => {
+    const largestPillWidth = Object.values(pillDimensions).reduce(
+      (prev, curr) => (curr.width > prev ? curr.width : prev),
+      0
+    );
+
+    console.log({ condition: largestPillWidth < window.innerWidth - 4 * m4 });
+
+    if (largestPillWidth < window.innerWidth - 4 * m4)
+      setLargestPillsFitsScreenWidth(true);
+    else setLargestPillsFitsScreenWidth(false);
+  }, [setLargestPillsFitsScreenWidth]);
+
+  useEffect(() => {
+    window.addEventListener("resize", computeIfPillFitsScreen);
+    computeIfPillFitsScreen();
+
+    return () => window.removeEventListener("resize", computeIfPillFitsScreen);
+  }, [pillDimensions]);
 
   return (
     <div
       className="absolute z-10 top-[52px] overflow-visible h-[calc(45%-52px)] flex flex-col w-full"
       style={{
-        justifyContent: window.innerHeight < 760 ? "flex-end" : "center",
-        paddingBottom:
-          window.innerHeight < 680
+        justifyContent: largestPillFitsScreenWidth ? "center" : "flex-end",
+        paddingBottom: !largestPillFitsScreenWidth
+          ? window.innerHeight < 680
             ? "28px"
             : window.innerHeight < 816
-            ? "32px"
-            : "0",
+            ? "36px"
+            : "0"
+          : "0",
       }}
     >
       <div
-        className={`text-center overflow-hidden opacity-50 text-sm rounded-2xl bg-cyan-50 relative mb-4 left-1/2 -translate-x-1/2 -translate-y-[2px] top-0 border-2 border-cyan-300 border-dashed`}
+        className={`text-center overflow-hidden opacity-50 text-sm rounded-2xl bg-cyan-50 relative left-1/2 -translate-x-1/2 -translate-y-[2px] top-0 border-2 border-cyan-300 border-dashed`}
         style={{
-          width: pillDimensions.width - 6 || 0,
-          height: pillDimensions.height - 4 || 0,
-          visibility: pillDimensions.width ? "visible" : "hidden",
+          width: pillDimensions[0]?.width - 6 || 0,
+          height: pillDimensions[0]?.height - 4 || 0,
+          visibility: pillDimensions[0]?.width ? "visible" : "hidden",
+          marginBottom:
+            window.innerHeight < 680
+              ? "8px"
+              : window.innerHeight < 816
+              ? "12px"
+              : "12px",
         }}
       >
         <div

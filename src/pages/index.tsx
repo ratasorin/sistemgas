@@ -33,7 +33,7 @@ const Home = () => {
       </div>
       {landingPageTooltips.map((el) =>
         el.tooltip === "default" ? (
-          <Tooltip elementId={el.id} tooltipTitle={el.title} />
+          <Tooltip masterId={el.id} tooltipTitle={el.title} />
         ) : (
           <AboutUsTooltip elementId={el.id} />
         )

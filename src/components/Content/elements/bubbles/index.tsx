@@ -25,7 +25,7 @@ const Bubbles = () => {
     const rightBoundary = window.innerWidth / 2;
 
     const bottomLimit = pillBox?.top;
-    const softBottomLimit;
+    // const softBottomLimit;
 
     const R1 = {} as Area;
   }, [setAreas]);

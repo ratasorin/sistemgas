@@ -155,6 +155,7 @@ const Scene: NextPage<{
             y: deltaY,
             duration: 0,
           });
+          setStartSlideshow(true);
         } else {
           textRendererDiv.style.top = `${
             Number(textRendererDiv.style.top.replace("px", "")) + deltaY

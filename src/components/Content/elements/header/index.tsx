@@ -1,4 +1,7 @@
-import { pillDimensionsAtom } from "components/Content/Scene/pill";
+import {
+  pillDimensionsAtom,
+  startSlideshowAtom,
+} from "components/Content/Scene/pill";
 import { useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import header_styles from "./header.module.css";
@@ -32,6 +35,9 @@ const Header = () => {
     return () => window.removeEventListener("resize", computeIfPillFitsScreen);
   }, [pillDimensions]);
 
+  const startSlideshow = useAtomValue(startSlideshowAtom);
+  console.log({ startSlideshow });
+
   return (
     <div
       className="absolute z-10 top-[52px] overflow-visible h-[calc(45%-52px)] flex flex-col w-full"
@@ -52,7 +58,8 @@ const Header = () => {
         style={{
           width: pillDimensions[0]?.width - 6 || 0,
           height: pillDimensions[0]?.height - 4 || 0,
-          visibility: pillDimensions[0]?.width ? "visible" : "hidden",
+          visibility:
+            !startSlideshow && pillDimensions[0]?.width ? "visible" : "hidden",
           marginBottom:
             window.innerHeight < 680
               ? "8px"

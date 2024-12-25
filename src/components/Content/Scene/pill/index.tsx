@@ -2,7 +2,7 @@ import pill_styles from "./styles.module.css";
 import { FC, useEffect, useRef, useState } from "react";
 import { m, motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
-import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { useAnimationState } from "../Car/Car";
 
 const ATTRIBUTES = [
@@ -52,7 +52,6 @@ const Pill: FC<{ x: number }> = ({ x }) => {
       referencePill.current?.getBoundingClientRect();
 
     if (forceEnd) {
-      console.log("HERE!");
       setWidth("finished-animation");
       clearInterval(interval.current);
       return;

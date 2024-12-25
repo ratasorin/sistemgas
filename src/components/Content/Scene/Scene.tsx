@@ -3,7 +3,7 @@ import Canvas from "./Canvas/Canvas";
 import { Positions } from "./Text/helpers/math/coordinates";
 import TextRenderer from "./Text/Text";
 import { Text } from "./Text/helpers/text";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CarRender, { useAnimationState } from "./Car/Car";
 import { gsap } from "gsap";
 import { END_TRANSITION_DURATION } from "../helper/animated-background";
@@ -129,6 +129,7 @@ const Scene: NextPage<{
   }, [images, width, height]);
 
   const setStartSlideshow = useSetAtom(startSlideshowAtom);
+  const canvasTextIsFront = useRef(false);
 
   useEffect(() => {
     if (!height || !imageHeight) return;
@@ -136,55 +137,60 @@ const Scene: NextPage<{
     if (forceEnd) {
       // the settimeout is needed to ensure the pill gets dimensions after setting it's width to: animation-finished
       setTimeout(() => {
-        bringTextCanvasFront();
         const textRendererDiv = document.getElementById("text__renderer")!;
-        const graphicsContainer = document.getElementById("main-text");
+        if (!textRendererDiv) return;
 
-        if (!graphicsContainer || !textRendererDiv) return;
+        const desiredLocation =
+          (document
+            .getElementById("pill-placeholder-scroll")
+            ?.getBoundingClientRect().top || 0) - 4;
+        const currentLocation = textRendererDiv.getBoundingClientRect().top;
 
-        const rect = textRendererDiv.getBoundingClientRect();
-        const marginBottom =
-          window.innerHeight < 680 ? 8 : window.innerHeight < 816 ? 12 : 12;
+        const deltaY = desiredLocation - currentLocation;
 
-        console.log({ rect });
-
-        const y =
-          rect.top -
-          graphicsContainer.getBoundingClientRect().top +
-          rect.height +
-          marginBottom;
-        setStartSlideshow(true);
-
-        gsap.to(document.getElementById("text__renderer")!, {
-          y: -y,
-          duration: 0,
-        });
+        if (!canvasTextIsFront.current) {
+          bringTextCanvasFront();
+          canvasTextIsFront.current = true;
+          gsap.to(textRendererDiv, {
+            y: deltaY,
+            duration: 0,
+          });
+        } else {
+          textRendererDiv.style.top = `${
+            Number(textRendererDiv.style.top.replace("px", "")) + deltaY
+          }px`;
+        }
       }, 50);
     } else if (finished && imageHeight && height) {
       requestAnimationFrame(() => {
-        bringTextCanvasFront();
         const textRendererDiv = document.getElementById("text__renderer")!;
         const graphicsContainer = document.getElementById("main-text");
 
         if (!graphicsContainer || !textRendererDiv) return;
 
-        const rect = textRendererDiv.getBoundingClientRect();
-        const marginBottom =
-          window.innerHeight < 680 ? 8 : window.innerHeight < 816 ? 12 : 12;
+        const desiredLocation =
+          (document
+            .getElementById("pill-placeholder-scroll")
+            ?.getBoundingClientRect().top || 0) - 4;
+        const currentLocation = textRendererDiv.getBoundingClientRect().top;
 
-        const y =
-          rect.top -
-          graphicsContainer.getBoundingClientRect().top +
-          rect.height +
-          marginBottom;
+        const deltaY = desiredLocation - currentLocation;
 
-        gsap
-          .to(document.getElementById("text__renderer"), {
-            y: -y,
-            duration: END_TRANSITION_DURATION / 1000,
-            ease: "expo.out",
-          })
-          .then(() => setStartSlideshow(true));
+        if (!canvasTextIsFront.current) {
+          bringTextCanvasFront();
+          canvasTextIsFront.current = true;
+          gsap
+            .to(document.getElementById("text__renderer"), {
+              y: deltaY,
+              duration: END_TRANSITION_DURATION / 1000,
+              ease: "expo.out",
+            })
+            .then(() => setStartSlideshow(true));
+        } else {
+          textRendererDiv.style.top = `${
+            Number(textRendererDiv.style.top.replace("px", "")) + deltaY
+          }px`;
+        }
       });
     }
   }, [finished, imageHeight, height, forceEnd]);

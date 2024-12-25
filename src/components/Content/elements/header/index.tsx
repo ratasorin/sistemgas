@@ -47,6 +47,7 @@ const Header = () => {
       }}
     >
       <div
+        id="pill-placeholder-scroll"
         className={`text-center overflow-hidden opacity-50 text-sm rounded-2xl bg-cyan-50 relative left-1/2 -translate-x-1/2 -translate-y-[2px] top-0 border-2 border-cyan-300 border-dashed`}
         style={{
           width: pillDimensions[0]?.width - 6 || 0,

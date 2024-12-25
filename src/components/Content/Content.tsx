@@ -32,6 +32,7 @@ import {
   animateComponentOnHover,
   poppers,
 } from "./helper/animte-component-on-hover";
+import Bubbles from "./elements/bubbles";
 
 const backgroundAnimations = [
   {
@@ -327,6 +328,7 @@ const MainScene: FC = () => {
   return (
     <>
       <Header></Header>
+      <Bubbles />
       {loading && <Loading />}
       <div
         ref={sceneRef}

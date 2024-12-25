@@ -143,7 +143,7 @@ const Scene: NextPage<{
         const desiredLocation =
           (document
             .getElementById("pill-placeholder-scroll")
-            ?.getBoundingClientRect().top || 0) - 4;
+            ?.getBoundingClientRect().top || 0) - 2;
         const currentLocation = textRendererDiv.getBoundingClientRect().top;
 
         const deltaY = desiredLocation - currentLocation;
@@ -171,7 +171,7 @@ const Scene: NextPage<{
         const desiredLocation =
           (document
             .getElementById("pill-placeholder-scroll")
-            ?.getBoundingClientRect().top || 0) - 4;
+            ?.getBoundingClientRect().top || 0) - 2;
         const currentLocation = textRendererDiv.getBoundingClientRect().top;
 
         const deltaY = desiredLocation - currentLocation;

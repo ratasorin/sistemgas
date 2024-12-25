@@ -36,7 +36,6 @@ const Header = () => {
   }, [pillDimensions]);
 
   const startSlideshow = useAtomValue(startSlideshowAtom);
-  console.log({ startSlideshow });
 
   return (
     <div
@@ -75,15 +74,21 @@ const Header = () => {
         </div>
       </div>
       <div
-        id="main-text"
+        id="main-text-and-button"
         style={{
           position: "relative",
           gap: window.innerHeight < 680 ? "12px" : "16px",
         }}
         className="overflow-visible left-1/2 -translate-x-1/2 w-full flex flex-col justify-center items-center"
       >
-        <h3 className="font-poppins px-8 font-extrabold text-center text-[32px] leading-9 md:text-5xl overflow-visible">
-          <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-400">
+        <h3
+          id="main-text"
+          className="font-poppins font-extrabold text-center text-[32px] leading-9 md:text-5xl overflow-visible"
+        >
+          <span
+            id="main-text-1"
+            className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-400"
+          >
             Alternativa
           </span>{" "}
           <span className="overflow-visible bg-clip-text text-transparent bg-gradient-to-r from-[#1334a0] to-[#3862ee]">

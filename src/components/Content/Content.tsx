@@ -23,7 +23,7 @@ import WebFont from "webfontloader";
 import { createPortal } from "react-dom";
 import { scrollElementBy } from "lib/scroll-smooth";
 import { Button, styled } from "@mui/material";
-import { useAtomValue } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { pillDimensionsAtom } from "./Scene/pill";
 import Loading from "./elements/loading";
 import Header from "./elements/header";
@@ -73,6 +73,8 @@ const backgroundAnimations = [
     zoomOut: 0.8,
   },
 ];
+
+export const sistemgasHQStartXAtom = atom<number | undefined>();
 
 const MainScene: FC = () => {
   const svg = useSvg(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
@@ -305,6 +307,13 @@ const MainScene: FC = () => {
     }
   }, [finished, forceEnd]);
 
+  const setScrollX = useSetAtom(sistemgasHQStartXAtom);
+  const handleScroll = () => {
+    if (sistemgasSvgRef.current) {
+      setScrollX(sistemgasSvgRef.current.scrollLeft);
+    }
+  };
+
   useEffect(() => {
     const svg = document.getElementById(LANDING_PAGE_SISTEMGAS_HQ_GLOW_SVG_ID);
 
@@ -342,7 +351,9 @@ const MainScene: FC = () => {
         ></Scene>
         {createPortal(
           <div
+            onScroll={handleScroll}
             ref={sistemgasSvgRef}
+            id="sistemgas-hq"
             className={`${content["sistemgas-hq"]} ${
               finished
                 ? content["sistemgas-hq-animate-in"]

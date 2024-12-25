@@ -81,7 +81,7 @@ const getResponsiveHeightFactor = (screenWidth: number) => {
 
 const bringTextCanvasFront = () => {
   const textRendererDiv = document.getElementById("text__renderer")!;
-  const graphicsContainer = document.getElementById("main-text");
+  const graphicsContainer = document.getElementById("main-text-and-button");
 
   if (!graphicsContainer || !textRendererDiv) return;
 
@@ -165,7 +165,9 @@ const Scene: NextPage<{
     } else if (finished && imageHeight && height) {
       requestAnimationFrame(() => {
         const textRendererDiv = document.getElementById("text__renderer")!;
-        const graphicsContainer = document.getElementById("main-text");
+        const graphicsContainer = document.getElementById(
+          "main-text-and-button"
+        );
 
         if (!graphicsContainer || !textRendererDiv) return;
 

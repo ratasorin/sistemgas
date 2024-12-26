@@ -21,8 +21,6 @@ const Header = () => {
       0
     );
 
-    console.log({ condition: largestPillWidth < window.innerWidth - 4 * m4 });
-
     if (largestPillWidth < window.innerWidth - 4 * m4)
       setLargestPillsFitsScreenWidth(true);
     else setLargestPillsFitsScreenWidth(false);
@@ -91,7 +89,10 @@ const Header = () => {
           >
             Alternativa
           </span>{" "}
-          <span className="overflow-visible bg-clip-text text-transparent bg-gradient-to-r from-[#1334a0] to-[#3862ee]">
+          <span
+            id="main-text-2"
+            className="overflow-visible bg-clip-text text-transparent bg-gradient-to-r from-[#1334a0] to-[#3862ee]"
+          >
             in furnizarea gazului natural
           </span>
         </h3>

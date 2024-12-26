@@ -1,11 +1,19 @@
 import { Position, getSmoothStepPath } from "@xyflow/react";
 import { simplifyQuadraticPath } from "./simplify-path";
+import { Coordinates } from "../Scene/Text/helpers/math/coordinates";
+
+interface Box {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
 
 export function modifySvgPathToAvoidCollisions(
   pathString: string,
   elementIds: string[],
   padding = 15,
-  roundingRadius = 10
+  borderRadius = 10
 ) {
   const parseSvgPoints = (pathData: string) =>
     pathData.match(/[MLZ][^MLZ]*/g)?.map((cmd) => {
@@ -47,7 +55,7 @@ export function modifySvgPathToAvoidCollisions(
     ); // Remove trailing whitespace
   };
 
-  const findIntersections = (p1, p2, rect) => {
+  const findIntersections = (p1: Coordinates, p2: Coordinates, rect: Box) => {
     const paddedRect = {
       left: rect.left - padding,
       right: rect.right + padding,
@@ -74,10 +82,15 @@ export function modifySvgPathToAvoidCollisions(
       }, // Left
     ];
 
-    const ccw = (a, b, c) =>
+    const ccw = (a: Coordinates, b: Coordinates, c: Coordinates) =>
       (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x);
-    const intersects = (a, b, c, d) =>
-      ccw(a, c, d) !== ccw(b, c, d) && ccw(a, b, c) !== ccw(a, b, d);
+
+    const intersects = (
+      a: Coordinates,
+      b: Coordinates,
+      c: Coordinates,
+      d: Coordinates
+    ) => ccw(a, c, d) !== ccw(b, c, d) && ccw(a, b, c) !== ccw(a, b, d);
 
     const intersections = [];
 
@@ -107,7 +120,7 @@ export function modifySvgPathToAvoidCollisions(
   };
 
   // Method to check if two rectangles intersect
-  const doesRectIntersect = (rectA, rectB) => {
+  const doesRectIntersect = (rectA: Box, rectB: Box) => {
     return (
       rectA.left < rectB.right &&
       rectA.right > rectB.left &&
@@ -116,7 +129,11 @@ export function modifySvgPathToAvoidCollisions(
     );
   };
 
-  const handleIntersection = (intersection, end, rect) => {
+  const handleIntersection = (
+    intersection: any,
+    end: Coordinates,
+    rect: Box
+  ) => {
     const { x: ix, y: iy } = intersection;
     const { start, end: edgeEnd } = intersection.edge;
 
@@ -136,10 +153,10 @@ export function modifySvgPathToAvoidCollisions(
 
       // Check if the first point avoids the element
       const rect1 = {
-        left: Math.min(firstPoint.x, end.x),
-        right: Math.max(firstPoint.x, end.x),
-        top: Math.min(firstPoint.y, end.y),
-        bottom: Math.max(firstPoint.y, end.y),
+        left: Math.min(firstPoint.x - padding, end.x - padding),
+        right: Math.max(firstPoint.x + padding, end.x + padding),
+        top: Math.min(firstPoint.y - padding, end.y + padding),
+        bottom: Math.max(firstPoint.y + padding, end.y + padding),
       };
 
       // If no intersection, we can safely return the first point
@@ -161,10 +178,10 @@ export function modifySvgPathToAvoidCollisions(
 
       // Check if the first point avoids the element
       const rect1 = {
-        left: Math.min(firstPoint.x, end.x),
-        right: Math.max(firstPoint.x, end.x),
-        top: Math.min(firstPoint.y, end.y),
-        bottom: Math.max(firstPoint.y, end.y),
+        left: Math.min(firstPoint.x - padding, end.x - padding),
+        right: Math.max(firstPoint.x + padding, end.x + padding),
+        top: Math.min(firstPoint.y - padding, end.y + padding),
+        bottom: Math.max(firstPoint.y + padding, end.y + padding),
       };
 
       // If no intersection, return the first point
@@ -183,7 +200,7 @@ export function modifySvgPathToAvoidCollisions(
     return [intersection, firstPoint, secondPoint];
   };
 
-  const calculateVectorDirection = (start, end) => ({
+  const calculateVectorDirection = (start: Coordinates, end: Coordinates) => ({
     x: end.x - start.x,
     y: end.y - start.y,
   });
@@ -227,79 +244,43 @@ export function modifySvgPathToAvoidCollisions(
           newPathData.push(`L${point.x},${point.y}`);
         });
 
-        const directionsToTake = { x: undefined, y: undefined };
+        const directionsToTake = {} as { x: Position; y: Position };
 
         const dfLength = deflectionPoints.length;
         const lastDfPoint = deflectionPoints[dfLength - 1];
         const secondLastDfPoint = deflectionPoints[dfLength - 2];
         let direction;
 
-        if (lastDfPoint.x - endPoint.x > 0) directionsToTake.x = "left";
-        else directionsToTake.x = "right";
+        if (lastDfPoint.x - endPoint.x > 0) directionsToTake.x = Position.Left;
+        else directionsToTake.x = Position.Right;
 
-        if (lastDfPoint.y - endPoint.y > 0) directionsToTake.y = "top";
-        else directionsToTake.y = "bottom";
+        if (lastDfPoint.y - endPoint.y > 0) directionsToTake.y = Position.Top;
+        else directionsToTake.y = Position.Bottom;
 
         if (lastDfPoint.x === secondLastDfPoint.x) {
-          if (lastDfPoint.y > secondLastDfPoint.y) direction = "bottom";
-          else direction = "top";
+          if (lastDfPoint.y > secondLastDfPoint.y) direction = Position.Bottom;
+          else direction = Position.Top;
         } else {
-          if (lastDfPoint.x > secondLastDfPoint.x) direction = "right";
-          else direction = "left";
+          if (lastDfPoint.x > secondLastDfPoint.x) direction = Position.Right;
+          else direction = Position.Left;
         }
 
         const directionLeft = Object.values(directionsToTake).filter(
           (v) => v !== direction
         );
 
-        console.log({
-          directionsToTake,
-          directionLeft,
-          lastDfPoint,
-          secondLastDfPoint,
+        const [smoothPath] = getSmoothStepPath({
+          sourceX: deflectionPoints[deflectionPoints.length - 1].x,
+          sourceY: deflectionPoints[deflectionPoints.length - 1].y,
+          sourcePosition: directionLeft[0],
+          targetX: endPoint.x,
+          targetY: endPoint.y,
+          targetPosition: Position.Top,
+          borderRadius: 0,
         });
 
-        if (
-          Math.abs(
-            deflectionPoints[deflectionPoints.length - 1].x - endPoint.x
-          ) < -1
-        ) {
-          const [smoothPath] = getSmoothStepPath({
-            sourceX: deflectionPoints[deflectionPoints.length - 1].x,
-            sourceY: deflectionPoints[deflectionPoints.length - 1].y,
-            sourcePosition: "bottom",
-            targetX:
-              endPoint.x -
-              Math.abs(
-                deflectionPoints[deflectionPoints.length - 1].x - endPoint.x
-              ),
-            targetY: endPoint.y,
-            targetPosition: "top",
-          });
-
-          console.log({
-            smooth: formatSmoothPath(simplifyQuadraticPath(smoothPath)),
-          });
-
-          newPathData.push(formatSmoothPath(simplifyQuadraticPath(smoothPath)));
-          break;
-        } else {
-          const [smoothPath] = getSmoothStepPath({
-            sourceX: deflectionPoints[deflectionPoints.length - 1].x,
-            sourceY: deflectionPoints[deflectionPoints.length - 1].y,
-            sourcePosition: directionLeft[0],
-            targetX: endPoint.x,
-            targetY: endPoint.y,
-            targetPosition: "top",
-          });
-
-          console.log({
-            smooth: formatSmoothPath(simplifyQuadraticPath(smoothPath)),
-          });
-
-          newPathData.push(formatSmoothPath(simplifyQuadraticPath(smoothPath)));
-          break;
-        }
+        newPathData.push(formatSmoothPath(simplifyQuadraticPath(smoothPath)));
+        break;
       }
 
       if (!collisionDetected) {
@@ -311,10 +292,12 @@ export function modifySvgPathToAvoidCollisions(
 
   let pathSegments = parseSvgPoints(newPathData.join(" "));
 
-  console.log({ npd: newPathData });
   // Function to modify the path data with rounding
-  const addRoundedPath = (start, middle, end) => {
-    console.log({ start, middle, end });
+  const addRoundedPath = (
+    start: Coordinates,
+    middle: Coordinates,
+    end: Coordinates
+  ) => {
     // Calculate direction vectors for the two lines
     const dx1 = middle.x - start.x;
     const dy1 = middle.y - start.y;
@@ -330,15 +313,18 @@ export function modifySvgPathToAvoidCollisions(
     const unitDx2 = len2 === 0 ? 0 : dx2 / len2;
     const unitDy2 = len2 === 0 ? 0 : dy2 / len2;
 
-    // Calculate new points shortened by roundingRadius
+    const adjustedRadius =
+      Math.floor(Math.min(borderRadius, Math.min(len1, len2))) / 2;
+
+    // Calculate new points shortened by borderRadius
     const shortStart = {
-      x: middle.x - unitDx1 * roundingRadius,
-      y: middle.y - unitDy1 * roundingRadius,
+      x: middle.x - unitDx1 * adjustedRadius,
+      y: middle.y - unitDy1 * adjustedRadius,
     };
 
     const shortEnd = {
-      x: middle.x + unitDx2 * roundingRadius,
-      y: middle.y + unitDy2 * roundingRadius,
+      x: middle.x + unitDx2 * adjustedRadius,
+      y: middle.y + unitDy2 * adjustedRadius,
     };
 
     // Create the path: Line -> Quadratic -> Line
@@ -373,8 +359,7 @@ export function modifySvgPathToAvoidCollisions(
         const { line1, quadraticCurve } = addRoundedPath(
           lastPoint,
           currentPoint,
-          nextPoint,
-          roundingRadius
+          nextPoint
         );
         finalPathData.push(line1);
         finalPathData.push(quadraticCurve);
@@ -390,6 +375,5 @@ export function modifySvgPathToAvoidCollisions(
   }
 
   // Add the last segment without any rounding
-  console.log({ finalPathData });
   return finalPathData.join(" ");
 }

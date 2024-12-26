@@ -29,6 +29,12 @@ export function simplifyQuadraticPath(pathData) {
     } else if (type === "L") {
       // Line command
       const newPoint = [args[0], args[1]];
+
+      // Skip if newPoint is the same as currentPoint
+      if (currentPoint[0] === newPoint[0] && currentPoint[1] === newPoint[1]) {
+        return;
+      }
+
       const differenceVector = [
         newPoint[0] - currentPoint[0],
         newPoint[1] - currentPoint[1],
@@ -44,39 +50,29 @@ export function simplifyQuadraticPath(pathData) {
       currentPoint = newPoint;
       lastCosine = currentCosine;
     } else if (type === "Q") {
-      // Quadratic Bezier command
+      // Quadratic Bézier command
       const [cx, cy, x, y] = args; // Control point and endpoint
 
-      // Process control point
+      // Skip the curve if control point equals either the start point or the end point
       const controlPoint = [cx, cy];
-      const controlDifferenceVector = [
-        controlPoint[0] - currentPoint[0],
-        controlPoint[1] - currentPoint[1],
-      ];
-      const controlCosine = calculateCosine(controlDifferenceVector, [1, 0]);
-
-      if (lastCosine === null || controlCosine !== lastCosine) {
-        coordinates.push(controlPoint);
-      } else {
-        coordinates[coordinates.length - 1] = controlPoint; // Replace last point
-      }
-
-      // Update for endpoint
       const endPoint = [x, y];
-      const endpointDifferenceVector = [
-        endPoint[0] - controlPoint[0],
-        endPoint[1] - controlPoint[1],
-      ];
-      const endpointCosine = calculateCosine(endpointDifferenceVector, [1, 0]);
-
-      if (controlCosine !== endpointCosine) {
-        coordinates.push(endPoint);
-      } else {
-        coordinates[coordinates.length - 1] = endPoint; // Replace last point
+      if (
+        (controlPoint[0] === currentPoint[0] &&
+          controlPoint[1] === currentPoint[1]) ||
+        (controlPoint[0] === endPoint[0] && controlPoint[1] === endPoint[1])
+      ) {
+        currentPoint = endPoint; // Update the current point to the end point
+        return; // Skip adding this segment
       }
 
+      // Skip if endPoint is the same as currentPoint
+      if (currentPoint[0] === endPoint[0] && currentPoint[1] === endPoint[1]) {
+        return;
+      }
+
+      // Add end point as a line segment
+      coordinates.push(endPoint);
       currentPoint = endPoint;
-      lastCosine = endpointCosine;
     } else if (type === "Z" || type === "z") {
       // Close path command
       coordinates.push("Z");

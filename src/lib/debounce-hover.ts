@@ -15,14 +15,6 @@ export const updateLastElementHovered = (
 ) => {
   const { cleanup, effect } = callbacks;
 
-  console.log({
-    hoverOutCountdown,
-    hoverOverElementCountdown,
-    element,
-    currentElementHovered,
-    lastElementHovered,
-  });
-
   if (hoverOverElementCountdown) clearTimeout(hoverOverElementCountdown);
   if (hoverOutCountdown) clearTimeout(hoverOutCountdown);
 

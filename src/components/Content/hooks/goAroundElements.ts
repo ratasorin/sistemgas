@@ -11,9 +11,6 @@ export const useGoAroundElement = (
   destinationPosition: Position,
   obstacleIds: string[]
 ) => {
-  useEffect(() => {
-    console.log({ source });
-  }, [source]);
   const [path] = getSmoothStepPath({
     sourceX: source.x,
     sourceY: source.y,

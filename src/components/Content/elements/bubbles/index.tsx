@@ -23,7 +23,8 @@ type Area = {
 };
 
 const MARGIN = 16; //px
-const TEXT_ID = "main-text-1";
+const TEXT_1_ID = "main-text-1";
+const TEXT_2_ID = "main-text-2";
 
 const Bubbles = () => {
   const sistemgasHQStartX = useAtomValue(sistemgasHQStartXAtom);
@@ -36,10 +37,6 @@ const Bubbles = () => {
       ),
     [pills]
   );
-
-  useEffect(() => {
-    console.log({ pills, largestPillWidth });
-  }, [pills, largestPillWidth]);
 
   const [areas, setAreas] = useState<[Area, Area] | undefined>();
   const startSlideshow = useAtomValue(startSlideshowAtom);
@@ -58,8 +55,6 @@ const Bubbles = () => {
     const softRightBoundary = window.innerWidth / 2;
     const rightBoundary = window.innerWidth / 2 - largestPillWidth / 2;
 
-    console.log({ rightBoundary, largestPillWidth });
-
     const bottomLimit = pillBox?.top || 0;
     const softBottomLimit = (pillBox?.top || 0) + (pillBox?.height || 0);
 
@@ -76,7 +71,6 @@ const Bubbles = () => {
       top: MARGIN,
       left: softLeftBoundary,
     };
-    console.log({ R1, R2 });
 
     setAreas([R1, R2]);
   }, [setAreas, largestPillWidth]);
@@ -120,23 +114,45 @@ const Bubbles = () => {
   useEffect(() => {
     if (source1Ref.current) resizeObserver.observe(source1Ref.current);
   }, []);
-  const DESIRED_X = 40;
+  const DESIRED_X_1 = 40;
 
-  const path = useGoAroundElement(
+  const path1 = useGoAroundElement(
     source1,
     {
       y: window.innerHeight,
-      x: -(sistemgasHQStartX || 0) + DESIRED_X,
+      x: -(sistemgasHQStartX || 0) + DESIRED_X_1,
     },
     Position.Bottom,
     Position.Top,
-    [TEXT_ID, "Building"]
+    [TEXT_1_ID, "Building"]
   );
 
-  console.log({
-    source1,
-    dest: { y: window.innerHeight, x: sistemgasHQStartX || 0 },
+  const [source2, setSource2] = useState<Coordinates>({ x: 0, y: 0 });
+  const source2Ref = useRef<HTMLDivElement | null>(null);
+
+  const resizeObserver2 = new ResizeObserver((mutation) => {
+    const rect = source2Ref.current?.getBoundingClientRect();
+    const x = (rect?.x || 0) + (rect?.width || 0) / 2;
+    const y = (rect?.y || 0) + (rect?.height || 0);
+    setSource2({ x, y });
   });
+
+  useEffect(() => {
+    if (source2Ref.current) resizeObserver2.observe(source2Ref.current);
+  }, []);
+
+  const DESIRED_X_2 = 900;
+
+  const path2 = useGoAroundElement(
+    source2,
+    {
+      y: window.innerHeight,
+      x: -(sistemgasHQStartX || 0) + DESIRED_X_2,
+    },
+    Position.Bottom,
+    Position.Top,
+    [TEXT_2_ID, "Building"]
+  );
 
   return (
     <>
@@ -153,7 +169,26 @@ const Bubbles = () => {
         <path
           fill="transparent"
           stroke="#FE6B7F"
-          d={path}
+          d={path1}
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <svg
+        style={{
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: "1",
+        }}
+      >
+        <path
+          fill="transparent"
+          stroke="#91CEFF"
+          d={path2}
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -178,7 +213,7 @@ const Bubbles = () => {
             width: 0.6 * minDimension > 52 ? 52 : 0.6 * minDimension,
             height: 0.6 * minDimension > 52 ? 52 : 0.6 * minDimension,
             border: "2px solid #FE6B7F",
-            backgroundColor: "#F8E0E3",
+            backgroundColor: "#FFECEF",
             borderRadius: "50%",
           }}
         ></div>
@@ -200,10 +235,12 @@ const Bubbles = () => {
         }}
       >
         <div
+          ref={source2Ref}
           style={{
             width: 0.6 * minDimension > 52 ? 52 : 0.6 * minDimension,
             height: 0.6 * minDimension > 52 ? 52 : 0.6 * minDimension,
-            backgroundColor: "red",
+            border: "2px solid #91CEFF",
+            backgroundColor: "#F1F8FF",
             borderRadius: "50%",
           }}
         ></div>

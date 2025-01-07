@@ -65,14 +65,26 @@ export function simplifyQuadraticPath(pathData) {
         return; // Skip adding this segment
       }
 
-      // Skip if endPoint is the same as currentPoint
-      if (currentPoint[0] === endPoint[0] && currentPoint[1] === endPoint[1]) {
-        return;
+      // Calculate direction from current point to control point and from control to endpoint
+      const toControl = [cx - currentPoint[0], cy - currentPoint[1]];
+      const toEnd = [x - cx, y - cy];
+
+      // Calculate cosines for both segments
+      const cosineToControl = calculateCosine(toControl, [1, 0]);
+      const cosineToEnd = calculateCosine(toEnd, [1, 0]);
+
+      // Add first line (from current point to control point)
+      if (lastCosine === null || cosineToControl !== lastCosine) {
+        coordinates.push([cx, cy]);
+      } else {
+        coordinates[coordinates.length - 1] = [cx, cy]; // Merge with last segment
       }
 
-      // Add end point as a line segment
-      coordinates.push(endPoint);
+      // Add second line (from control point to endpoint)
+      coordinates.push([x, y]);
       currentPoint = endPoint;
+
+      lastCosine = cosineToEnd; // Update lastCosine with the second part of the Bézier curve
     } else if (type === "Z" || type === "z") {
       // Close path command
       coordinates.push("Z");

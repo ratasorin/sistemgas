@@ -74,7 +74,7 @@ const backgroundAnimations = [
   },
 ];
 
-export const sistemgasHQStartXAtom = atom<number | undefined>();
+export const sistemgasHQBBoxAtom = atom<ScrollBBox | undefined>();
 
 const MainScene: FC = () => {
   const svg = useSvg(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
@@ -307,10 +307,16 @@ const MainScene: FC = () => {
     }
   }, [finished, forceEnd]);
 
-  const setScrollX = useSetAtom(sistemgasHQStartXAtom);
+  const setBBox = useSetAtom(sistemgasHQBBoxAtom);
   const handleScroll = () => {
     if (sistemgasSvgRef.current) {
-      setScrollX(sistemgasSvgRef.current.scrollLeft);
+      setBBox({
+        scrollLeft: sistemgasSvgRef.current.scrollLeft,
+        height: sistemgasSvgRef.current.scrollHeight,
+        width: sistemgasSvgRef.current.scrollWidth,
+        x: sistemgasSvgRef.current.clientLeft,
+        y: sistemgasSvgRef.current.clientTop,
+      });
     }
   };
 

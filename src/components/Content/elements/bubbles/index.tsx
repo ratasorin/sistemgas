@@ -1,19 +1,24 @@
 import { Position } from "@xyflow/react";
-import { sistemgasHQStartXAtom } from "components/Content/Content";
+import bubbles_styles from "./index.module.css";
+import { sistemgasHQBBoxAtom } from "components/Content/Content";
+import { getTextTrueBBox } from "components/Content/hooks/getTextTrueBBox";
 import { useGoAroundElement } from "components/Content/hooks/goAroundElements";
 import {
   pillDimensionsAtom,
   startSlideshowAtom,
 } from "components/Content/Scene/pill";
 import { Coordinates } from "components/Content/Scene/Text/helpers/math/coordinates";
-import { atom, useAtomValue } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import React, {
+  MutableRefObject,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import GlowingPath from "./svg-glow";
+import { useAnimationState } from "components/Content/Scene/Car/Car";
 
 type Area = {
   width: number;
@@ -23,12 +28,11 @@ type Area = {
 };
 
 const MARGIN = 16; //px
-const TEXT_1_ID = "main-text-1";
-const TEXT_2_ID = "main-text-2";
+const TEXT_ID = "main-text";
 
-const Bubbles = () => {
-  const sistemgasHQStartX = useAtomValue(sistemgasHQStartXAtom);
+const useAreas = () => {
   const pills = useAtomValue(pillDimensionsAtom);
+  const [areas, setAreas] = useState<[Area, Area] | undefined>();
   const largestPillWidth = useMemo(
     () =>
       Object.values(pills).reduce(
@@ -37,9 +41,6 @@ const Bubbles = () => {
       ),
     [pills]
   );
-
-  const [areas, setAreas] = useState<[Area, Area] | undefined>();
-  const startSlideshow = useAtomValue(startSlideshowAtom);
 
   const computeAreas = useCallback(() => {
     const leftNavigation = document
@@ -93,6 +94,72 @@ const Bubbles = () => {
     [largestArea]
   );
 
+  return { minDimension, largestArea, computeAreas };
+};
+
+interface ComputePathAroundProps {
+  elementsId: string[];
+  source: MutableRefObject<HTMLDivElement | null>;
+  destination: { x: number; y: number };
+  sourcePosition?: Position;
+  destinationPosition?: Position;
+}
+
+export const computePathAround = ({
+  elementsId,
+  source,
+  destination,
+  sourcePosition = Position.Bottom,
+  destinationPosition = Position.Top,
+}: ComputePathAroundProps) => {
+  const [sourceCoordinates, setSourceCoordinates] = useState<Coordinates>({
+    x: 0,
+    y: 0,
+  });
+  const sistemgasHQBBox = useAtomValue(sistemgasHQBBoxAtom); // general offset
+
+  const elementResizer = new ResizeObserver((mutation) => {
+    const rect = source.current?.getBoundingClientRect();
+    const x = (rect?.x || 0) + (rect?.width || 0) / 2;
+    const y = (rect?.y || 0) + (rect?.height || 0);
+    setSourceCoordinates({ x, y });
+  });
+
+  useEffect(() => {
+    if (source.current) elementResizer.observe(source.current);
+  }, [destination]);
+
+  const destinationCoordinates = useMemo(() => {
+    return {
+      y: destination.y,
+      x: -(sistemgasHQBBox?.scrollLeft || 0) + destination.x,
+    };
+  }, [destination, sistemgasHQBBox]);
+
+  const path = useGoAroundElement(
+    sourceCoordinates,
+    destinationCoordinates,
+    sourcePosition,
+    destinationPosition,
+    elementsId
+  );
+
+  return path;
+};
+
+export const bubblesDimensionAtom = atom(0);
+const Bubbles = () => {
+  const startSlideshow = useAtomValue(startSlideshowAtom);
+  const { minDimension, largestArea, computeAreas } = useAreas();
+  const sistemgasHQBBox = useAtomValue(sistemgasHQBBoxAtom);
+  const setBubblesDimension = useSetAtom(bubblesDimensionAtom);
+
+  useEffect(() => {
+    setBubblesDimension(
+      FACTOR * minDimension > 52 ? 52 : FACTOR * minDimension
+    );
+  }, [minDimension]);
+
   useEffect(() => {
     if (startSlideshow) {
       computeAreas();
@@ -101,61 +168,65 @@ const Bubbles = () => {
     return () => window.removeEventListener("resize", computeAreas);
   }, [computeAreas, startSlideshow]);
 
-  const [source1, setSource1] = useState<Coordinates>({ x: 0, y: 0 });
-  const source1Ref = useRef<HTMLDivElement | null>(null);
+  const leftmostBubble = useRef<HTMLDivElement | null>(null);
+  const rightmostBubble = useRef<HTMLDivElement | null>(null);
 
-  const resizeObserver = new ResizeObserver((mutation) => {
-    const rect = source1Ref.current?.getBoundingClientRect();
-    const x = (rect?.x || 0) + (rect?.width || 0) / 2;
-    const y = (rect?.y || 0) + (rect?.height || 0);
-    setSource1({ x, y });
-  });
-
+  const leftmostPathElement = useRef<SVGPathElement | null>(null);
+  const leftmostPathElementGlow = useRef<SVGPathElement | null>(null);
+  const rightmostPathElement = useRef<SVGPathElement | null>(null);
+  const rightmostPathElementGlow = useRef<SVGPathElement | null>(null);
   useEffect(() => {
-    if (source1Ref.current) resizeObserver.observe(source1Ref.current);
-  }, []);
-  const DESIRED_X_1 = 40;
+    console.log({ element: leftmostPathElementGlow.current });
+    leftmostPathElement.current?.classList.add(bubbles_styles["hide-path"]);
+    leftmostPathElementGlow.current?.classList.add(bubbles_styles["hide-path"]);
+    rightmostPathElement.current?.classList.add(bubbles_styles["hide-path"]);
+    rightmostPathElementGlow.current?.classList.add(
+      bubbles_styles["hide-path"]
+    );
 
-  const path1 = useGoAroundElement(
-    source1,
-    {
-      y: window.innerHeight,
-      x: -(sistemgasHQStartX || 0) + DESIRED_X_1,
-    },
-    Position.Bottom,
-    Position.Top,
-    [TEXT_1_ID, "Building"]
+    if (startSlideshow) {
+      leftmostPathElement.current?.classList.add(bubbles_styles["reveal-path"]);
+      leftmostPathElementGlow.current?.classList.add(
+        bubbles_styles["reveal-path"]
+      );
+      rightmostPathElement.current?.classList.add(
+        bubbles_styles["reveal-path"]
+      );
+      rightmostPathElementGlow.current?.classList.add(
+        bubbles_styles["reveal-path"]
+      );
+    }
+  }, [startSlideshow]);
+
+  const textTrueBBoxIds = useMemo(
+    () => getTextTrueBBox(TEXT_ID),
+    [startSlideshow]
   );
 
-  const [source2, setSource2] = useState<Coordinates>({ x: 0, y: 0 });
-  const source2Ref = useRef<HTMLDivElement | null>(null);
-
-  const resizeObserver2 = new ResizeObserver((mutation) => {
-    const rect = source2Ref.current?.getBoundingClientRect();
-    const x = (rect?.x || 0) + (rect?.width || 0) / 2;
-    const y = (rect?.y || 0) + (rect?.height || 0);
-    setSource2({ x, y });
+  const leftmostPath = computePathAround({
+    elementsId: [...textTrueBBoxIds, "Building"],
+    destination: { x: 10, y: window.innerHeight },
+    source: leftmostBubble,
   });
 
-  useEffect(() => {
-    if (source2Ref.current) resizeObserver2.observe(source2Ref.current);
-  }, []);
-
-  const DESIRED_X_2 = 900;
-
-  const path2 = useGoAroundElement(
-    source2,
-    {
+  const rightmostPath = computePathAround({
+    elementsId: [...textTrueBBoxIds, "Building"],
+    destination: {
+      x: (sistemgasHQBBox?.width || 0) - 10,
       y: window.innerHeight,
-      x: -(sistemgasHQStartX || 0) + DESIRED_X_2,
     },
-    Position.Bottom,
-    Position.Top,
-    [TEXT_2_ID, "Building"]
-  );
+    source: rightmostBubble,
+  });
+
+  const FACTOR = 0.68;
 
   return (
-    <>
+    <div style={{ visibility: startSlideshow ? "visible" : "hidden" }}>
+      <GlowingPath
+        reference={leftmostPathElementGlow}
+        pathData={leftmostPath || ""}
+        color="#FE6B7F"
+      />
       <svg
         style={{
           width: "100%",
@@ -163,18 +234,24 @@ const Bubbles = () => {
           position: "absolute",
           top: 0,
           left: 0,
-          zIndex: "1",
+          zIndex: "4",
         }}
       >
         <path
           fill="transparent"
           stroke="#FE6B7F"
-          d={path1}
+          d={leftmostPath}
           strokeWidth={2}
+          ref={leftmostPathElement}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
       </svg>
+      <GlowingPath
+        reference={rightmostPathElementGlow}
+        pathData={rightmostPath || ""}
+        color="#91CEFF"
+      />
       <svg
         style={{
           width: "100%",
@@ -188,8 +265,9 @@ const Bubbles = () => {
         <path
           fill="transparent"
           stroke="#91CEFF"
-          d={path2}
+          d={rightmostPath}
           strokeWidth={2}
+          ref={rightmostPathElement}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
@@ -201,19 +279,21 @@ const Bubbles = () => {
           top: largestArea?.top,
           width: largestArea?.width,
           height: largestArea?.height,
-          zIndex: 100,
+          zIndex: 1,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
         }}
       >
         <div
-          ref={source1Ref}
+          ref={leftmostBubble}
           style={{
-            width: 0.6 * minDimension > 52 ? 52 : 0.6 * minDimension,
-            height: 0.6 * minDimension > 52 ? 52 : 0.6 * minDimension,
+            width: FACTOR * minDimension > 52 ? 52 : FACTOR * minDimension,
+            height: FACTOR * minDimension > 52 ? 52 : FACTOR * minDimension,
             border: "2px solid #FE6B7F",
             backgroundColor: "#FFECEF",
+            filter: `url(#line-glow)`, // Apply the filter to the div
+
             borderRadius: "50%",
           }}
         ></div>
@@ -231,21 +311,24 @@ const Bubbles = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          zIndex: 100,
+          zIndex: 1,
         }}
       >
         <div
-          ref={source2Ref}
+          ref={rightmostBubble}
           style={{
-            width: 0.6 * minDimension > 52 ? 52 : 0.6 * minDimension,
-            height: 0.6 * minDimension > 52 ? 52 : 0.6 * minDimension,
+            width: FACTOR * minDimension > 52 ? 52 : FACTOR * minDimension,
+            height: FACTOR * minDimension > 52 ? 52 : FACTOR * minDimension,
             border: "2px solid #91CEFF",
             backgroundColor: "#F1F8FF",
             borderRadius: "50%",
+            filter: `url(#line-glow)`, // Apply the filter to the div
           }}
-        ></div>
+        >
+          <img src="" alt="" />
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

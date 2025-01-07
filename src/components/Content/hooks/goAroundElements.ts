@@ -25,7 +25,14 @@ export const useGoAroundElement = (
     let prevPath = path;
     obstacleIds.forEach((obstacleId) => {
       const simplePath = simplifyQuadraticPath(prevPath);
-      prevPath = modifySvgPathToAvoidCollisions(simplePath, [obstacleId]);
+      console.log({ simplePath });
+      prevPath = modifySvgPathToAvoidCollisions(
+        simplePath,
+        [obstacleId],
+        16,
+        12,
+        destinationPosition
+      );
     });
 
     setNewPath(prevPath);

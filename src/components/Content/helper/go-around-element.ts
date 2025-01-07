@@ -9,11 +9,29 @@ interface Box {
   bottom: number;
 }
 
+export const formatSmoothPath = (pathData: string) => {
+  return (
+    pathData
+      // Split commands into separate entries
+      .match(/[MLQ][^MLQ]*/g)
+      ?.map((segment) => {
+        const command = segment[0]; // First character is the command
+        const coords = segment.slice(1).trim(); // Extract coordinates
+
+        // Ensure proper formatting with a space between command and coordinates
+        return `${command}${coords.replace(/[\s,]+/g, ",")}`;
+      })
+      .filter((formattedSegment) => !formattedSegment.startsWith("M")) // Remove the M command
+      .join(" ") // Join back into a single string
+      .trim()
+  ); // Remove trailing whitespace
+};
 export function modifySvgPathToAvoidCollisions(
   pathString: string,
   elementIds: string[],
-  padding = 15,
-  borderRadius = 10
+  padding = 16,
+  borderRadius = 12,
+  targetPosition: Position = Position.Top
 ) {
   const parseSvgPoints = (pathData: string) =>
     pathData.match(/[MLZ][^MLZ]*/g)?.map((cmd) => {
@@ -36,24 +54,6 @@ export function modifySvgPathToAvoidCollisions(
   let currentPoint = points[0];
   const endPoint = points[points.length - 1];
   newPathData.push(`M${currentPoint.x},${currentPoint.y}`);
-
-  const formatSmoothPath = (pathData: string) => {
-    return (
-      pathData
-        // Split commands into separate entries
-        .match(/[MLQ][^MLQ]*/g)
-        ?.map((segment) => {
-          const command = segment[0]; // First character is the command
-          const coords = segment.slice(1).trim(); // Extract coordinates
-
-          // Ensure proper formatting with a space between command and coordinates
-          return `${command}${coords.replace(/[\s,]+/g, ",")}`;
-        })
-        .filter((formattedSegment) => !formattedSegment.startsWith("M")) // Remove the M command
-        .join(" ") // Join back into a single string
-        .trim()
-    ); // Remove trailing whitespace
-  };
 
   const findIntersections = (p1: Coordinates, p2: Coordinates, rect: Box) => {
     const paddedRect = {
@@ -275,7 +275,7 @@ export function modifySvgPathToAvoidCollisions(
           sourcePosition: directionLeft[0],
           targetX: endPoint.x,
           targetY: endPoint.y,
-          targetPosition: Position.Top,
+          targetPosition,
           borderRadius: 0,
         });
 

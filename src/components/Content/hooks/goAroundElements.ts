@@ -1,5 +1,5 @@
 import { getSmoothStepPath, Position } from "@xyflow/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { modifySvgPathToAvoidCollisions } from "../helper/go-around-element";
 import { simplifyQuadraticPath } from "../helper/simplify-path";
 import { Coordinates } from "../Scene/Text/helpers/math/coordinates";
@@ -18,6 +18,7 @@ export const useGoAroundElement = (
     targetX: destination.x,
     targetY: destination.y,
     targetPosition: destinationPosition,
+    borderRadius: 12,
   });
   const [newPath, setNewPath] = useState<string | undefined>(undefined);
 
@@ -25,7 +26,6 @@ export const useGoAroundElement = (
     let prevPath = path;
     obstacleIds.forEach((obstacleId) => {
       const simplePath = simplifyQuadraticPath(prevPath);
-      console.log({ simplePath });
       prevPath = modifySvgPathToAvoidCollisions(
         simplePath,
         [obstacleId],
@@ -34,6 +34,8 @@ export const useGoAroundElement = (
         destinationPosition
       );
     });
+
+    console.log({ prevPath });
 
     setNewPath(prevPath);
   }, [path]);

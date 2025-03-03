@@ -59,7 +59,7 @@ const AnimatedBackground: FC<{
           element.setAttribute(
             "style",
             `transform: translate(calc(${-speed / 1.5}*3000px), ${
-              transitionDown ? "calc((1/8)*100vh)" : "0"
+              transitionDown ? "calc(1 / 8 * 100vh)" : "0"
             }) scale(${zoomOut ?? 1})`
           );
         } else if (finished && animationRef.current) {

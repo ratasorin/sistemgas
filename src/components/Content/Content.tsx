@@ -32,7 +32,9 @@ import {
   animateComponentOnHover,
   poppers,
 } from "./helper/animte-component-on-hover";
-import Bubbles from "./elements/bubbles";
+import Bubbles from "./elements/path-connector";
+import { GridPattern } from "./elements/grid-background";
+import { cn } from "lib/utils";
 
 const backgroundAnimations = [
   {
@@ -49,7 +51,7 @@ const backgroundAnimations = [
   },
 
   {
-    baseClassName: content["park-front"],
+    baseClassName: content["road-park-front"],
     speed: 1.2,
     transitionDown: true,
     zoomOut: 0.9,
@@ -342,89 +344,79 @@ const MainScene: FC = () => {
 
   return (
     <>
-      <Header></Header>
-      <Bubbles />
       {loading && <Loading />}
+
       <div
         ref={sceneRef}
-        className="relative overflow-x-hidden overflow-y-hidden flex-1 flex flex-col-reverse z-0 mb-4 mr-4 ml-4 mt-4 bg-gradient-to-t from-cyan-200 to-cyan-50 rounded-md"
+        id="scene-root"
+        className="relative top-0 left-0 h-full overflow-x-hidden overflow-y-auto flex-1 z-0 mb-4 mr-4 ml-4 mt-4 bg-gradient-to-b from-sky-300 to-cyan-200 rounded-md"
       >
+        <Header></Header>
+
+        <div
+          style={{
+            maskImage:
+              "radial-gradient(50% 50% ellipse at 50% 50%, white, transparent)",
+          }}
+          className={cn(
+            "absolute -z-10 top-0 flex h-2/3 w-full left-1/2 -translate-x-1/2 flex-col items-center justify-center overflow-hidden rounded-lg"
+          )}
+        >
+          <GridPattern
+            width={20}
+            height={20}
+            squareFillProbability={0.1}
+            className={cn("skew-y-3")}
+          />
+        </div>
         <Scene
           width={dimensions.width}
           height={dimensions.height}
           imageHeight={imageHeight}
           start={!loading}
         ></Scene>
-        {createPortal(
-          <div
-            onScroll={handleScroll}
-            ref={sistemgasSvgRef}
-            id="sistemgas-hq"
-            className={`${content["sistemgas-hq"]} ${
+        <div
+          onScroll={handleScroll}
+          ref={sistemgasSvgRef}
+          id="sistemgas-hq"
+          className={`${content["sistemgas-hq"]} ${
+            finished
+              ? content["sistemgas-hq-animate-in"]
+              : forceEnd
+              ? content["sistemgas-hq-force-end"]
+              : ""
+          }`}
+        >
+          <EmbedSvg
+            className={`absolute w-full z-10 left-0 translate-x-full h-full flex flex-col justify-end items-center min-w-min ${
               finished
-                ? content["sistemgas-hq-animate-in"]
+                ? content["sistemgas-svg-animate-in"]
                 : forceEnd
-                ? content["sistemgas-hq-force-end"]
+                ? content["sistemgas-svg-force-end"]
                 : ""
             }`}
-          >
-            <EmbedSvg
-              className={`absolute w-full z-10 bottom-0 left-0 translate-x-full h-screen flex flex-col justify-end items-center overflow-x-visible min-w-min ${
-                finished
-                  ? content["sistemgas-svg-animate-in"]
-                  : forceEnd
-                  ? content["sistemgas-svg-force-end"]
-                  : ""
-              }`}
-              svgClassName={`h-[55%] overflow-visible`}
-              elementId={LANDING_PAGE_SISTEMGAS_HQ_SVG_ID}
-              svgName="sistemgas-hq.svg"
-            ></EmbedSvg>
+            svgClassName={`h-[45%] overflow-visible`}
+            elementId={LANDING_PAGE_SISTEMGAS_HQ_SVG_ID}
+            svgName="sistemgas-hq.svg"
+          ></EmbedSvg>
 
-            <EmbedSvg
-              className={`absolute w-full bottom-0 left-0 translate-x-full h-screen flex flex-col justify-end items-center overflow-x-visible min-w-min ${
-                finished
-                  ? content["sistemgas-svg-animate-in"]
-                  : forceEnd
-                  ? content["sistemgas-svg-force-end"]
-                  : ""
-              }`}
-              svgClassName={`h-[55%] overflow-visible`}
-              elementId={LANDING_PAGE_SISTEMGAS_HQ_GLOW_SVG_ID}
-              svgName="sistemgas-hq-glow.svg"
-            ></EmbedSvg>
-          </div>,
-          document.getElementById("root")!
-        )}
-
+          <EmbedSvg
+            className={`absolute w-full left-0 translate-x-full h-full flex flex-col justify-end items-center min-w-min ${
+              finished
+                ? content["sistemgas-svg-animate-in"]
+                : forceEnd
+                ? content["sistemgas-svg-force-end"]
+                : ""
+            }`}
+            svgClassName={`h-[45%] overflow-visible`}
+            elementId={LANDING_PAGE_SISTEMGAS_HQ_GLOW_SVG_ID}
+            svgName="sistemgas-hq-glow.svg"
+          ></EmbedSvg>
+        </div>
         <div ref={elementRef} className={`${content.parallax} z-0 relative`}>
           {backgroundAnimations.map((elem) => (
             <AnimatedBackground {...elem} widthType="--background-svg-width" />
           ))}
-          <div
-            style={{
-              position: "relative",
-              backgroundColor: "#1daa60",
-              height: "20%",
-              top: "80%",
-            }}
-          ></div>
-          <div
-            className={`${content["street-background"]} ${
-              finished
-                ? `${content["transition-down"]}`
-                : forceEnd
-                ? content["force-end"]
-                : ""
-            }`}
-          ></div>
-          <AnimatedBackground
-            baseClassName={content["street"]}
-            speed={2}
-            key={content["street"]}
-            transitionDown={true}
-            widthType="--road-svg-width"
-          />
         </div>
       </div>
     </>

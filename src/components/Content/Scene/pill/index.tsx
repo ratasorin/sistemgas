@@ -4,12 +4,14 @@ import { m, motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { useAnimationState } from "../Car/Car";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import { cn } from "lib/utils";
 
 const ATTRIBUTES = [
   { id: 0, name: "RAPID 🚀", color: "rgb(255, 28, 28)" },
   { id: 1, name: "SUSTENABIL 🌱", color: "rgb(0, 177, 0)" },
   { id: 2, name: "EFICIENT ⌛", color: "rgb(31, 102, 255)" },
-  { id: 3, name: "DE INCREDERE 🤝🏼", color: "rgb(245, 135, 32)" },
+  { id: 3, name: "PROFESIONAL 🤝🏼", color: "rgb(245, 135, 32)" },
 ];
 
 export const pillDimensionsAtom = atom<
@@ -118,8 +120,12 @@ const Pill: FC<{ x: number }> = ({ x }) => {
           width: width === "finished-animation" ? maxWidth : width,
         }}
       >
-        <div className={pill_styles["inner"]} style={{ overflow: "visible" }}>
+        <div
+          className={cn(pill_styles["inner"], "text-sky-950")}
+          style={{ overflow: "visible" }}
+        >
           <motion.span
+            className="text-sky-950"
             style={{
               display: "flex",
               alignItems: "center",
@@ -127,7 +133,10 @@ const Pill: FC<{ x: number }> = ({ x }) => {
               overflow: "visible",
             }}
           >
-            🔥 SISTEMGAS este furnizorul:{" "}
+            <div className="rounded-full bg-sky-300 flex items-center justify-center">
+              <ArrowForwardRoundedIcon className="!text-lg text-sky-950" />
+            </div>
+            Incearca furnizorul:{" "}
             <AnimatePresence mode="wait">
               <motion.span
                 key={attribute.name}
@@ -136,6 +145,7 @@ const Pill: FC<{ x: number }> = ({ x }) => {
                 exit={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.5 }}
                 style={{
+                  marginRight: "12px",
                   color: attribute.color,
                   display: "inline-block",
                   overflow: "visible",
@@ -167,7 +177,16 @@ const Pill: FC<{ x: number }> = ({ x }) => {
             }}
           >
             <div className={pill_styles["inner"]}>
-              <span>🔥 SISTEMGAS este furnizorul: {attr.name}</span>
+              <div className="rounded-full bg-sky-200">
+                <ArrowForwardRoundedIcon className="!text-base" />
+              </div>
+              <span
+                style={{
+                  marginRight: "12px",
+                }}
+              >
+                Incearca furnizorul: {attr.name}
+              </span>
             </div>
           </div>
         );

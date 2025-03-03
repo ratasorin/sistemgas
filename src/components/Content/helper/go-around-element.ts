@@ -153,10 +153,10 @@ export function modifySvgPathToAvoidCollisions(
 
       // Check if the first point avoids the element
       const rect1 = {
-        left: Math.min(firstPoint.x - padding, end.x - padding),
-        right: Math.max(firstPoint.x + padding, end.x + padding),
-        top: Math.min(firstPoint.y - padding, end.y + padding),
-        bottom: Math.max(firstPoint.y + padding, end.y + padding),
+        left: Math.min(firstPoint.x, end.x),
+        right: Math.max(firstPoint.x, end.x),
+        top: Math.min(firstPoint.y, end.y),
+        bottom: Math.max(firstPoint.y, end.y),
       };
 
       // If no intersection, we can safely return the first point
@@ -211,7 +211,9 @@ export function modifySvgPathToAvoidCollisions(
       let collisionDetected = false;
 
       const element = document.getElementById(elementId);
-      if (!element) continue;
+      if (!element) {
+        return pathString;
+      }
 
       const rect = element.getBoundingClientRect();
       const intersections = findIntersections(currentPoint, nextPoint, rect);
@@ -239,6 +241,7 @@ export function modifySvgPathToAvoidCollisions(
           endPoint,
           rect
         );
+        console.log({ deflectionPoints });
 
         deflectionPoints.forEach((point, index) => {
           newPathData.push(`L${point.x},${point.y}`);
@@ -250,6 +253,8 @@ export function modifySvgPathToAvoidCollisions(
         const lastDfPoint = deflectionPoints[dfLength - 1];
         const secondLastDfPoint = deflectionPoints[dfLength - 2];
         let direction;
+
+        console.log({ lastDfPoint, secondLastDfPoint, endPoint });
 
         if (lastDfPoint.x - endPoint.x > 0) directionsToTake.x = Position.Left;
         else directionsToTake.x = Position.Right;
@@ -269,17 +274,34 @@ export function modifySvgPathToAvoidCollisions(
           (v) => v !== direction
         );
 
-        const [smoothPath] = getSmoothStepPath({
-          sourceX: deflectionPoints[deflectionPoints.length - 1].x,
-          sourceY: deflectionPoints[deflectionPoints.length - 1].y,
-          sourcePosition: directionLeft[0],
-          targetX: endPoint.x,
-          targetY: endPoint.y,
-          targetPosition,
-          borderRadius: 0,
-        });
+        let path;
 
-        newPathData.push(formatSmoothPath(simplifyQuadraticPath(smoothPath)));
+        if (
+          (directionLeft[0] === Position.Right ||
+            directionLeft[0] === Position.Left) &&
+          targetPosition === Position.Top
+        ) {
+          const midX = endPoint.x;
+          const midY = lastDfPoint.y;
+
+          path = `M ${lastDfPoint.x},${lastDfPoint.y} 
+                    L ${midX},${midY} 
+                    L ${endPoint.x},${endPoint.y}`;
+        } else {
+          const [smoothPath] = getSmoothStepPath({
+            sourceX: lastDfPoint.x,
+            sourceY: lastDfPoint.y,
+            sourcePosition: directionLeft[0],
+            targetX: endPoint.x,
+            targetY: endPoint.y,
+            targetPosition,
+            borderRadius: 0,
+          });
+          path = smoothPath;
+          console.log({ smoothPath });
+        }
+
+        newPathData.push(formatSmoothPath(simplifyQuadraticPath(path)));
         break;
       }
 

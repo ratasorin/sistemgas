@@ -349,7 +349,7 @@ const MainScene: FC = () => {
       <div
         ref={sceneRef}
         id="scene-root"
-        className="relative top-0 left-0 h-full overflow-x-hidden overflow-y-auto flex-1 z-0 mb-4 mr-4 ml-4 mt-4 bg-gradient-to-b from-sky-300 to-cyan-200 rounded-md"
+        className="relative top-0 left-0 h-full overflow-x-hidden overflow-y-auto flex-1 z-0 mb-4 mr-4 ml-4 mt-4 bg-gradient-to-b from-[#94ddff] to-cyan-200 rounded-md"
       >
         <Header></Header>
 

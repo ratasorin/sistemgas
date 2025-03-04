@@ -170,6 +170,6 @@
   background-position: left bottom;
   transform-origin: bottom center;
   background-repeat: repeat-x;
-  background-size: contain;
+  background-size: auto 100%;
   z-index: 6;
 }

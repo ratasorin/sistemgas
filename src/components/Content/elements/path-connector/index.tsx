@@ -20,7 +20,6 @@ export const useDynamicCoordinates = (
   const updateCoordinates = useCallback(() => {
     if (!elementRef) return;
 
-    console.log({ initialOffset });
 
     const rect = elementRef.getBoundingClientRect();
 
@@ -72,7 +71,6 @@ const PathConnector: React.FC<PathConnectorProps> = ({
   const startCoordinates = useDynamicCoordinates(startRef, startOffset);
   const endCoordinates = useDynamicCoordinates(endRef, endOffset);
 
-  console.log({ startCoordinates, endCoordinates });
 
   const pathData = useGoAroundElement(
     startCoordinates,

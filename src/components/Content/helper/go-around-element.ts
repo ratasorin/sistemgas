@@ -241,7 +241,6 @@ export function modifySvgPathToAvoidCollisions(
           endPoint,
           rect
         );
-        console.log({ deflectionPoints });
 
         deflectionPoints.forEach((point, index) => {
           newPathData.push(`L${point.x},${point.y}`);
@@ -254,7 +253,6 @@ export function modifySvgPathToAvoidCollisions(
         const secondLastDfPoint = deflectionPoints[dfLength - 2];
         let direction;
 
-        console.log({ lastDfPoint, secondLastDfPoint, endPoint });
 
         if (lastDfPoint.x - endPoint.x > 0) directionsToTake.x = Position.Left;
         else directionsToTake.x = Position.Right;
@@ -298,7 +296,6 @@ export function modifySvgPathToAvoidCollisions(
             borderRadius: 0,
           });
           path = smoothPath;
-          console.log({ smoothPath });
         }
 
         newPathData.push(formatSmoothPath(simplifyQuadraticPath(path)));

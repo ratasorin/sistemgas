@@ -23,6 +23,8 @@
     "jotai": "^2.10.0",
     "lucide-react": "^0.477.0",
     "next": "^14.2.5",
+    "ngrok": "^5.0.0-beta.2",
+    "qrcode": "^1.5.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.12.0",

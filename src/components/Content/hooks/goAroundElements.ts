@@ -35,7 +35,6 @@ export const useGoAroundElement = (
       );
     });
 
-    console.log({ prevPath });
 
     setNewPath(prevPath);
   }, [path]);

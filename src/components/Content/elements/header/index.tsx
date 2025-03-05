@@ -14,10 +14,14 @@ import header_styles from "./header.module.css";
 import { Button } from "@mui/material";
 import EmojiScroll from "./emoji-scroll";
 import PathConnector from "../path-connector";
-import { Position } from "@xyflow/react";
 import { createPortal } from "react-dom";
 
 const m4 = 16; //px
+
+interface BubbleInterface {
+  startElement: HTMLElement | null;
+  endOffsetX: number;
+}
 
 const BUBBLE_1 = "BUBBLE_1";
 const BUBBLE_2 = "BUBBLE_2";
@@ -26,6 +30,36 @@ const BUBBLE_4 = "BUBBLE_4";
 const DETAILS_BUTTON_ID = "DETAILS_BUTTON";
 
 const BUILDING_TOP_CLASSNAME = ".cls-57";
+const BUILDING_HQ_ID = "Layer_2";
+
+const getBuildingTop = () => {
+  const svg = document.getElementById(BUILDING_HQ_ID) as unknown as
+    | SVGElement
+    | undefined;
+  const buildingTop = svg?.querySelectorAll(BUILDING_TOP_CLASSNAME)[0];
+
+  return buildingTop;
+};
+
+const getButton = () => {
+  return document.getElementById(DETAILS_BUTTON_ID);
+};
+
+const getBBox = (el?: Element | null | undefined): DOMRect => {
+  return (
+    el?.getBoundingClientRect() || {
+      bottom: 0,
+      height: 0,
+      left: 0,
+      right: 0,
+      top: 0,
+      width: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => "0",
+    }
+  );
+};
 
 const Header = () => {
   const pillDimensions = useAtomValue(pillDimensionsAtom);
@@ -53,43 +87,60 @@ const Header = () => {
   const startSlideshow = useAtomValue(startSlideshowAtom);
 
   const [buildingTop, setBuildingTop] = useState<Element | null>(null);
-  const [bubble1, setBubble1] = useState<HTMLElement | null>(null);
-  const [bubble2, setBubble2] = useState<HTMLElement | null>(null);
+  const [bubbles, setBubbles] = useState<
+    [BubbleInterface, BubbleInterface, BubbleInterface, BubbleInterface]
+  >([
+    { startElement: null, endOffsetX: 0 },
+    { startElement: null, endOffsetX: 0 },
+    { startElement: null, endOffsetX: 0 },
+    { startElement: null, endOffsetX: 0 },
+  ]);
 
   useEffect(() => {
-    setBubble1((bubble) =>
-      bubble ? bubble : document.getElementById(BUBBLE_1)
-    );
-    setBubble2((bubble) =>
-      bubble ? bubble : document.getElementById(BUBBLE_2)
-    );
-
-    const svg = document.getElementById("Layer_2") as unknown as SVGElement;
-    if (svg) {
-      setBuildingTop((buildingTop) =>
-        buildingTop ? buildingTop : svg.querySelectorAll(".cls-57")[0]
-      );
-    }
+    setTimeout(() => {
+      const bubble1 = document.getElementById(BUBBLE_1);
+      const bubble2 = document.getElementById(BUBBLE_2);
+      const bubble3 = document.getElementById(BUBBLE_3);
+      const bubble4 = document.getElementById(BUBBLE_4);
+  
+      const buildingTop = getBuildingTop();
+      setBuildingTop((b) => (b ? b : buildingTop || null));
+  
+      const buildingBBox = getBBox(buildingTop);
+      const buildingStartX = buildingBBox.x;
+      const buildingEndX = buildingStartX + buildingBBox.width;
+  
+      const button = getButton();
+      const buttonBBox = getBBox(button);
+      const buttonStartX = buttonBBox.x;
+      const buttonEndX = buttonBBox.x + buttonBBox.width;
+  
+      const seg1 = buttonStartX - buildingStartX;
+      const seg2 = buildingEndX - buttonEndX;
+  
+      const localAnchor1 =  seg1 / 3;
+      const localAnchor2 = (2 * seg1) / 3;
+  
+      const localAnchor3 = (buttonEndX - buildingStartX) + seg2 / 3;
+      const localAnchor4 = (buttonEndX - buildingStartX) + (2 * seg2) / 3;
+  
+      setBubbles([
+        { endOffsetX: localAnchor1, startElement: bubble1 },
+        { endOffsetX: localAnchor2, startElement: bubble2 },
+        { endOffsetX: localAnchor3, startElement: bubble3 },
+        { endOffsetX: localAnchor4, startElement: bubble4 },
+      ]);  
+    }, 10);
+    
   }, [startSlideshow]);
 
   const startOffset = useMemo(() => {
-    console.log({
-      x: (bubble1?.getBoundingClientRect().width || 0) / 2,
-      y: bubble1?.getBoundingClientRect().height || 0,
-    });
+    const bubbleBBox = getBBox(bubbles[0].startElement);
     return {
-      x: (bubble1?.getBoundingClientRect().width || 0) / 2,
-      y: bubble1?.getBoundingClientRect().height || 0,
+      x: bubbleBBox.width / 2,
+      y: bubbleBBox.height,
     };
-  }, [startSlideshow]);
-
-  const endOffset1 = useMemo(() => {
-    return { x: 20, y: 0 };
-  }, []);
-
-  const endOffset2 = useMemo(() => {
-    return { x: 80, y: 0 };
-  }, []);
+  }, [bubbles]);
 
   return (
     <>
@@ -140,20 +191,11 @@ const Header = () => {
           <h2 className="overflow-visible mb-2 mt-3 bg-clip-text font-bold text-4xl md:text-5xl text-transparent bg-gradient-to-r from-[#1334A1] to-[#264cca]">
             SISTEMGAS
           </h2>
-          <h3
-            id="main-text"
-            className="font-poppins font-bold text-center text-2xl leading-6 md:text-3xl overflow-visible px-4"
-          >
-            <span
-              id="main-text-1"
-              className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-500 to-orange-400"
-            >
+          <h3 className="font-poppins font-bold text-center text-2xl leading-6 md:text-3xl overflow-visible px-4">
+            <span className="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-500 to-orange-400">
               Alternativa
             </span>{" "}
-            <span
-              id="main-text-2"
-              className="overflow-visible bg-clip-text text-transparent bg-gradient-to-tr from-[#3A57B6] to-[#557CFC]"
-            >
+            <span className="overflow-visible bg-clip-text text-transparent bg-gradient-to-tr from-[#3A57B6] to-[#557CFC]">
               in furnizarea gazului natural
             </span>
           </h3>
@@ -168,11 +210,11 @@ const Header = () => {
             {startSlideshow &&
               createPortal(
                 <>
-                  <PathConnector
+                {bubbles.map(b =>                   <PathConnector
                     elementsToDodge={[DETAILS_BUTTON_ID]}
-                    startRef={bubble1}
+                    startRef={b.startElement}
                     endRef={buildingTop}
-                    endOffset={endOffset1}
+                    endOffset={{x: b.endOffsetX, y: 0}}
                     startOffset={startOffset}
                     strokeWidth={2}
                     gradient={{
@@ -191,31 +233,7 @@ const Header = () => {
                         </linearGradient>
                       ),
                     }}
-                  ></PathConnector>
-                  <PathConnector
-                    elementsToDodge={[DETAILS_BUTTON_ID]}
-                    startRef={bubble2}
-                    endRef={buildingTop}
-                    endOffset={endOffset2}
-                    startOffset={startOffset}
-                    strokeWidth={2}
-                    gradient={{
-                      id: "customGradient",
-                      defs: (
-                        <linearGradient
-                          id="customGradient"
-                          x1="0%"
-                          y1="0%"
-                          x2="0%"
-                          y2="100%"
-                        >
-                          <stop offset="0%" stopColor="#95A9E300" />
-                          <stop offset="50%" stopColor="#91A3E1" />
-                          <stop offset="100%" stopColor="#637BCD" />
-                        </linearGradient>
-                      ),
-                    }}
-                  ></PathConnector>
+                  ></PathConnector>)}
                 </>,
                 document.getElementById("root")!
               )}

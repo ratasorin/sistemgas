@@ -16,15 +16,11 @@ import {
   LANDING_PAGE_SISTEMGAS_HQ_SVG_ID,
   LANDING_PAGE_TRUCKS_SVG_ID,
 } from "constant";
-import { shouldExit, updateLastElementHovered } from "lib/debounce-hover";
+import { updateLastElementHovered } from "lib/debounce-hover";
 import "tippy.js/animations/scale.css";
-import { IoPlaySkipForward } from "react-icons/io5";
 import WebFont from "webfontloader";
-import { createPortal } from "react-dom";
 import { scrollElementBy } from "lib/scroll-smooth";
-import { Button, styled } from "@mui/material";
-import { atom, useAtomValue, useSetAtom } from "jotai";
-import { pillDimensionsAtom } from "./Scene/pill";
+import { atom, useSetAtom } from "jotai";
 import Loading from "./elements/loading";
 import Header from "./elements/header";
 import {
@@ -32,7 +28,6 @@ import {
   animateComponentOnHover,
   poppers,
 } from "./helper/animte-component-on-hover";
-import Bubbles from "./elements/path-connector";
 import { GridPattern } from "./elements/grid-background";
 import { cn } from "lib/utils";
 

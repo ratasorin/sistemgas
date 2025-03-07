@@ -1,14 +1,13 @@
 import { useState, useRef, useEffect, FC, useMemo } from "react";
 import content from "./content.module.css";
 import Scene from "./Scene/Scene";
-import AnimatedBackground, {
-  END_TRANSITION_DURATION,
-} from "./helper/animated-background";
+import AnimatedBackground from "./helper/animated-background";
 import { useAnimationState, useImageLoaded } from "./Scene/Car/Car";
 import EmbedSvg, { useSvg } from "lib/embed-svg";
 import { rotateElementAroundAnchorPoint } from "lib/rotate-svg";
 import tippy, { DelegateInstance, Props } from "tippy.js";
 import {
+  END_TRANSITION_DURATION,
   LANDING_PAGE_BUILDING_SVG_ID,
   LANDING_PAGE_EMPLOYEE_SVG_ID,
   LANDING_PAGE_GAS_TANK_SVG_ID,

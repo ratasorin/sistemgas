@@ -1,3 +1,9 @@
 {
+  "tailwindCSS.experimental.classRegex": [
+    ["svgClassName\\s*=\\s*['\"]([^'\"]*)['\"]", "svgClassName"]
+  ],
+  "editor.quickSuggestions": {
+    "strings": true
+  },
   "cSpell.words": ["millis", "SERVICII", "Sistemga", "sistemgas"]
 }

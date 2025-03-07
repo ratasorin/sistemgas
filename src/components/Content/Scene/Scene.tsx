@@ -1,18 +1,19 @@
 import {
+  END_TRANSITION_DURATION,
   GRAPHICS_CONTAINER_ID,
   PILL_PLACEHOLDER_ID,
   screens,
-  TEXT_RENDERED_DIV_ID
+  TEXT_RENDERED_DIV_ID,
 } from "constant";
 import { gsap } from "gsap";
 import { useSetAtom } from "jotai";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { END_TRANSITION_DURATION } from "../helper/animated-background";
 import Canvas from "./Canvas/Canvas";
 import CarRender, { useAnimationState } from "./Car/Car";
 import Pill, { startSlideshowAtom } from "./pill";
 import scene_styles from "./styles.module.css";
 import { Positions } from "./Text/helpers/math/coordinates";
+import EmbedSvg from "lib/embed-svg";
 
 export interface Render {
   render: () => void;
@@ -98,7 +99,6 @@ const handleForceEnd = (
   }, 50);
 };
 
-
 /**
  * Handle the pill placement and animation when the car exits the canvas
  * @param announceSlideshowStart *function* - A method to announce all other components (like the pipes and grid background) they can enter the screen
@@ -110,9 +110,7 @@ const animatePillOnFinish = (
 ) => {
   requestAnimationFrame(() => {
     const textRendererDiv = getTextRendererDiv();
-    const graphicsContainer = document.getElementById(
-      GRAPHICS_CONTAINER_ID
-    );
+    const graphicsContainer = document.getElementById(GRAPHICS_CONTAINER_ID);
 
     if (!graphicsContainer || !textRendererDiv) return;
 
@@ -143,7 +141,7 @@ const animatePillOnFinish = (
         .then(() =>
           // set a timeout because the BuildingHQ takes END_TRANSITION_DURATION / 4 (ms) to animate in
           setTimeout(
-            announceSlideshowStart(),
+            () => announceSlideshowStart(),
             END_TRANSITION_DURATION / 4
           )
         );
@@ -153,7 +151,7 @@ const animatePillOnFinish = (
       }px`;
     }
   });
-}
+};
 
 const Scene: FC<{
   width: number;
@@ -190,7 +188,7 @@ const Scene: FC<{
   }, [images, width, height]);
 
   const setStartSlideshow = useSetAtom(startSlideshowAtom);
-  const canvasTextIsFront = useRef(false)
+  const canvasTextIsFront = useRef(false);
 
   /**
    * Handle pill placement on forceEnd or car regular exit (finish)
@@ -234,21 +232,13 @@ const Scene: FC<{
       >
         <Pill x={x} />
       </div>
-      <div
-        id="car__renderer"
-        className="absolute bottom-0 w-full h-full z-20 overflow-hidden"
-      >
-        <Canvas
-          width={carCanvasDimensions.width}
-          height={carCanvasDimensions.height}
-          render={carRenderer}
-          start={start}
-          style={{
-            position: "absolute",
-            bottom: 0,
-            transform: "translateY(calc(-1/11*100vh))",
-          }}
-        ></Canvas>
+      <div className="absolute bottom-0 w-full h-full z-20 overflow-hidden">
+        <EmbedSvg
+          svgName="gas_truck.svg"
+          elementId="gastruck"
+          className="h-1/2"
+          svgClassName=""
+        ></EmbedSvg>
       </div>
     </div>
   );

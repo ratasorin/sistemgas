@@ -32,3 +32,4 @@ export const fonts = {
 export const TEXT_RENDERED_DIV_ID = "text__renderer";
 export const GRAPHICS_CONTAINER_ID = "main-text-and-button";
 export const PILL_PLACEHOLDER_ID = "pill-placeholder-scroll";
+export const END_TRANSITION_DURATION = 1500;

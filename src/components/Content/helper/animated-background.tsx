@@ -1,7 +1,6 @@
 import { FC, useMemo, useRef, useState } from "react";
 import { useAnimationState } from "../Scene/Car/Car";
-
-export const END_TRANSITION_DURATION = 1500;
+import { END_TRANSITION_DURATION } from "constant";
 
 const AnimatedBackground: FC<{
   baseClassName: string;

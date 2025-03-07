@@ -124,6 +124,7 @@ const Header = () => {
       const localAnchor3 = (buttonEndX - buildingStartX) + seg2 / 3;
       const localAnchor4 = (buttonEndX - buildingStartX) + (2 * seg2) / 3;
   
+      console.log("COMPUTE BUBBLES NOW!")
       setBubbles([
         { endOffsetX: localAnchor1, startElement: bubble1 },
         { endOffsetX: localAnchor2, startElement: bubble2 },

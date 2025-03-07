@@ -1,6 +1,10 @@
 {
-  "tailwindCSS.experimental.classRegex": [
-    ["svgClassName\\s*=\\s*['\"]([^'\"]*)['\"]", "svgClassName"]
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "ngClass",
+    "class:list",
+    "svgClassName"
   ],
   "editor.quickSuggestions": {
     "strings": true

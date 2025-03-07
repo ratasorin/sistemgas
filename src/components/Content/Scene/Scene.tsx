@@ -8,7 +8,6 @@ import {
 import { gsap } from "gsap";
 import { useSetAtom } from "jotai";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
-import Canvas from "./Canvas/Canvas";
 import CarRender, { useAnimationState } from "./Car/Car";
 import Pill, { startSlideshowAtom } from "./pill";
 import scene_styles from "./styles.module.css";
@@ -33,16 +32,6 @@ const getResponsiveCarVelocity = (screenWidth: number) => {
   if (screenWidth < screens["sm"]) speed = speed - 0.4;
 
   return speed;
-};
-
-const getResponsiveHeightFactor = (screenWidth: number) => {
-  let heightFactor = 0.6;
-  if (screenWidth < screens["xl"]) heightFactor = 0.55;
-  if (screenWidth < screens["lg"]) heightFactor = 0.5;
-  if (screenWidth < screens["md"]) heightFactor = 0.45;
-  if (screenWidth < screens["sm"]) heightFactor = 0.4;
-
-  return heightFactor;
 };
 
 const getTextRendererDiv = () => document.getElementById(TEXT_RENDERED_DIV_ID);
@@ -165,27 +154,12 @@ const Scene: FC<{
     return getResponsiveCarVelocity(width);
   }, [width]);
 
-  const heightFactor = useMemo(() => {
-    return getResponsiveHeightFactor(width);
-  }, [width]);
-
-  const images = useMemo(() => {
-    const gasTruck = new Image() as HTMLImageElement;
-    gasTruck.src = "/gas_truck.svg";
-    return { gasTruck };
-  }, []);
-
   const carRenderer = useMemo(() => {
-    if (images.gasTruck)
-      return new CarRender(images.gasTruck, carVelocity, heightFactor);
-  }, [images.gasTruck, carVelocity, heightFactor]);
-
-  const carCanvasDimensions = useMemo(() => {
-    const ratio = (0.4 * height) / images.gasTruck.height;
-    const width = ratio * images.gasTruck.width;
-
-    return { width, height: 0.4 * height };
-  }, [images, width, height]);
+    const carElement = document.getElementById("GAS_TRUCK_CONTAINER");
+    console.log({ carElement });
+    if (carVelocity && carElement)
+      return new CarRender(carElement, carVelocity);
+  }, [carVelocity]);
 
   const setStartSlideshow = useSetAtom(startSlideshowAtom);
   const canvasTextIsFront = useRef(false);
@@ -207,23 +181,26 @@ const Scene: FC<{
 
   useEffect(() => {
     let id: number | undefined = undefined;
-    const callback = () => {
-      if (carRenderer?.ended) {
-        if (id) window.cancelAnimationFrame(id);
-        return;
-      }
-      setX((carRenderer?.car?.position || 0) - 200);
-      id = window.requestAnimationFrame(callback);
-    };
 
-    id = window.requestAnimationFrame(callback);
+    setTimeout(() => {
+      carRenderer?.start();
+      const callback = () => {
+        if (carRenderer?.ended) {
+          if (id) window.cancelAnimationFrame(id);
+          return;
+        }
+        setX((carRenderer?.car?.position || 0) - 200);
+        id = window.requestAnimationFrame(callback);
+      };
+
+      id = window.requestAnimationFrame(callback);
+    }, 1000);
 
     return () => {
       if (id) window.cancelAnimationFrame(id);
     };
   }, [setX, carRenderer]);
 
-  if (!carRenderer) return null;
   return (
     <div className="absolute bottom-0 w-full h-full overflow-hidden z-10">
       <div
@@ -232,12 +209,12 @@ const Scene: FC<{
       >
         <Pill x={x} />
       </div>
-      <div className="absolute bottom-0 w-full h-full z-20 overflow-hidden">
+      <div className="absolute bottom-0 w-full h-full z-20 overflow-hidden flex items-end -translate-y-16">
         <EmbedSvg
           svgName="gas_truck.svg"
-          elementId="gastruck"
-          className="h-1/2"
-          svgClassName=""
+          elementId="GAS_TRUCK_CONTAINER"
+          className="h-1/3 -translate-x-full overflow-visible"
+          svgClassName="relative h-full"
         ></EmbedSvg>
       </div>
     </div>

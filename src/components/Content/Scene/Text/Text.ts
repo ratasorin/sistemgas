@@ -1,4 +1,4 @@
-import { getCanvasDimensions } from "../Canvas/helper/canvas-dimensions";
+import { getCanvasDimensions } from "../Canvas/helper/element-dimensions";
 import { fitCarInsideCanvas } from "../Car/Car";
 import { Render } from "../Scene";
 import {

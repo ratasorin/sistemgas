@@ -30,7 +30,6 @@ const EmbedSvg: FC<{
   const svgCreated = useRef(false);
   const { setSvg } = useSvgStore();
   const element = useRef<HTMLDivElement | null>(null);
-  const { finished, forceEnd } = useAnimationState();
 
   const getSVG = useCallback(async () => {
     const svg = fetch(svgName).then((response) =>
@@ -59,7 +58,8 @@ const EmbedSvg: FC<{
         }
       });
     }
-  });
+  }, []);
+
   return <div ref={element} className={className} id={elementId}></div>;
 };
 

@@ -6,8 +6,8 @@ import {
   TEXT_RENDERED_DIV_ID,
 } from "constant";
 import { gsap } from "gsap";
-import { useSetAtom } from "jotai";
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CarRender, { useAnimationState } from "./Car/Car";
 import Pill, { startSlideshowAtom } from "./pill";
 import scene_styles from "./styles.module.css";
@@ -147,19 +147,24 @@ const Scene: FC<{
   height: number;
   imageHeight: number;
   start: boolean;
-}> = ({ width, height, imageHeight, start }) => {
+}> = ({ width, height, imageHeight }) => {
   const { finished, forceEnd } = useAnimationState();
 
   const carVelocity = useMemo(() => {
     return getResponsiveCarVelocity(width);
   }, [width]);
 
+  const [carLoaded, setCarLoaded] = useState(false);
+
+  const notifyCarLoaded = useCallback(() => setCarLoaded(true), [setCarLoaded]);
   const carRenderer = useMemo(() => {
+    if (!carLoaded || finished || forceEnd) return null;
+
     const carElement = document.getElementById("GAS_TRUCK_CONTAINER");
-    console.log({ carElement });
+
     if (carVelocity && carElement)
       return new CarRender(carElement, carVelocity);
-  }, [carVelocity]);
+  }, [carVelocity, carLoaded]);
 
   const setStartSlideshow = useSetAtom(startSlideshowAtom);
   const canvasTextIsFront = useRef(false);
@@ -182,24 +187,33 @@ const Scene: FC<{
   useEffect(() => {
     let id: number | undefined = undefined;
 
-    setTimeout(() => {
-      carRenderer?.start();
+    if(forceEnd) {
+      if (id) window.cancelAnimationFrame(id);
+      carRenderer?.remove();
+      carRenderer?.end();
+    }
+
+    if (carRenderer && !id) {
+      carRenderer.start();
       const callback = () => {
         if (carRenderer?.ended) {
           if (id) window.cancelAnimationFrame(id);
           return;
         }
-        setX((carRenderer?.car?.position || 0) - 200);
+        carRenderer.update();
+        carRenderer.render();
+        setX((carRenderer?.car?.position || 0) - 400);
         id = window.requestAnimationFrame(callback);
       };
 
       id = window.requestAnimationFrame(callback);
-    }, 1000);
-
+    }
     return () => {
       if (id) window.cancelAnimationFrame(id);
+      carRenderer?.remove();
     };
-  }, [setX, carRenderer]);
+  }, [carRenderer, forceEnd]);
+
 
   return (
     <div className="absolute bottom-0 w-full h-full overflow-hidden z-10">
@@ -209,12 +223,13 @@ const Scene: FC<{
       >
         <Pill x={x} />
       </div>
-      <div className="absolute bottom-0 w-full h-full z-20 overflow-hidden flex items-end -translate-y-16">
+      <div className="absolute bottom-0 w-full h-full z-20 overflow-hidden flex items-end -translate-y-[84px]">
         <EmbedSvg
           svgName="gas_truck.svg"
           elementId="GAS_TRUCK_CONTAINER"
-          className="h-1/3 -translate-x-full overflow-visible"
-          svgClassName="relative h-full"
+          className="h-[40%] -translate-x-full overflow-visible"
+          svgClassName="relative h-full -translate-x-full"
+          notifySvgLoaded={notifyCarLoaded}
         ></EmbedSvg>
       </div>
     </div>

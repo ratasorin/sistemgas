@@ -29,8 +29,15 @@ const BUBBLE_3 = "BUBBLE_3";
 const BUBBLE_4 = "BUBBLE_4";
 const DETAILS_BUTTON_ID = "DETAILS_BUTTON";
 
-const BUILDING_TOP_CLASSNAME = ".cls-57";
-const BUILDING_HQ_ID = "Layer_2";
+const BUBBLE_SVG = {
+  [BUBBLE_1]: "rocket.svg",
+  [BUBBLE_2]: "hourglass.svg",
+  [BUBBLE_3]: "seedling.svg",
+  [BUBBLE_4]: "handshake.svg",
+};
+
+export const BUILDING_TOP_CLASSNAME = ".cls-57";
+export const BUILDING_HQ_ID = "Layer_2";
 
 const getBuildingTop = () => {
   const svg = document.getElementById(BUILDING_HQ_ID) as unknown as
@@ -96,44 +103,55 @@ const Header = () => {
     { startElement: null, endOffsetX: 0 },
   ]);
 
+  const [expandPipes, setExpandPipes] = useState(false);
+
   useEffect(() => {
+    if(startSlideshow) {
+      const bubblesConatiner = document.getElementById("bubbles");
+      bubblesConatiner?.classList.add(header_styles["expand-bubbles"]);
+      setTimeout(() => {
+        setExpandPipes(true);
+      }, 1000);
+    }
+  }, [startSlideshow])
+
+  useEffect(() => {
+    if(!expandPipes) return;
     setTimeout(() => {
       const bubble1 = document.getElementById(BUBBLE_1);
       const bubble2 = document.getElementById(BUBBLE_2);
       const bubble3 = document.getElementById(BUBBLE_3);
       const bubble4 = document.getElementById(BUBBLE_4);
-  
+
       const buildingTop = getBuildingTop();
       setBuildingTop((b) => (b ? b : buildingTop || null));
-  
+
       const buildingBBox = getBBox(buildingTop);
       const buildingStartX = buildingBBox.x;
       const buildingEndX = buildingStartX + buildingBBox.width;
-  
+
       const button = getButton();
       const buttonBBox = getBBox(button);
       const buttonStartX = buttonBBox.x;
       const buttonEndX = buttonBBox.x + buttonBBox.width;
-  
+
       const seg1 = buttonStartX - buildingStartX;
       const seg2 = buildingEndX - buttonEndX;
-  
-      const localAnchor1 =  seg1 / 3;
+
+      const localAnchor1 = seg1 / 3;
       const localAnchor2 = (2 * seg1) / 3;
-  
-      const localAnchor3 = (buttonEndX - buildingStartX) + seg2 / 3;
-      const localAnchor4 = (buttonEndX - buildingStartX) + (2 * seg2) / 3;
-  
-      console.log("COMPUTE BUBBLES NOW!")
+
+      const localAnchor3 = buttonEndX - buildingStartX + seg2 / 3;
+      const localAnchor4 = buttonEndX - buildingStartX + (2 * seg2) / 3;
+
       setBubbles([
         { endOffsetX: localAnchor1, startElement: bubble1 },
         { endOffsetX: localAnchor2, startElement: bubble2 },
         { endOffsetX: localAnchor3, startElement: bubble3 },
         { endOffsetX: localAnchor4, startElement: bubble4 },
-      ]);  
+      ]);
     }, 10);
-    
-  }, [startSlideshow]);
+  }, [expandPipes]);
 
   const startOffset = useMemo(() => {
     const bubbleBBox = getBBox(bubbles[0].startElement);
@@ -146,7 +164,7 @@ const Header = () => {
   return (
     <>
       <div
-        className="absolute z-10 top-[72px] overflow-visible h-[calc(65%-72px)] flex flex-col w-full"
+        className="absolute z-20 top-[72px] overflow-visible h-[calc(65%-72px)] flex flex-col w-full"
         style={{
           justifyContent: "flex-start",
           paddingBottom: !largestPillFitsScreenWidth
@@ -203,59 +221,79 @@ const Header = () => {
         </div>
 
         <div className="w-full flex-1 px-2 flex items-center flex-col">
-          <div className="h-1/2 w-full max-w-sm flex justify-evenly items-center pt-6 overflow-visible">
-            <div
-              id={BUBBLE_1}
-              className="w-10 h-10 mt-6 rounded-full bg-[#D9E2FE]"
-            ></div>
+          <div className="h-0 w-full max-w-sm flex justify-evenly items-center mb-2 overflow-hidden" id = "bubbles">
+            {([BUBBLE_1, BUBBLE_2, BUBBLE_3, BUBBLE_4] as const).map((id) => (
+              <div
+                id={id}
+                style={{
+                  marginBottom: [BUBBLE_2, BUBBLE_3].includes(id)
+                    ? "2rem"
+                    : "0",
+                  marginTop: [BUBBLE_1, BUBBLE_4].includes(id) ? "2rem" : "0",
+                }}
+                className="w-12 h-12 mt-6 rounded-full bg-[#D9E2FE] border-2 border-[#91A3E1] flex items-center justify-center p-2"
+              >
+                <img src={`/emojis/${BUBBLE_SVG[id]}`} alt="" />
+              </div>
+            ))}
+
             {startSlideshow &&
               createPortal(
                 <>
-                {bubbles.map(b =>                   <PathConnector
-                    elementsToDodge={[DETAILS_BUTTON_ID]}
-                    startRef={b.startElement}
-                    endRef={buildingTop}
-                    endOffset={{x: b.endOffsetX, y: 0}}
-                    startOffset={startOffset}
-                    strokeWidth={2}
-                    gradient={{
-                      id: "customGradient",
-                      defs: (
-                        <linearGradient
-                          id="customGradient"
-                          x1="0%"
-                          y1="0%"
-                          x2="0%"
-                          y2="100%"
-                        >
-                          <stop offset="0%" stopColor="#95A9E300" />
-                          <stop offset="50%" stopColor="#91A3E1" />
-                          <stop offset="100%" stopColor="#637BCD" />
-                        </linearGradient>
-                      ),
-                    }}
-                  ></PathConnector>)}
+                  {bubbles.map((b) => (
+                    <PathConnector
+                      elementsToDodge={[DETAILS_BUTTON_ID]}
+                      startRef={b.startElement}
+                      endRef={buildingTop}
+                      endOffset={{ x: b.endOffsetX, y: 0 }}
+                      startOffset={startOffset}
+                      strokeWidth={2}
+                      gradient={{
+                        id: "customGradient",
+                        defs: (
+                          <linearGradient
+                            id="customGradient"
+                            x1="0%"
+                            y1="0%"
+                            x2="0%"
+                            y2="100%"
+                          >
+                            <stop offset="0%" stopColor="#95A9E300" />
+                            <stop offset="50%" stopColor="#91A3E1" />
+                            <stop offset="100%" stopColor="#637BCD" />
+                          </linearGradient>
+                        ),
+                      }}
+                    ></PathConnector>
+                  ))}
                 </>,
                 document.getElementById("root")!
               )}
-            <div
-              id={BUBBLE_2}
-              className="w-10 h-10 rounded-full bg-[#D9E2FE]"
-            ></div>
-            <div
-              id={BUBBLE_3}
-              className="w-10 h-10 rounded-full bg-[#D9E2FE]"
-            ></div>
-            <div
-              id={BUBBLE_4}
-              className="w-10 h-10 mt-6 rounded-full bg-[#D9E2FE]"
-            ></div>
           </div>
-          <div className="h-1/2 flex items-center justify-center py-4">
+          <div className="h-1/2 flex items-start justify-center py-4 !overflow-visible">
             <Button
               variant="contained"
               id={DETAILS_BUTTON_ID}
-              className="font-poppins !font-semibold !rounded-lg !px-4 !py-1 !bg-gradient-to-r from-[#3862ee] to-[#1334a0]"
+              className="font-poppins !font-semibold !rounded-lg !px-4 !py-1 !shadow-none !overflow-visible"
+              style={{
+                background:
+                  "linear-gradient(to bottom, #afbde7 -30%, #1334A1 150%)",
+              }}
+              sx={{
+                "::before": {
+                  overflow: "visible",
+                  content: '""',
+                  position: "absolute",
+                  top: "-2px",
+                  left: "-2px",
+                  width: "calc(100% + 4px)",
+                  height: "calc(100% + 4px)",
+                  borderRadius: "0.50rem",
+                  background:
+                    "linear-gradient(to bottom, #9DB0EF -20%, #1334A1 120%)",
+                  zIndex: -1,
+                },
+              }}
             >
               VEZI DETALII
             </Button>

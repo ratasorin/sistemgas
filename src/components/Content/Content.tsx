@@ -21,7 +21,7 @@ import WebFont from "webfontloader";
 import { scrollElementBy } from "lib/scroll-smooth";
 import { atom, useSetAtom } from "jotai";
 import Loading from "./elements/loading";
-import Header from "./elements/header";
+import Header, { BUILDING_TOP_CLASSNAME } from "./elements/header";
 import {
   actions,
   animateComponentOnHover,
@@ -283,11 +283,21 @@ const MainScene: FC = () => {
   const sistemgasSvgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+
     if (sistemgasSvgRef.current && finished) {
+      const svg = document.getElementById(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
+      if(!svg) return;
+      const buildingTop = svg.querySelector(BUILDING_TOP_CLASSNAME);
+
+      if(!buildingTop) return;
+
+      const boundingBox = buildingTop.getBoundingClientRect();
+      const sistemgasSvgContainer = document.querySelector(".sistemgas-hq-svg");
+      const buildingTopCenter = boundingBox.left + boundingBox.width / 2 - (sistemgasSvgContainer?.getBoundingClientRect()?.left || 0);
+      const deltaXForMiddle = buildingTopCenter - window.innerWidth / 2 - 92;
       scrollElementBy(
         sistemgasSvgRef.current,
-        sistemgasSvgRef.current.children[0].scrollWidth / 2 -
-          window.innerWidth / 2,
+        deltaXForMiddle,  
         END_TRANSITION_DURATION / 4
       );
 
@@ -295,11 +305,25 @@ const MainScene: FC = () => {
         sistemgasSvgRef.current!.style.overflowX = "scroll";
       }, END_TRANSITION_DURATION / 4);
     } else if (sistemgasSvgRef.current && forceEnd) {
-      sistemgasSvgRef.current.scrollLeft =
-        sistemgasSvgRef.current.children[0].scrollWidth / 2 -
-        window.innerWidth / 2 +
-        35;
       sistemgasSvgRef.current.style.overflowX = "scroll";
+      const svg = document.getElementById(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
+      if (svg) {
+
+        const buildingTop = svg.querySelector(BUILDING_TOP_CLASSNAME);
+        if (buildingTop) {
+          requestAnimationFrame(() => {
+            const boundingBox = buildingTop.getBoundingClientRect();
+
+            // Find the current center of the building relative to the viewport
+            const buildingTopCenter = boundingBox.left + boundingBox.width / 2;
+            const deltaXForMiddle = buildingTopCenter - window.innerWidth / 2  - 64;
+
+            // Calculate the required translation to center the building
+            const translateX = deltaXForMiddle;
+            sistemgasSvgRef.current!.scrollLeft = translateX;
+          });
+        }
+      }
     }
   }, [finished, forceEnd]);
 
@@ -382,7 +406,7 @@ const MainScene: FC = () => {
           }`}
         >
           <EmbedSvg
-            className={`absolute w-full z-10 left-0 translate-x-full h-full flex flex-col justify-end items-center min-w-min ${
+            className={`sistemgas-hq-svg absolute w-full z-10 left-0 translate-x-full h-full flex flex-col justify-end items-center min-w-min ${
               finished
                 ? content["sistemgas-svg-animate-in"]
                 : forceEnd
@@ -395,7 +419,7 @@ const MainScene: FC = () => {
           ></EmbedSvg>
 
           <EmbedSvg
-            className={`absolute w-full left-0 translate-x-full h-full flex flex-col justify-end items-center min-w-min ${
+            className={`sistemgas-hq-svg absolute w-full left-0 translate-x-full h-full flex flex-col justify-end items-center min-w-min ${
               finished
                 ? content["sistemgas-svg-animate-in"]
                 : forceEnd

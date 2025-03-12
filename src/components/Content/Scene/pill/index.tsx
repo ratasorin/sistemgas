@@ -61,6 +61,7 @@ const Pill: FC<{ x: number }> = ({ x }) => {
 
     if (!referencePillBoundingBox) return;
 
+
     if (x < referencePillBoundingBox.left) {
       setWidth(0);
       return;
@@ -133,7 +134,7 @@ const Pill: FC<{ x: number }> = ({ x }) => {
               overflow: "visible",
             }}
           >
-            <div className="rounded-full bg-sky-300 flex items-center justify-center">
+            <div className="rounded-full bg-sky-100 flex items-center justify-center">
               <ArrowForwardRoundedIcon className="!text-lg text-sky-950" />
             </div>
             Incearca furnizorul:{" "}
@@ -177,7 +178,7 @@ const Pill: FC<{ x: number }> = ({ x }) => {
             }}
           >
             <div className={pill_styles["inner"]}>
-              <div className="rounded-full bg-sky-200">
+              <div className="rounded-full">
                 <ArrowForwardRoundedIcon className="!text-base" />
               </div>
               <span

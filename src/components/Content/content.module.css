@@ -61,10 +61,6 @@
   filter: drop-shadow(0 0 10 black);
 }
 
-.sistemgas-svg-force-end {
-  transform: translate(0);
-}
-
 .sistemgas-hq-force-end {
   transform: translateY(calc(1 / 8 * 100vh)) scale(1.2);
 }
@@ -83,6 +79,14 @@
     transform: translateY(calc(1 / 8 * 100vh)) scale(1.2);
   }
 }
+
+
+.sistemgas-svg-force-end {
+  position: absolute;
+  transform: translateX(0);
+  overflow-x: visible !important;
+}
+
 
 .sistemgas-svg-animate-in {
   position: absolute;

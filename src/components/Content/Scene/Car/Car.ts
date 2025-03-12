@@ -1,4 +1,3 @@
-import { getElementDimensions } from "../Canvas/helper/element-dimensions";
 import { create } from "zustand";
 
 export const useAnimationState = create<{
@@ -14,12 +13,13 @@ export const useImageLoaded = create<{ imageLoaded: boolean }>((set) => ({
 }));
 
 class Car {
-  position: number = -300;
+  position: number = 0;
   velocity: number = 0;
   width: number;
   constructor(width: number, velocity: number) {
     this.width = width;
     this.velocity = velocity;
+    this.position = -200;
   }
   update() {
     this.position += this.velocity;
@@ -30,7 +30,6 @@ export default class CarRender {
   carElement: HTMLElement | undefined;
   context: CanvasRenderingContext2D | undefined;
   car: Car | undefined;
-  heightFactor: number = 0;
   carVelocity: number = 0;
   ended: boolean = false;
 
@@ -42,38 +41,41 @@ export default class CarRender {
 
   start() {
     this.car = new Car(this.carElement?.clientWidth || 0, this.carVelocity);
-
-    console.log("START?");
-
     useImageLoaded.setState(() => ({ imageLoaded: true }));
-
     this.render();
   }
 
   end() {
-    if (!this.context || !this.carElement) {
+    if (!this.carElement) {
       this.ended = true;
       return;
     }
     this.ended = true;
   }
 
+  remove() {
+    if (!this.carElement) return;
+    this.carElement.style.transform = `translateX(-100%)`;
+  }
+
   update() {
     if (this.ended) {
       console.error("YOU SHOULDN'T UPDATE AFTER END WAS TRIGGERED");
-      return;
+      return 0;
     }
-    if (!this.carElement || !this.context || !this.car) return;
+    if (!this.carElement || !this.car) return 0;
 
     if (
       this.car.position <=
-      getElementDimensions(this.carElement).width + window.innerWidth
+      this.carElement.getBoundingClientRect().width + window.innerWidth
     ) {
       this.car.update();
     } else {
       useAnimationState.setState(() => ({ finished: true }));
       this.end();
     }
+
+    return this.car.position;
   }
 
   render() {
@@ -82,8 +84,9 @@ export default class CarRender {
       /translateX\([^)]+\)\s*/g,
       ""
     );
+
     this.carElement.style.transform = `translateX(${
-      -getElementDimensions(this.carElement).width + this.car.position
+      this.car.position
     }px) ${otherTransforms}`;
   }
 }

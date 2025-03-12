@@ -1,4 +1,5 @@
 import { useAnimationState } from "components/Content/Scene/Car/Car";
+import { atom, useSetAtom } from "jotai";
 import { FC, useCallback, useEffect, useRef } from "react";
 import { create } from "zustand";
 
@@ -21,16 +22,18 @@ export const useSvg = (elementId: string) => {
   return svgCollection[elementId];
 };
 
+
 const EmbedSvg: FC<{
   className?: string;
   svgClassName?: string;
   elementId: string;
   svgName: string;
-}> = ({ elementId, svgName, className, svgClassName }) => {
+  notifySvgLoaded?: () => void;
+}> = ({ elementId, svgName, className, svgClassName, notifySvgLoaded }) => {
   const svgCreated = useRef(false);
   const { setSvg } = useSvgStore();
   const element = useRef<HTMLDivElement | null>(null);
-
+  
   const getSVG = useCallback(async () => {
     const svg = fetch(svgName).then((response) =>
       response.text().then((text) => {
@@ -39,12 +42,15 @@ const EmbedSvg: FC<{
           text,
           "image/svg+xml"
         ).documentElement;
+        if(notifySvgLoaded)
+          notifySvgLoaded();
         return parsedSvg;
       })
     );
 
     return svg;
-  }, []);
+  }, [notifySvgLoaded]);
+  
   useEffect(() => {
     if (document && !svgCreated.current) {
       svgCreated.current = true;

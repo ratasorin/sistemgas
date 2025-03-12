@@ -19,3 +19,16 @@
   position: relative;
   font-size: 12px;
 }
+
+@keyframes expandHeight {
+  from {
+    height: 0;
+  }
+  to {
+    height: 50%;
+  }
+}
+
+.expand-bubbles {
+  animation: expandHeight 1s ease-in-out forwards;
+}

@@ -209,7 +209,7 @@ const Scene: FC<{
           }
           carRenderer.update();
           carRenderer.render();
-          setX((carRenderer?.car?.position || 0) - 400);
+          setX((carRenderer?.car?.position || 0) - (carRenderer.carElement?.clientWidth || 1000) / 2);
           id = window.requestAnimationFrame(callback);
         };
   
@@ -238,7 +238,7 @@ const Scene: FC<{
       >
         <Pill x={x} />
       </div>
-      <div className="absolute bottom-0 w-full h-full z-20 overflow-hidden flex items-end -translate-y-[84px]">
+      <div className="absolute bottom-0 w-full h-full z-20 overflow-hidden flex items-end -translate-y-[72px]">
         <EmbedSvg
           svgName="gas_truck.svg"
           elementId="GAS_TRUCK_CONTAINER"

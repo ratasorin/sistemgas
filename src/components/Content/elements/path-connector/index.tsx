@@ -109,6 +109,7 @@ const PathConnector: React.FC<PathConnectorProps> = ({
             });
 
             setTimeout(() => {
+              path.style.strokeDasharray = "0";
               resolve([]);
             }, triggerNext || duration);
           }

@@ -70,7 +70,7 @@ const ImplementedAnimations: {
     duration: 0,
   },
   bubbles: {
-    duration: 1500,
+    duration: 700,
   },
   "skip-bubbles": {
     duration: 0,
@@ -79,7 +79,7 @@ const ImplementedAnimations: {
     duration: 0,
   },
   pipes: {
-    duration: 1500,
+    duration: 700,
   },
 };
 

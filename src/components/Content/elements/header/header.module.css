@@ -20,15 +20,11 @@
   font-size: 12px;
 }
 
-@keyframes expandHeight {
+@keyframes expand-height {
   from {
     height: 0;
   }
   to {
     height: 50%;
   }
-}
-
-.expand-bubbles {
-  animation: expandHeight 1s ease-in-out forwards;
 }

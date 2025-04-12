@@ -2,12 +2,14 @@ import React, { useRef } from "react";
 import { Position } from "@xyflow/react";
 import { useGoAroundElement } from "components/Content/hooks/goAroundElements";
 import { useEffect, useState, useCallback } from "react";
+import { createAnimationImplementation } from "lib/animation/manage";
 
 export interface Coordinates {
   x: number;
   y: number;
 }
 
+const MAX_LENGTH = 10_000;
 export const useDynamicCoordinates = (
   elementRef: Element | null,
   initialOffset: Coordinates
@@ -19,7 +21,6 @@ export const useDynamicCoordinates = (
 
   const updateCoordinates = useCallback(() => {
     if (!elementRef) return;
-
 
     const rect = elementRef.getBoundingClientRect();
 
@@ -71,7 +72,6 @@ const PathConnector: React.FC<PathConnectorProps> = ({
   const startCoordinates = useDynamicCoordinates(startRef, startOffset);
   const endCoordinates = useDynamicCoordinates(endRef, endOffset);
 
-
   const pathData = useGoAroundElement(
     startCoordinates,
     endCoordinates,
@@ -79,6 +79,44 @@ const PathConnector: React.FC<PathConnectorProps> = ({
     Position.Top,
     elementsToDodge
   );
+
+  const createdAnimationImplementation = useRef(false);
+
+  useEffect(() => {
+    console.log({ pathData });
+    if (
+      !pathData ||
+      pathData === "M0,0 L0,0" ||
+      createdAnimationImplementation.current
+    )
+      return;
+
+    createdAnimationImplementation.current = true;
+    createAnimationImplementation(
+      "pipes",
+      (duration, triggerNext) => {
+        return new Promise((resolve) => {
+          if (pathRef.current && pathData) {
+            const path = pathRef.current;
+            const length = pathRef.current.getTotalLength();
+            path.style.strokeDasharray = `${length}`;
+            path.style.strokeDashoffset = `${length}`;
+            path.getBoundingClientRect();
+
+            requestAnimationFrame(() => {
+              path.style.transition = `stroke-dashoffset ${duration}ms ease-out`;
+              path.style.strokeDashoffset = "0";
+            });
+
+            setTimeout(() => {
+              resolve([]);
+            }, triggerNext || duration);
+          }
+        });
+      },
+      true
+    );
+  }, [pathData]);
 
   return (
     <svg
@@ -95,6 +133,10 @@ const PathConnector: React.FC<PathConnectorProps> = ({
       <defs>{gradient?.defs}</defs>
 
       <path
+        style={{
+          strokeDasharray: MAX_LENGTH,
+          strokeDashoffset: MAX_LENGTH,
+        }}
         ref={pathRef}
         d={pathData || ""}
         stroke={gradient ? `url(#${gradient.id})` : "#FE6B7F"} // Default solid color if no gradient

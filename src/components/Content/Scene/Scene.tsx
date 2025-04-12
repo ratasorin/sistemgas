@@ -13,6 +13,7 @@ import Pill, { startSlideshowAtom } from "./pill";
 import scene_styles from "./styles.module.css";
 import { Positions } from "./Text/helpers/math/coordinates";
 import EmbedSvg from "lib/embed-svg";
+import { createAnimationImplementation, useAnimationManager } from "lib/animation/manage";
 
 export interface Render {
   render: () => void;
@@ -94,6 +95,7 @@ const handleForceEnd = (
  * @param canvasTextIsFront *MutableRefObject<boolean>* - A flag to signal if the pill was transported to the root div
  */
 const animatePillOnFinish = (
+  duration: number,
   announceSlideshowStart: () => any,
   canvasTextIsFront: React.MutableRefObject<boolean>
 ) => {
@@ -124,16 +126,9 @@ const animatePillOnFinish = (
       gsap
         .to(textRendererDiv, {
           y: deltaY,
-          duration: END_TRANSITION_DURATION / 1000,
+          duration,
           ease: "expo.out",
-        })
-        .then(() =>
-          // set a timeout because the BuildingHQ takes END_TRANSITION_DURATION / 4 (ms) to animate in
-          setTimeout(
-            () => announceSlideshowStart(),
-            END_TRANSITION_DURATION / 4
-          )
-        );
+        });
     } else {
       textRendererDiv.style.top = `${
         Number(textRendererDiv.style.top.replace("px", "")) + deltaY
@@ -168,6 +163,7 @@ const Scene: FC<{
 
   const setStartSlideshow = useSetAtom(startSlideshowAtom);
   const canvasTextIsFront = useRef(false);
+  const startedAnimation = useRef(false);
 
   /**
    * Handle pill placement on forceEnd or car regular exit (finish)
@@ -175,43 +171,62 @@ const Scene: FC<{
   useEffect(() => {
     if (!height || !imageHeight) return;
 
+    createAnimationImplementation("pill", (duration, triggerNext) => {
+
+      if(!duration) console.error("[ANIMATION MANAGEMENT] No duration set for 'pill' animation! (proceeding with 1000ms)");
+
+      return new Promise((resolve) => {
+      animatePillOnFinish((duration || 1000) / 1000, () => setStartSlideshow(true), canvasTextIsFront);
+        setTimeout(() => {
+          resolve(["bubbles"]);
+        }, triggerNext || duration);
+      });
+    })
+
     if (forceEnd) {
       handleForceEnd(() => setStartSlideshow(true), canvasTextIsFront);
-    } else if (finished && imageHeight && height) {
-      animatePillOnFinish(() => setStartSlideshow(true), canvasTextIsFront);
     }
-  }, [finished, imageHeight, height, forceEnd]);
+
+  }, [imageHeight, height]);
 
   const [x, setX] = useState(0);
 
+  const {startAnimation} = useAnimationManager();
+
   useEffect(() => {
-    let id: number | undefined = undefined;
+    if(!carRenderer) return;
+    
+    createAnimationImplementation("car", () => {
+      return new Promise((resolve) => {
+        let id: number | undefined = undefined;
+      if (carRenderer) {
+        carRenderer.start();
+        const callback = () => {
+          if (carRenderer?.ended) {
+            if (id) window.cancelAnimationFrame(id);
+            resolve(["hit-breaks", "reveal-hq", "pill"]);
+            return;
+          }
+          carRenderer.update();
+          carRenderer.render();
+          setX((carRenderer?.car?.position || 0) - 400);
+          id = window.requestAnimationFrame(callback);
+        };
+  
+        id = window.requestAnimationFrame(callback);
+      }
+      });
+    });
+
+    if(!startedAnimation.current) {
+      startAnimation("car");
+      startedAnimation.current = true;
+    }
 
     if(forceEnd) {
-      if (id) window.cancelAnimationFrame(id);
       carRenderer?.remove();
       carRenderer?.end();
     }
-
-    if (carRenderer && !id) {
-      carRenderer.start();
-      const callback = () => {
-        if (carRenderer?.ended) {
-          if (id) window.cancelAnimationFrame(id);
-          return;
-        }
-        carRenderer.update();
-        carRenderer.render();
-        setX((carRenderer?.car?.position || 0) - 400);
-        id = window.requestAnimationFrame(callback);
-      };
-
-      id = window.requestAnimationFrame(callback);
-    }
-    return () => {
-      if (id) window.cancelAnimationFrame(id);
-      carRenderer?.remove();
-    };
   }, [carRenderer, forceEnd]);
 
 

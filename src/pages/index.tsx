@@ -1,4 +1,5 @@
 import { landingPageTooltips } from "components/tooltip/landing-page-tooltips";
+import { AnimationProvider } from "lib/animation/manage";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 
@@ -18,7 +19,7 @@ const AboutUsTooltip = dynamic(
 
 const Home = () => {
   return (
-    <>
+    <AnimationProvider>
       <Head>
         <title>Sistemgas</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -38,7 +39,7 @@ const Home = () => {
           <AboutUsTooltip elementId={el.id} />
         )
       )}
-    </>
+    </AnimationProvider>
   );
 };
 

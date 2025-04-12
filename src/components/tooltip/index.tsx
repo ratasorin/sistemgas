@@ -39,8 +39,10 @@ const Tooltip: FC<{
     element?.addEventListener("mouseenter", onEnter);
 
     return () => {
-      element?.removeEventListener("mouseleave", onLeave);
-      element?.addEventListener("mouseenter", onEnter);
+      if(element) {
+        element.removeEventListener("mouseleave", onLeave);
+        element.addEventListener("mouseenter", onEnter);
+      }
     };
   }, [element, masterId]);
 

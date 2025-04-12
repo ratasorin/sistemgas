@@ -1,6 +1,6 @@
 import { useAnimationState } from "components/Content/Scene/Car/Car";
 import { atom, useSetAtom } from "jotai";
-import { FC, useCallback, useEffect, useRef } from "react";
+import { CSSProperties, FC, useCallback, useEffect, useRef } from "react";
 import { create } from "zustand";
 
 interface SvgStoreInterface {
@@ -26,10 +26,11 @@ export const useSvg = (elementId: string) => {
 const EmbedSvg: FC<{
   className?: string;
   svgClassName?: string;
+  style?: CSSProperties;
   elementId: string;
   svgName: string;
   notifySvgLoaded?: () => void;
-}> = ({ elementId, svgName, className, svgClassName, notifySvgLoaded }) => {
+}> = ({ elementId, svgName, className, svgClassName, notifySvgLoaded, style}) => {
   const svgCreated = useRef(false);
   const { setSvg } = useSvgStore();
   const element = useRef<HTMLDivElement | null>(null);
@@ -66,7 +67,7 @@ const EmbedSvg: FC<{
     }
   }, []);
 
-  return <div ref={element} className={className} id={elementId}></div>;
+  return <div ref={element} style = {style} className={className} id={elementId}></div>;
 };
 
 export default EmbedSvg;

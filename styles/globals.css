@@ -19,7 +19,7 @@ a {
 * {
   box-sizing: border-box;
   overflow-x: hidden;
-  --end-transition-duration: 2s;
+  --end-transition-duration: 1.5s;      
 }
 
 

@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect, FC, useMemo } from "react";
+import { useState, useRef, useEffect, FC, useMemo, useCallback } from "react";
 import content from "./content.module.css";
 import Scene from "./Scene/Scene";
 import AnimatedBackground from "./helper/animated-background";
 import { useAnimationState, useImageLoaded } from "./Scene/Car/Car";
 import EmbedSvg, { useSvg } from "lib/embed-svg";
 import { rotateElementAroundAnchorPoint } from "lib/rotate-svg";
-import tippy, { DelegateInstance, Props } from "tippy.js";
+import { Props } from "tippy.js";
 import {
   END_TRANSITION_DURATION,
   LANDING_PAGE_BUILDING_SVG_ID,
@@ -29,6 +29,8 @@ import {
 } from "./helper/animte-component-on-hover";
 import { GridPattern } from "./elements/grid-background";
 import { cn } from "lib/utils";
+import { getTranslateXY } from "./helper/get-translate";
+import { createAnimationImplementation } from "lib/animation/manage";
 
 const backgroundAnimations = [
   {
@@ -279,63 +281,78 @@ const MainScene: FC = () => {
   }, [loading]);
 
   const elementRef = useRef<HTMLDivElement>(null);
+  const sistemgasSvgsContainer = useRef<HTMLDivElement>(null);
 
-  const sistemgasSvgRef = useRef<HTMLDivElement>(null);
-
+  /**
+   * Reveal the building svg with a slide-in + camera up motion
+   */
   useEffect(() => {
-
-    if (sistemgasSvgRef.current && finished) {
-      const svg = document.getElementById(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
-      if(!svg) return;
-      const buildingTop = svg.querySelector(BUILDING_TOP_CLASSNAME);
-
-      if(!buildingTop) return;
-
-      const boundingBox = buildingTop.getBoundingClientRect();
-      const sistemgasSvgContainer = document.querySelector(".sistemgas-hq-svg");
-      const buildingTopCenter = boundingBox.left + boundingBox.width / 2 - (sistemgasSvgContainer?.getBoundingClientRect()?.left || 0);
-      const deltaXForMiddle = buildingTopCenter - window.innerWidth / 2 - 92;
-      scrollElementBy(
-        sistemgasSvgRef.current,
-        deltaXForMiddle,  
-        END_TRANSITION_DURATION / 4
-      );
-
-      setTimeout(() => {
-        sistemgasSvgRef.current!.style.overflowX = "scroll";
-      }, END_TRANSITION_DURATION / 4);
-    } else if (sistemgasSvgRef.current && forceEnd) {
-      sistemgasSvgRef.current.style.overflowX = "scroll";
-      const svg = document.getElementById(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
-      if (svg) {
-
-        const buildingTop = svg.querySelector(BUILDING_TOP_CLASSNAME);
-        if (buildingTop) {
-          requestAnimationFrame(() => {
-            const boundingBox = buildingTop.getBoundingClientRect();
-
-            // Find the current center of the building relative to the viewport
-            const buildingTopCenter = boundingBox.left + boundingBox.width / 2;
-            const deltaXForMiddle = buildingTopCenter - window.innerWidth / 2  - 64;
-
-            // Calculate the required translation to center the building
-            const translateX = deltaXForMiddle;
-            sistemgasSvgRef.current!.scrollLeft = translateX;
-          });
+    createAnimationImplementation("reveal-hq", (duration, triggerNext) => {
+      return new Promise((resolve) => {
+        if (!duration) {
+          return;
         }
-      }
-    }
-  }, [finished, forceEnd]);
+
+        if (sistemgasSvgsContainer.current)
+          sistemgasSvgsContainer.current.style.animation = `${duration}ms cubic-bezier(0.33, 0.27, 0.58, 1) forwards ${content["sistemgas-hq-down"]}`;
+
+        const svg = document.getElementById(LANDING_PAGE_SISTEMGAS_HQ_SVG_ID);
+        if (!svg) return;
+        const buildingTop = svg.querySelector(BUILDING_TOP_CLASSNAME);
+        if (!buildingTop) return;
+
+        const sistemgasHqSvgs = [
+          ...document.querySelectorAll(".sistemgas-hq-svg"),
+        ] as HTMLDivElement[];
+        if (!sistemgasHqSvgs.length) return;
+
+        const boundingBox = buildingTop.getBoundingClientRect();
+        const buildingTopCenter = boundingBox.left + boundingBox.width / 2;
+        let deltaXForMiddle = buildingTopCenter - window.innerWidth / 2;
+        const currentXOffset = getTranslateXY(sistemgasHqSvgs[0]).translateX;
+
+        sistemgasHqSvgs.forEach((el) => {
+          // we are going to move past the origin
+          if (deltaXForMiddle > currentXOffset) {
+            const remaining = Math.abs(currentXOffset - deltaXForMiddle);
+
+            el.style.transform = `translateX(0px)`;
+            el.style.transition = `transform ${duration / 2}ms ease-in`;
+            sistemgasSvgsContainer.current!.style.overflowX = "scroll";
+
+            setTimeout(() => {
+              el.style.transition = "";
+              scrollElementBy(
+                sistemgasSvgsContainer.current!,
+                remaining,
+                duration / 2
+              );
+            }, duration / 2);
+          } else {
+            el.style.transform = `translateX(${
+              currentXOffset - deltaXForMiddle
+            }px)`;
+            el.style.transition = `transform ${duration}ms ease-out`;
+            sistemgasSvgsContainer.current!.style.overflowX = "scroll";
+          }
+        });
+
+        setTimeout(() => {
+          resolve([]);
+        }, triggerNext || duration);
+      });
+    });
+  }, []);
 
   const setBBox = useSetAtom(sistemgasHQBBoxAtom);
   const handleScroll = () => {
-    if (sistemgasSvgRef.current) {
+    if (sistemgasSvgsContainer.current) {
       setBBox({
-        scrollLeft: sistemgasSvgRef.current.scrollLeft,
-        height: sistemgasSvgRef.current.scrollHeight,
-        width: sistemgasSvgRef.current.scrollWidth,
-        x: sistemgasSvgRef.current.clientLeft,
-        y: sistemgasSvgRef.current.clientTop,
+        scrollLeft: sistemgasSvgsContainer.current.scrollLeft,
+        height: sistemgasSvgsContainer.current.scrollHeight,
+        width: sistemgasSvgsContainer.current.scrollWidth,
+        x: sistemgasSvgsContainer.current.clientLeft,
+        y: sistemgasSvgsContainer.current.clientTop,
       });
     }
   };
@@ -395,37 +412,27 @@ const MainScene: FC = () => {
         ></Scene>
         <div
           onScroll={handleScroll}
-          ref={sistemgasSvgRef}
+          ref={sistemgasSvgsContainer}
           id="sistemgas-hq"
           className={`${content["sistemgas-hq"]} ${
-            finished
-              ? content["sistemgas-hq-animate-in"]
-              : forceEnd
-              ? content["sistemgas-hq-force-end"]
-              : ""
+            forceEnd ? content["sistemgas-hq-force-end"] : ""
           }`}
         >
           <EmbedSvg
-            className={`sistemgas-hq-svg absolute w-full z-10 left-0 translate-x-full h-full flex flex-col justify-end items-center min-w-min ${
-              finished
-                ? content["sistemgas-svg-animate-in"]
-                : forceEnd
-                ? content["sistemgas-svg-force-end"]
-                : ""
-            }`}
+            className={`sistemgas-hq-svg absolute w-full z-10 left-0 h-full flex flex-col justify-end items-center min-w-min`}
+            style={{
+              transform: `translateX(${window.innerWidth}px)`,
+            }}
             svgClassName={`h-[45%] overflow-visible`}
             elementId={LANDING_PAGE_SISTEMGAS_HQ_SVG_ID}
             svgName="sistemgas-hq.svg"
           ></EmbedSvg>
 
           <EmbedSvg
-            className={`sistemgas-hq-svg absolute w-full left-0 translate-x-full h-full flex flex-col justify-end items-center min-w-min ${
-              finished
-                ? content["sistemgas-svg-animate-in"]
-                : forceEnd
-                ? content["sistemgas-svg-force-end"]
-                : ""
-            }`}
+            style={{
+              transform: `translateX(${window.innerWidth}px)`,
+            }}
+            className={`sistemgas-hq-svg absolute w-full left-0 h-full flex flex-col justify-end items-center min-w-min`}
             svgClassName={`h-[45%] overflow-visible`}
             elementId={LANDING_PAGE_SISTEMGAS_HQ_GLOW_SVG_ID}
             svgName="sistemgas-hq-glow.svg"

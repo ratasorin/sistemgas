@@ -1,42 +1,33 @@
-/*
-   @param moveBy: the amount to scroll by
-   @param time: the exact amount of time the scrolling will take (in milliseconds)
-*/
 export function scrollElementBy(
   element: HTMLElement,
   moveBy: number,
   animationTime: number = 500
 ) {
-  let prevTime: number | undefined;
-  let elapsedTime = 0;
-  const speed = +(moveBy / animationTime).toFixed(2);
-
+  let startTime: number | undefined;
+  const startScrollLeft = element.scrollLeft;
+  
   let COOL_DOWN = 20; // ms
   let accumulatedCoolDown = 0;
-  let right = 0;
 
   window.requestAnimationFrame(function step(currentTime) {
-    if (!prevTime) prevTime = currentTime;
+    if (!startTime) startTime = currentTime;
 
-    const delta_T = currentTime - prevTime;
-
-    elapsedTime += delta_T;
-    accumulatedCoolDown += delta_T;
+    const elapsedTime = currentTime - startTime;
+    accumulatedCoolDown += elapsedTime;
 
     if (accumulatedCoolDown < COOL_DOWN) {
-      prevTime = currentTime;
       window.requestAnimationFrame(step);
       return;
     }
 
-    const scrollBy = +(accumulatedCoolDown * speed).toFixed(2);
-    accumulatedCoolDown = 0;
-    right += scrollBy;
+    const progress = Math.min(elapsedTime / animationTime, 1); // Ensures it doesn't exceed 1
+    const easedProgress = 1 - Math.pow(1 - progress, 3); // Ease-out function
 
-    element.scrollLeft = right;
+    // Compute the new scroll position
+    const newScrollLeft = startScrollLeft + moveBy * easedProgress;
+    element.scrollLeft = newScrollLeft;
 
-    if (elapsedTime <= animationTime) {
-      prevTime = currentTime;
+    if (progress < 1) {
       window.requestAnimationFrame(step);
     }
   });

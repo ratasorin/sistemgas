@@ -15,6 +15,7 @@ import { Button } from "@mui/material";
 import EmojiScroll from "./emoji-scroll";
 import PathConnector from "../path-connector";
 import { createPortal } from "react-dom";
+import { createAnimationImplementation } from "lib/animation/manage";
 
 const m4 = 16; //px
 
@@ -103,55 +104,56 @@ const Header = () => {
     { startElement: null, endOffsetX: 0 },
   ]);
 
-  const [expandPipes, setExpandPipes] = useState(false);
-
   useEffect(() => {
-    if(startSlideshow) {
-      const bubblesConatiner = document.getElementById("bubbles");
-      bubblesConatiner?.classList.add(header_styles["expand-bubbles"]);
-      setTimeout(() => {
-        setExpandPipes(true);
-      }, 1000);
-    }
-  }, [startSlideshow])
+    createAnimationImplementation("bubbles", (duration, triggerNext) => {
+      return new Promise((resolve) => {
+        
+        const bubblesConatiner = document.getElementById("bubbles");
+        if(!bubblesConatiner) return;
 
-  useEffect(() => {
-    if(!expandPipes) return;
-    setTimeout(() => {
-      const bubble1 = document.getElementById(BUBBLE_1);
-      const bubble2 = document.getElementById(BUBBLE_2);
-      const bubble3 = document.getElementById(BUBBLE_3);
-      const bubble4 = document.getElementById(BUBBLE_4);
+        bubblesConatiner.style.animation = `${header_styles["expand-height"]} ${duration}ms ease-in-out forwards`;
 
-      const buildingTop = getBuildingTop();
-      setBuildingTop((b) => (b ? b : buildingTop || null));
+        setTimeout(() => {
+          const bubble1 = document.getElementById(BUBBLE_1);
+          const bubble2 = document.getElementById(BUBBLE_2);
+          const bubble3 = document.getElementById(BUBBLE_3);
+          const bubble4 = document.getElementById(BUBBLE_4);
+      
+          const buildingTop = getBuildingTop();
+          setBuildingTop((b) => (b ? b : buildingTop || null));
+      
+          const buildingBBox = getBBox(buildingTop);
+          const buildingStartX = buildingBBox.x;
+          const buildingEndX = buildingStartX + buildingBBox.width;
+      
+          const button = getButton();
+          const buttonBBox = getBBox(button);
+          const buttonStartX = buttonBBox.x;
+          const buttonEndX = buttonBBox.x + buttonBBox.width;
+      
+          const seg1 = buttonStartX - buildingStartX;
+          const seg2 = buildingEndX - buttonEndX;
+      
+          const localAnchor1 = seg1 / 3;
+          const localAnchor2 = (2 * seg1) / 3;
+      
+          const localAnchor3 = buttonEndX - buildingStartX + seg2 / 3;
+          const localAnchor4 = buttonEndX - buildingStartX + (2 * seg2) / 3;
+      
+          setBubbles([
+            { endOffsetX: localAnchor1, startElement: bubble1 },
+            { endOffsetX: localAnchor2, startElement: bubble2 },
+            { endOffsetX: localAnchor3, startElement: bubble3 },
+            { endOffsetX: localAnchor4, startElement: bubble4 },
+          ]);
 
-      const buildingBBox = getBBox(buildingTop);
-      const buildingStartX = buildingBBox.x;
-      const buildingEndX = buildingStartX + buildingBBox.width;
-
-      const button = getButton();
-      const buttonBBox = getBBox(button);
-      const buttonStartX = buttonBBox.x;
-      const buttonEndX = buttonBBox.x + buttonBBox.width;
-
-      const seg1 = buttonStartX - buildingStartX;
-      const seg2 = buildingEndX - buttonEndX;
-
-      const localAnchor1 = seg1 / 3;
-      const localAnchor2 = (2 * seg1) / 3;
-
-      const localAnchor3 = buttonEndX - buildingStartX + seg2 / 3;
-      const localAnchor4 = buttonEndX - buildingStartX + (2 * seg2) / 3;
-
-      setBubbles([
-        { endOffsetX: localAnchor1, startElement: bubble1 },
-        { endOffsetX: localAnchor2, startElement: bubble2 },
-        { endOffsetX: localAnchor3, startElement: bubble3 },
-        { endOffsetX: localAnchor4, startElement: bubble4 },
-      ]);
-    }, 10);
-  }, [expandPipes]);
+          setTimeout(() => {
+            resolve(["pipes"]);
+          }, 100);
+        }, triggerNext || duration);
+      });
+    });
+  }, [setBubbles]);
 
   const startOffset = useMemo(() => {
     const bubbleBBox = getBBox(bubbles[0].startElement);
@@ -221,7 +223,10 @@ const Header = () => {
         </div>
 
         <div className="w-full flex-1 px-2 flex items-center flex-col">
-          <div className="h-0 w-full max-w-sm flex justify-evenly items-center mb-2 overflow-hidden" id = "bubbles">
+          <div
+            className="h-0 w-full max-w-sm flex justify-evenly items-center mb-2 overflow-hidden"
+            id="bubbles"
+          >
             {([BUBBLE_1, BUBBLE_2, BUBBLE_3, BUBBLE_4] as const).map((id) => (
               <div
                 id={id}
@@ -237,38 +242,37 @@ const Header = () => {
               </div>
             ))}
 
-            {startSlideshow &&
-              createPortal(
-                <>
-                  {bubbles.map((b) => (
-                    <PathConnector
-                      elementsToDodge={[DETAILS_BUTTON_ID]}
-                      startRef={b.startElement}
-                      endRef={buildingTop}
-                      endOffset={{ x: b.endOffsetX, y: 0 }}
-                      startOffset={startOffset}
-                      strokeWidth={2}
-                      gradient={{
-                        id: "customGradient",
-                        defs: (
-                          <linearGradient
-                            id="customGradient"
-                            x1="0%"
-                            y1="0%"
-                            x2="0%"
-                            y2="100%"
-                          >
-                            <stop offset="0%" stopColor="#95A9E300" />
-                            <stop offset="50%" stopColor="#91A3E1" />
-                            <stop offset="100%" stopColor="#637BCD" />
-                          </linearGradient>
-                        ),
-                      }}
-                    ></PathConnector>
-                  ))}
-                </>,
-                document.getElementById("root")!
-              )}
+            {createPortal(
+              <>
+                {bubbles.map((b) => (
+                  <PathConnector
+                    elementsToDodge={[DETAILS_BUTTON_ID]}
+                    startRef={b.startElement}
+                    endRef={buildingTop}
+                    endOffset={{ x: b.endOffsetX, y: 0 }}
+                    startOffset={startOffset}
+                    strokeWidth={2}
+                    gradient={{
+                      id: "customGradient",
+                      defs: (
+                        <linearGradient
+                          id="customGradient"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop offset="0%" stopColor="#95A9E300" />
+                          <stop offset="50%" stopColor="#91A3E1" />
+                          <stop offset="100%" stopColor="#637BCD" />
+                        </linearGradient>
+                      ),
+                    }}
+                  ></PathConnector>
+                ))}
+              </>,
+              document.getElementById("root")!
+            )}
           </div>
           <div className="h-1/2 flex items-start justify-center py-4 !overflow-visible">
             <Button

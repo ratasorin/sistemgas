@@ -5,8 +5,6 @@
     (2141 / 151) * (1 / 7) * 100vh
   ); /* the 32 px are because there is a margin left and right of 16px that affect the width of the container*/
   min-height: 100%;
-  transform-origin: center bottom;
-  transform: scale(1.2);
   overflow: visible;
 }
 
@@ -36,6 +34,7 @@
   width: 100%;
   height: 100%;
   overflow: visible;
+  transform-origin: bottom center;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
@@ -62,46 +61,16 @@
 }
 
 .sistemgas-hq-force-end {
-  transform: translateY(calc(1 / 8 * 100vh)) scale(1.2);
-}
-
-.sistemgas-hq-animate-in {
-  animation: var(--end-transition-duration) cubic-bezier(0.33, 0.27, 0.58, 1)
-    forwards sistemgas-hq-down;
+  transform: translateY(calc(1 / 8 * 100vh));
 }
 
 @keyframes sistemgas-hq-down {
   0% {
-    transform: translateY(0) scale(1.2);
+    transform: translateY(0);
   }
-
+  
   100% {
-    transform: translateY(calc(1 / 8 * 100vh)) scale(1.2);
-  }
-}
-
-
-.sistemgas-svg-force-end {
-  position: absolute;
-  transform: translateX(0);
-  overflow-x: visible !important;
-}
-
-
-.sistemgas-svg-animate-in {
-  position: absolute;
-  animation: var(--end-transition-duration) cubic-bezier(0.33, 0.27, 0.58, 1)
-    forwards sistemgas-svg-in;
-  overflow-x: visible !important;
-}
-
-@keyframes sistemgas-svg-in {
-  0% {
-    transform: translateX(100%);
-  }
-
-  100% {
-    transform: translateX(0);
+    transform: translateY(calc(1 / 8 * 100vh));
   }
 }
 

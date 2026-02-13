@@ -26,13 +26,14 @@ export interface Render {
 }
 
 const getResponsiveCarVelocity = (screenWidth: number) => {
-  let speed: number = 6;
-  if (screenWidth < screens["xl"]) speed = speed - 0.1;
-  if (screenWidth < screens["lg"]) speed = speed - 0.2;
-  if (screenWidth < screens["md"]) speed = speed - 0.3;
-  if (screenWidth < screens["sm"]) speed = speed - 0.4;
-
-  return speed;
+  // Return speed in pixels per millisecond for time-based animation
+  // Aiming for ~1.5 - 2 seconds to cross the screen
+  if (screenWidth >= screens["2xl"]) return 1;
+  if (screenWidth >= screens["xl"]) return 0.9;
+  if (screenWidth >= screens["lg"]) return 0.8;
+  if (screenWidth >= screens["md"]) return 0.7;
+  if (screenWidth >= screens["sm"]) return 0.6;
+  return 0.45;
 };
 
 const getTextRendererDiv = () => document.getElementById(TEXT_RENDERED_DIV_ID);
@@ -143,7 +144,7 @@ const Scene: FC<{
   imageHeight: number;
   start: boolean;
 }> = ({ width, height, imageHeight }) => {
-  const { finished, forceEnd } = useAnimationState();
+  const { forceEnd } = useAnimationState();
 
   const carVelocity = useMemo(() => {
     return getResponsiveCarVelocity(width);
@@ -152,14 +153,18 @@ const Scene: FC<{
   const [carLoaded, setCarLoaded] = useState(false);
 
   const notifyCarLoaded = useCallback(() => setCarLoaded(true), [setCarLoaded]);
-  const carRenderer = useMemo(() => {
-    if (!carLoaded || finished || forceEnd) return null;
+  
+  const carRendererRef = useRef<CarRender | null>(null);
+
+  useEffect(() => {
+    if(!carLoaded) return;
 
     const carElement = document.getElementById("GAS_TRUCK_CONTAINER");
-
-    if (carVelocity && carElement)
-      return new CarRender(carElement, carVelocity);
-  }, [carVelocity, carLoaded]);
+    if(carVelocity && carElement) {
+      carRendererRef.current = new CarRender(carElement, carVelocity);
+    }
+  }, [carVelocity, carLoaded])
+ 
 
   const setStartSlideshow = useSetAtom(startSlideshowAtom);
   const canvasTextIsFront = useRef(false);
@@ -194,26 +199,39 @@ const Scene: FC<{
   const {startAnimation} = useAnimationManager();
 
   useEffect(() => {
-    if(!carRenderer) return;
+    if (forceEnd) {
+      carRendererRef.current?.skip();
+    }
+  }, [forceEnd]);
+
+  useEffect(() => {
+    if(!carRendererRef.current) return;
     
+    let currentId: number | undefined = undefined;
+
     createAnimationImplementation("car", () => {
       return new Promise((resolve) => {
-        let id: number | undefined = undefined;
-      if (carRenderer) {
-        carRenderer.start();
-        const callback = () => {
-          if (carRenderer?.ended) {
-            if (id) window.cancelAnimationFrame(id);
+        let lastTime: number | undefined = undefined;
+
+        if (carRendererRef.current) {
+        carRendererRef.current.start();
+        const callback = (timestamp: number) => {
+          if (lastTime === undefined) lastTime = timestamp;
+          const deltaTime = timestamp - lastTime;
+          lastTime = timestamp;
+
+          if (carRendererRef.current?.ended) {
+            if (currentId) window.cancelAnimationFrame(currentId);
             resolve(["hit-breaks", "reveal-hq", "pill"]);
             return;
           }
-          carRenderer.update();
-          carRenderer.render();
-          setX((carRenderer?.car?.position || 0) - (carRenderer.carElement?.clientWidth || 1000) / 2);
-          id = window.requestAnimationFrame(callback);
+          carRendererRef.current?.update(deltaTime);
+          carRendererRef.current?.render();
+          setX((carRendererRef.current?.car?.position || 0) - (carRendererRef.current?.carElement?.clientWidth || 1000) / 2);
+          currentId = window.requestAnimationFrame(callback);
         };
   
-        id = window.requestAnimationFrame(callback);
+        currentId = window.requestAnimationFrame(callback);
       }
       });
     });
@@ -223,11 +241,10 @@ const Scene: FC<{
       startedAnimation.current = true;
     }
 
-    if(forceEnd) {
-      carRenderer?.remove();
-      carRenderer?.end();
-    }
-  }, [carRenderer, forceEnd]);
+    return () => {
+      if (currentId) window.cancelAnimationFrame(currentId);
+    };
+  }, [carLoaded]);
 
 
   return (

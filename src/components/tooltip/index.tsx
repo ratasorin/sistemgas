@@ -1,3 +1,5 @@
+"use client";
+
 import { poppers } from "components/Content/helper/animte-component-on-hover";
 import { shouldExit, updateLastElementHovered } from "lib/debounce-hover";
 import React, { FC, useCallback, useEffect, useState } from "react";

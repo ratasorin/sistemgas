@@ -1,7 +1,8 @@
+"use client";
+
 import { landingPageTooltips } from "components/tooltip/landing-page-tooltips";
 import { AnimationProvider } from "lib/animation/manage";
 import dynamic from "next/dynamic";
-import Head from "next/head";
 
 const Content = dynamic(() => import("components/Content/Content"), {
   ssr: false,
@@ -20,11 +21,6 @@ const AboutUsTooltip = dynamic(
 const Home = () => {
   return (
     <AnimationProvider>
-      <Head>
-        <title>Sistemgas</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
-
       <Navbar />
       <div
         id="root"
@@ -34,9 +30,9 @@ const Home = () => {
       </div>
       {landingPageTooltips.map((el) =>
         el.tooltip === "default" ? (
-          <Tooltip masterId={el.id} tooltipTitle={el.title} />
+          <Tooltip key={el.id} masterId={el.id} tooltipTitle={el.title} />
         ) : (
-          <AboutUsTooltip elementId={el.id} />
+          <AboutUsTooltip key={el.id} elementId={el.id} />
         )
       )}
     </AnimationProvider>

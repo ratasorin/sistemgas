@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, useEffect, FC, useMemo, useCallback } from "react";
 import content from "./content.module.css";
 import Scene from "./Scene/Scene";
@@ -440,7 +442,7 @@ const MainScene: FC = () => {
         </div>
         <div ref={elementRef} className={`${content.parallax} z-0 relative`}>
           {backgroundAnimations.map((elem) => (
-            <AnimatedBackground {...elem} widthType="--background-svg-width" />
+            <AnimatedBackground key={elem.baseClassName} {...elem} widthType="--background-svg-width" />
           ))}
         </div>
       </div>

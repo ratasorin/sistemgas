@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect } from "react";
 import EmbedSvg, { useSvg } from "lib/embed-svg";
 import { rotateElementAroundAnchorPoint } from "lib/rotate-svg";

@@ -229,6 +229,7 @@ const Header = () => {
           >
             {([BUBBLE_1, BUBBLE_2, BUBBLE_3, BUBBLE_4] as const).map((id) => (
               <div
+                key={id}
                 id={id}
                 style={{
                   marginBottom: [BUBBLE_2, BUBBLE_3].includes(id)
@@ -244,8 +245,9 @@ const Header = () => {
 
             {createPortal(
               <>
-                {bubbles.map((b) => (
+                {bubbles.map((b, index) => (
                   <PathConnector
+                    key={index}
                     elementsToDodge={[DETAILS_BUTTON_ID]}
                     startRef={b.startElement}
                     endRef={buildingTop}

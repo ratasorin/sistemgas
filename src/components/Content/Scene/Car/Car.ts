@@ -21,8 +21,8 @@ class Car {
     this.velocity = velocity;
     this.position = -200;
   }
-  update() {
-    this.position += this.velocity;
+  update(deltaTime: number = 1) {
+    this.position += this.velocity * deltaTime;
   }
 }
 
@@ -45,12 +45,18 @@ export default class CarRender {
     this.render();
   }
 
-  end() {
-    if (!this.carElement) {
-      this.ended = true;
-      return;
+  skip() {
+    if (this.car && this.carElement) {
+      this.car.position = window.innerWidth + this.carElement.clientWidth + 2000;
+      this.render();
     }
+    this.end();
+  }
+
+  end() {
+    if (this.ended) return;
     this.ended = true;
+    useAnimationState.setState(() => ({ finished: true }));
   }
 
   remove() {
@@ -58,7 +64,7 @@ export default class CarRender {
     this.carElement.style.transform = `translateX(-100%)`;
   }
 
-  update() {
+  update(deltaTime: number = 1) {
     if (this.ended) {
       console.error("YOU SHOULDN'T UPDATE AFTER END WAS TRIGGERED");
       return 0;
@@ -69,7 +75,7 @@ export default class CarRender {
       this.car.position <=
       this.carElement.getBoundingClientRect().width + window.innerWidth
     ) {
-      this.car.update();
+      this.car.update(deltaTime);
     } else {
       useAnimationState.setState(() => ({ finished: true }));
       this.end();

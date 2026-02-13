@@ -162,6 +162,7 @@ const Pill: FC<{ x: number }> = ({ x }) => {
       {ATTRIBUTES.map((attr) => {
         return (
           <div
+            key={attr.id}
             className={`${pill_styles["card"]} ${pill_styles["example-2"]}`}
             ref={(e) => {
               if (e) {

@@ -1,3 +1,5 @@
+"use client";
+
 import { useAnimationState } from "components/Content/Scene/Car/Car";
 import { atom, useAtom } from "jotai";
 import { FC, useState } from "react";

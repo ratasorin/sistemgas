@@ -183,6 +183,7 @@ const Scene: FC<{
       return new Promise((resolve) => {
       animatePillOnFinish((duration || 1000) / 1000, () => setStartSlideshow(true), canvasTextIsFront);
         setTimeout(() => {
+          setStartSlideshow(true);
           resolve(["bubbles"]);
         }, triggerNext || duration);
       });
@@ -200,9 +201,10 @@ const Scene: FC<{
 
   useEffect(() => {
     if (forceEnd) {
+      handleForceEnd(() => setStartSlideshow(true), canvasTextIsFront);
       carRendererRef.current?.skip();
     }
-  }, [forceEnd]);
+  }, [forceEnd, setStartSlideshow]);
 
   useEffect(() => {
     if(!carRendererRef.current) return;

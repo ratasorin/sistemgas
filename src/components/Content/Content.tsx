@@ -33,6 +33,8 @@ import { GridPattern } from "./elements/grid-background";
 import { cn } from "lib/utils";
 import { getTranslateXY } from "./helper/get-translate";
 import { createAnimationImplementation } from "lib/animation/manage";
+import Marquee from "./elements/marquee/Marquee";
+import About from "./elements/about/About";
 
 const backgroundAnimations = [
   {
@@ -282,6 +284,23 @@ const MainScene: FC = () => {
     });
   }, [loading]);
 
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+
+    const handleScroll = () => {
+      if (scene.scrollTop > 400) {
+        const employeePopper = poppers.find(
+          (popper) => (popper.reference as HTMLElement).id === LANDING_PAGE_EMPLOYEE_SVG_ID
+        );
+        employeePopper?.hide();
+      }
+    };
+
+    scene.addEventListener("scroll", handleScroll);
+    return () => scene.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const elementRef = useRef<HTMLDivElement>(null);
   const sistemgasSvgsContainer = useRef<HTMLDivElement>(null);
 
@@ -445,6 +464,8 @@ const MainScene: FC = () => {
             <AnimatedBackground key={elem.baseClassName} {...elem} widthType="--background-svg-width" />
           ))}
         </div>
+        
+          <Marquee />
       </div>
     </>
   );

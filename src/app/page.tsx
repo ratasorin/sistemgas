@@ -1,5 +1,6 @@
 "use client";
 
+import Marquee from "components/Content/elements/marquee/Marquee";
 import { landingPageTooltips } from "components/tooltip/landing-page-tooltips";
 import { AnimationProvider } from "lib/animation/manage";
 import dynamic from "next/dynamic";
@@ -27,6 +28,7 @@ const Home = () => {
         className="relative w-screen h-screen flex flex-col overflow-y-hidden justify-center"
       >
         <Content />
+
       </div>
       {landingPageTooltips.map((el) =>
         el.tooltip === "default" ? (
